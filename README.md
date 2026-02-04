@@ -115,7 +115,7 @@ pip install -r requirements.txt
 cp .env.example .env
 # Edit .env and add your API keys:
 # - TMDB_API_KEY (required): https://www.themoviedb.org/settings/api
-# - ANTHROPIC_API_KEY (required): https://console.anthropic.com/
+# - ANTHROPIC_API_KEY (required if using Claude, the default provider): https://console.anthropic.com/
 ```
 
 ### 3. Run the agent
