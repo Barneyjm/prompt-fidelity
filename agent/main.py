@@ -129,9 +129,8 @@ def resolve_ids_node(state: AgentState) -> AgentState:
 
         # Re-separate verified/inferred after resolution
         verified = [c for c in resolved if c.get("type") == "verified"]
-        inferred = state["inferred_constraints"] + [
-            c for c in resolved if c.get("type") == "inferred" and c not in state["inferred_constraints"]
-        ]
+        newly_inferred = [c for c in resolved if c.get("type") == "inferred"]
+        inferred = state["inferred_constraints"] + newly_inferred
 
         return {
             **state,
