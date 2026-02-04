@@ -11,6 +11,11 @@ from dataclasses import dataclass
 from typing import Literal
 
 
+# Maximum bits for any single constraint (prevents inf/NaN issues)
+# 20 bits ≈ survival rate of ~0.000001 (one in a million)
+MAX_CONSTRAINT_BITS = 20.0
+
+
 @dataclass
 class Constraint:
     """Represents a single constraint extracted from a user prompt."""
@@ -25,10 +30,10 @@ class Constraint:
     def bits(self) -> float:
         """Calculate information content in bits using -log2(survival_rate)."""
         if self.estimated_survival_rate <= 0:
-            return float('inf')
+            return MAX_CONSTRAINT_BITS  # Cap at max to avoid inf/NaN
         if self.estimated_survival_rate >= 1:
             return 0.0
-        return -math.log2(self.estimated_survival_rate)
+        return min(-math.log2(self.estimated_survival_rate), MAX_CONSTRAINT_BITS)
 
     def to_dict(self) -> dict:
         """Convert constraint to dictionary representation."""
