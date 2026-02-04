@@ -1,0 +1,195 @@
+{
+  "description": "Sample prompts categorized by expected fidelity level",
+  "categories": {
+    "high_fidelity": {
+      "description": "Prompts with mostly verified constraints, expected fidelity > 0.8",
+      "expected_range": [0.8, 1.0],
+      "prompts": [
+        {
+          "prompt": "Action movies from the 80s rated above 7",
+          "notes": "All constraints map to TMDb fields: genre, year range, vote_average"
+        },
+        {
+          "prompt": "French films under 90 minutes",
+          "notes": "Language and runtime are both verified fields"
+        },
+        {
+          "prompt": "Movies directed by Ridley Scott with a budget over $50 million",
+          "notes": "Director lookup + budget filter (post-filter from details)"
+        },
+        {
+          "prompt": "Horror movies from Japan released after 2000",
+          "notes": "Genre, country/language, year range"
+        },
+        {
+          "prompt": "Comedies with Will Ferrell rated above 6",
+          "notes": "Genre, cast lookup, rating filter"
+        },
+        {
+          "prompt": "Sci-fi films between 1990 and 2000 with over 1000 votes",
+          "notes": "Genre, date range, vote count"
+        },
+        {
+          "prompt": "Documentary films about music",
+          "notes": "Two genres combined"
+        },
+        {
+          "prompt": "Korean thriller movies",
+          "notes": "Language and genre"
+        }
+      ]
+    },
+    "medium_fidelity": {
+      "description": "Prompts mixing verified and inferred constraints, expected fidelity 0.4-0.7",
+      "expected_range": [0.4, 0.7],
+      "prompts": [
+        {
+          "prompt": "90s thrillers that feel like a Coen Brothers film",
+          "notes": "Decade + genre verified; Coen Brothers aesthetic is inferred"
+        },
+        {
+          "prompt": "Sci-fi movies under 2 hours with a melancholy tone",
+          "notes": "Genre + runtime verified; tone is inferred"
+        },
+        {
+          "prompt": "Horror films from Japan that aren't jump-scare dependent",
+          "notes": "Genre + language verified; scare style is inferred"
+        },
+        {
+          "prompt": "Action movies with strong female leads from the 2010s",
+          "notes": "Genre + decade verified; character archetype is inferred"
+        },
+        {
+          "prompt": "Romantic comedies that don't follow the typical formula",
+          "notes": "Genre verified; originality is inferred"
+        },
+        {
+          "prompt": "War movies with anti-war themes",
+          "notes": "Genre verified; thematic stance is inferred"
+        },
+        {
+          "prompt": "Crime dramas with morally ambiguous protagonists",
+          "notes": "Genres verified; moral complexity is inferred"
+        },
+        {
+          "prompt": "Animated films suitable for adults, not Pixar or Disney",
+          "notes": "Genre + exclusions verified; maturity level is inferred"
+        }
+      ]
+    },
+    "low_fidelity": {
+      "description": "Prompts with mostly inferred constraints, expected fidelity < 0.4",
+      "expected_range": [0.0, 0.4],
+      "prompts": [
+        {
+          "prompt": "Movies that feel like a rainy Sunday afternoon",
+          "notes": "Pure mood/atmosphere, no verified fields"
+        },
+        {
+          "prompt": "Films with the visual palette of a Vermeer painting",
+          "notes": "Cinematography style, no API equivalent"
+        },
+        {
+          "prompt": "Something that will make me rethink how I treat the people I love",
+          "notes": "Emotional impact, purely inferred"
+        },
+        {
+          "prompt": "Movies with Wes Anderson energy but not by Wes Anderson",
+          "notes": "Stylistic comparison, inferred except for director exclusion"
+        },
+        {
+          "prompt": "Films that feel like being 17 again",
+          "notes": "Nostalgic emotional resonance, inferred"
+        },
+        {
+          "prompt": "Movies where the ending completely recontextualizes everything",
+          "notes": "Narrative structure, inferred"
+        },
+        {
+          "prompt": "Something meditative and slow, like watching a river flow",
+          "notes": "Pacing and mood, purely inferred"
+        },
+        {
+          "prompt": "Films that capture the loneliness of modern city life",
+          "notes": "Thematic content, inferred"
+        },
+        {
+          "prompt": "Movies with a dreamlike quality that blur reality and fantasy",
+          "notes": "Stylistic/tonal, inferred"
+        },
+        {
+          "prompt": "Something existentially unsettling but ultimately hopeful",
+          "notes": "Emotional arc, inferred"
+        }
+      ]
+    },
+    "edge_cases": {
+      "description": "Interesting edge cases for testing the system",
+      "prompts": [
+        {
+          "prompt": "Good movies",
+          "notes": "Extremely vague, should result in high fidelity (just rating filter)"
+        },
+        {
+          "prompt": "Movies",
+          "notes": "No constraints at all, fidelity should be 1.0 (trivially satisfied)"
+        },
+        {
+          "prompt": "The best Christopher Nolan film about dreams",
+          "notes": "Effectively asking for one specific movie (Inception)"
+        },
+        {
+          "prompt": "Foreign films",
+          "notes": "Ambiguous - 'foreign' relative to what? Tests interpretation"
+        },
+        {
+          "prompt": "Movies like Blade Runner but not sci-fi",
+          "notes": "Contradictory-ish: Blade Runner is definitionally sci-fi"
+        },
+        {
+          "prompt": "Underrated gems from the 2000s",
+          "notes": "'Underrated' is subjective but could map to low vote count + high rating"
+        },
+        {
+          "prompt": "Crowd-pleasers that aren't dumb",
+          "notes": "Mixed: popularity verified, 'not dumb' is inferred"
+        },
+        {
+          "prompt": "Movies my grandma would like",
+          "notes": "Requires inferring demographic preferences"
+        }
+      ]
+    }
+  },
+  "validation_experiments": {
+    "specificity_progression": {
+      "description": "A sequence of prompts with increasing specificity to track fidelity changes",
+      "sequence": [
+        "Movies",
+        "Drama movies",
+        "Drama movies from the 1990s",
+        "Drama movies from the 1990s rated above 7",
+        "Drama movies from the 1990s rated above 7 with a melancholy tone",
+        "Drama movies from the 1990s rated above 7 with a melancholy tone that explore themes of loss",
+        "Drama movies from the 1990s rated above 7 with a melancholy tone that explore themes of loss and feel like early Terrence Malick"
+      ]
+    },
+    "constraint_type_swap": {
+      "description": "Pairs of prompts expressing similar intent but with different verified/inferred ratios",
+      "pairs": [
+        {
+          "high_verified": "Japanese horror movies",
+          "high_inferred": "Horror movies with J-horror aesthetics"
+        },
+        {
+          "high_verified": "Comedies with Will Ferrell",
+          "high_inferred": "Comedies with Will Ferrell's type of humor"
+        },
+        {
+          "high_verified": "Science fiction movies from the 1980s",
+          "high_inferred": "Movies that capture 80s sci-fi nostalgia"
+        }
+      ]
+    }
+  }
+}

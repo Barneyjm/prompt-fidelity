@@ -1,0 +1,183 @@
+{
+  "description": "TMDb API verified fields with selectivity estimates for fidelity calculation",
+  "fields": {
+    "release_year": {
+      "api_params": ["primary_release_year", "primary_release_date.gte", "primary_release_date.lte"],
+      "description": "Year or date range of movie release",
+      "selectivity_notes": "~100 years of range, single year ~1% of catalog",
+      "default_survival_rate": 0.01
+    },
+    "release_decade": {
+      "api_params": ["primary_release_date.gte", "primary_release_date.lte"],
+      "description": "Decade of movie release (e.g., 1990s)",
+      "selectivity_notes": "Decade covers ~10% of catalog",
+      "default_survival_rate": 0.10
+    },
+    "genre": {
+      "api_params": ["with_genres"],
+      "description": "Movie genre(s) by TMDb genre ID",
+      "selectivity_notes": "19 official genres, each ~5-15% of catalog",
+      "default_survival_rate": 0.10,
+      "genre_ids": {
+        "28": "Action",
+        "12": "Adventure",
+        "16": "Animation",
+        "35": "Comedy",
+        "80": "Crime",
+        "99": "Documentary",
+        "18": "Drama",
+        "10751": "Family",
+        "14": "Fantasy",
+        "36": "History",
+        "27": "Horror",
+        "10402": "Music",
+        "9648": "Mystery",
+        "10749": "Romance",
+        "878": "Science Fiction",
+        "10770": "TV Movie",
+        "53": "Thriller",
+        "10752": "War",
+        "37": "Western"
+      }
+    },
+    "runtime": {
+      "api_params": ["with_runtime.gte", "with_runtime.lte"],
+      "description": "Movie runtime in minutes",
+      "selectivity_notes": "Most films 80-180 minutes, tight bounds more selective",
+      "default_survival_rate": 0.30
+    },
+    "vote_average": {
+      "api_params": ["vote_average.gte", "vote_average.lte"],
+      "description": "Average user rating on 0-10 scale",
+      "selectivity_notes": "High ratings (>7) ~20% of catalog, >8 ~5%",
+      "default_survival_rate": 0.20
+    },
+    "vote_count": {
+      "api_params": ["vote_count.gte", "vote_count.lte"],
+      "description": "Number of user votes (proxy for popularity)",
+      "selectivity_notes": ">1000 votes ~10% of catalog, >10000 ~1%",
+      "default_survival_rate": 0.10
+    },
+    "original_language": {
+      "api_params": ["with_original_language"],
+      "description": "Original language of the film (ISO 639-1 code)",
+      "selectivity_notes": "English ~50%, major languages 5-15%, rare languages <1%",
+      "default_survival_rate": 0.10,
+      "common_languages": {
+        "en": "English",
+        "fr": "French",
+        "de": "German",
+        "es": "Spanish",
+        "it": "Italian",
+        "ja": "Japanese",
+        "ko": "Korean",
+        "zh": "Chinese",
+        "hi": "Hindi",
+        "ru": "Russian",
+        "pt": "Portuguese",
+        "sv": "Swedish",
+        "da": "Danish",
+        "no": "Norwegian",
+        "fi": "Finnish"
+      }
+    },
+    "adult": {
+      "api_params": ["include_adult"],
+      "description": "Whether to include adult content",
+      "selectivity_notes": "Adult content ~5% when included",
+      "default_survival_rate": 0.95
+    },
+    "region": {
+      "api_params": ["region", "with_origin_country"],
+      "description": "Region/country filter (ISO 3166-1 code)",
+      "selectivity_notes": "US ~40%, major markets 5-15%",
+      "default_survival_rate": 0.15
+    },
+    "cast": {
+      "api_params": ["with_cast"],
+      "description": "Filter by actor (requires TMDb person ID)",
+      "selectivity_notes": "Highly variable, major stars ~0.1-1%",
+      "default_survival_rate": 0.005,
+      "requires_id_lookup": true
+    },
+    "crew": {
+      "api_params": ["with_crew"],
+      "description": "Filter by crew member (requires TMDb person ID)",
+      "selectivity_notes": "Directors typically have 5-50 films",
+      "default_survival_rate": 0.001,
+      "requires_id_lookup": true
+    },
+    "director": {
+      "api_params": ["with_crew"],
+      "description": "Filter by director (subset of crew)",
+      "selectivity_notes": "Most directors have <20 films, prolific ones up to 50+",
+      "default_survival_rate": 0.0005,
+      "requires_id_lookup": true
+    },
+    "keywords": {
+      "api_params": ["with_keywords", "without_keywords"],
+      "description": "TMDb keyword tags (semi-structured)",
+      "selectivity_notes": "Thousands of keywords, highly variable selectivity",
+      "default_survival_rate": 0.05,
+      "requires_id_lookup": true
+    },
+    "companies": {
+      "api_params": ["with_companies"],
+      "description": "Production company filter",
+      "selectivity_notes": "Major studios ~5%, indie companies <1%",
+      "default_survival_rate": 0.02,
+      "requires_id_lookup": true
+    },
+    "certification": {
+      "api_params": ["certification", "certification.gte", "certification.lte", "certification_country"],
+      "description": "Content rating (PG, R, etc.)",
+      "selectivity_notes": "R-rated ~30%, PG-13 ~25%, PG ~15%",
+      "default_survival_rate": 0.25
+    }
+  },
+  "inferred_attributes": {
+    "description": "Attributes that cannot be queried through TMDb and require LLM inference",
+    "examples": [
+      {
+        "category": "mood_tone",
+        "examples": ["dark", "uplifting", "meditative", "melancholy", "tense", "whimsical"],
+        "typical_survival_rate": 0.15
+      },
+      {
+        "category": "cinematography_style",
+        "examples": ["handheld", "long takes", "neon-lit", "naturalistic", "stylized", "black and white aesthetic"],
+        "typical_survival_rate": 0.10
+      },
+      {
+        "category": "thematic_content",
+        "examples": ["explores grief", "questions identity", "examines class", "about redemption"],
+        "typical_survival_rate": 0.12
+      },
+      {
+        "category": "comparative_feel",
+        "examples": ["feels like a Coen Brothers film", "Wes Anderson energy", "Tarkovsky-esque"],
+        "typical_survival_rate": 0.05
+      },
+      {
+        "category": "cultural_context",
+        "examples": ["good for a first date", "watch with your parents", "cult classic"],
+        "typical_survival_rate": 0.15
+      },
+      {
+        "category": "pacing",
+        "examples": ["slow burn", "tight and fast", "meditative pace", "relentless"],
+        "typical_survival_rate": 0.20
+      },
+      {
+        "category": "emotional_arc",
+        "examples": ["starts hopeful ends devastating", "builds to catharsis", "emotionally draining"],
+        "typical_survival_rate": 0.10
+      },
+      {
+        "category": "soundtrack",
+        "examples": ["great score", "iconic soundtrack", "minimal music", "synth-heavy"],
+        "typical_survival_rate": 0.15
+      }
+    ]
+  }
+}
