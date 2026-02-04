@@ -17,13 +17,89 @@ Fidelity = verified_bits / (verified_bits + inferred_bits)
 
 A fidelity score of 1.0 means your request can be fully satisfied through database queries. A score near 0 means almost everything depends on LLM judgment.
 
-## Examples
+## The Theory in Action: 100% vs 0% Fidelity
 
-| Prompt | Fidelity | Why |
-|--------|----------|-----|
-| "Action movies from the 80s rated above 7" | ~0.95 | Genre, year, rating are all queryable |
-| "90s thrillers that feel like a Coen Brothers film" | ~0.50 | Genre + decade verified; aesthetic is inferred |
-| "Movies that feel like a rainy Sunday afternoon" | ~0.05 | Pure mood, almost nothing queryable |
+Same system. Same architecture. Same LLM. Completely different reliability guarantees.
+
+### High Fidelity (100%) — Provably Correct
+
+```
+$ python -m agent.main "Action movies from the 1980s rated above 7.0"
+
+══════════════════════════════════════════════════
+  PROMPT FIDELITY: 100.0%
+══════════════════════════════════════════════════
+
+  [████████████████████] 100.0%
+
+  Constraint Breakdown:
+  ────────────────────────────────────────
+
+  VERIFIED (queryable via API):
+  ✓ Action genre (3.06 bits)
+  ✓ Released in the 1980s (3.32 bits)
+  ✓ Rating above 7.0 (2.00 bits)
+
+  ────────────────────────────────────────
+  Verified:    8.38 bits (3 constraints)
+  Inferred:    0.00 bits (0 constraints)
+  Total:       8.38 bits
+══════════════════════════════════════════════════
+
+1. The Empire Strikes Back (1980) - 8.4/10
+2. Scarface (1983) - 8.2/10
+3. Aliens (1986) - 8.0/10
+4. Raiders of the Lost Ark (1981) - 7.9/10
+5. Indiana Jones and the Last Crusade (1989) - 7.8/10
+```
+
+**Every single result is verifiably correct.** Action film? Check. From the 80s? Check. Rated above 7.0? Check. You could audit each one against TMDb and nothing would be wrong. The LLM made zero judgment calls.
+
+### Low Fidelity (0%) — Best Guess
+
+```
+$ python -m agent.main "Movies that feel like a rainy Sunday afternoon"
+
+══════════════════════════════════════════════════
+  PROMPT FIDELITY: 0.0%
+══════════════════════════════════════════════════
+
+  [░░░░░░░░░░░░░░░░░░░░] 0.0%
+
+  Constraint Breakdown:
+  ────────────────────────────────────────
+
+  INFERRED (requires LLM judgment):
+  ? Cozy, contemplative atmosphere (2.32 bits)
+  ? Slower pacing matching Sunday mood (2.00 bits)
+  ? Intimate, character-driven storytelling (1.74 bits)
+  ? Nostalgic, melancholic, or reflective tone (2.32 bits)
+
+  ────────────────────────────────────────
+  Verified:    0.00 bits (0 constraints)
+  Inferred:    8.38 bits (4 constraints)
+  Total:       8.38 bits
+══════════════════════════════════════════════════
+
+1. The Shawshank Redemption (1994) - Match: 92/100
+2. The Godfather (1972) - Match: 80/100
+3. My First Client (2019) - Match: 72/100
+   ...
+10. La bicicleta de los Huanca (2007) - Match: 55/100
+```
+
+**The results are defensible but unverifiable.** Shawshank and The Godfather? Reasonable picks. But notice the match scores decay from 92 to 55—the LLM is running out of conviction. With no verified constraints to anchor the search, the candidate pool was the entire TMDb catalog, and the LLM had to do all the work. Some picks are great; others are the model reaching for obscure films it isn't confident about.
+
+### The Insight
+
+Both queries have **identical total information content** (8.38 bits). The difference is entirely in *where that information comes from*:
+
+| Query | Verified | Inferred | Fidelity |
+|-------|----------|----------|----------|
+| "Action movies from the 1980s rated above 7.0" | 8.38 bits | 0 bits | **100%** |
+| "Movies that feel like a rainy Sunday afternoon" | 0 bits | 8.38 bits | **0%** |
+
+This is the fidelity frontier in action. The first prompt sits at the maximum—every bit of specificity maps to a queryable field. The second prompt sits at the minimum—the entire request requires LLM inference.
 
 ## Quick Start
 
