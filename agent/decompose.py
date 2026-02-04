@@ -48,7 +48,7 @@ TMDb API parameters you can use:
 - with_crew: person ID for director/crew (requires lookup)
 - with_keywords: keyword ID (requires lookup)
 
-IMPORTANT: If a constraint mentions a specific person (actor or director), set requires_id_lookup to true and include the person's name in person_name field. Similarly for keywords.
+IMPORTANT: If a constraint mentions a specific person (actor or director), set requires_id_lookup to true and include the person's name in the `person_name` field. Similarly, for keywords requiring lookup, set requires_id_lookup to true and include the keyword in the `keyword_name` field.
 
 Respond with a JSON object in this exact format:
 {
