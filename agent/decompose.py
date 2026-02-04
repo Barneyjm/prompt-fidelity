@@ -27,10 +27,13 @@ For each constraint, estimate the "survival rate" - the fraction of all movies t
 
 For VERIFIED constraints, also provide the TMDb API parameter and value.
 
+IMPORTANT: Date ranges count as ONE constraint, not two. If a user says "from the 90s" or "between 1990 and 1999", that is a SINGLE constraint called "Released in the 1990s" with a combined survival rate for the decade (~0.10). Do NOT split this into separate "after X" and "before Y" constraints. Use the api_params field (plural) to list both parameters needed.
+
 TMDb API parameters you can use:
 - primary_release_year: exact year (e.g., "1999")
 - primary_release_date.gte: earliest date (e.g., "1990-01-01")
 - primary_release_date.lte: latest date (e.g., "1999-12-31")
+- For date RANGES (decades, spans): use api_params array with both gte and lte
 - with_genres: genre ID(s) - use these IDs:
   Action=28, Adventure=12, Animation=16, Comedy=35, Crime=80, Documentary=99,
   Drama=18, Family=10751, Fantasy=14, History=36, Horror=27, Music=10402,
@@ -60,6 +63,15 @@ Respond with a JSON object in this exact format:
       "requires_id_lookup": false
     },
     {
+      "description": "Released in the 1990s",
+      "type": "verified",
+      "api_params": [
+        {"param": "primary_release_date.gte", "value": "1990-01-01"},
+        {"param": "primary_release_date.lte", "value": "1999-12-31"}
+      ],
+      "estimated_survival_rate": 0.10
+    },
+    {
       "description": "Description of subjective constraint",
       "type": "inferred",
       "estimated_survival_rate": 0.15
@@ -68,13 +80,15 @@ Respond with a JSON object in this exact format:
   "interpretation_notes": "Brief explanation of how you interpreted ambiguous parts of the request"
 }
 
+Use api_param/api_value for single-parameter constraints. Use api_params array for date ranges that need both gte and lte.
+
 Only output valid JSON, no other text."""
 
 
 def decompose_with_claude(
     prompt: str,
     api_key: str | None = None,
-    model: str = "claude-sonnet-4-20250514"
+    model: str = "claude-sonnet-4-5"
 ) -> dict:
     """
     Decompose a movie request using Claude.
@@ -173,7 +187,7 @@ def decompose_prompt(
         return decompose_with_claude(
             prompt,
             api_key=api_key,
-            model=model or "claude-sonnet-4-20250514"
+            model=model or "claude-sonnet-4-5"
         )
     elif provider == "openai":
         return decompose_with_openai(

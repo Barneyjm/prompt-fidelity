@@ -315,7 +315,9 @@ def build_discover_params(verified_constraints: list[dict]) -> dict[str, Any]:
     Build TMDb discover API parameters from verified constraints.
 
     Args:
-        verified_constraints: List of verified constraint dicts with api_param and api_value
+        verified_constraints: List of verified constraint dicts with either:
+            - api_param/api_value for single parameters
+            - api_params array for multi-parameter constraints (e.g., date ranges)
 
     Returns:
         Dictionary of parameters for the discover/movie endpoint
@@ -323,16 +325,25 @@ def build_discover_params(verified_constraints: list[dict]) -> dict[str, Any]:
     params = {}
 
     for constraint in verified_constraints:
-        api_param = constraint.get("api_param")
-        api_value = constraint.get("api_value")
+        # Handle new api_params array format (for date ranges, etc.)
+        if "api_params" in constraint:
+            for param_pair in constraint["api_params"]:
+                api_param = param_pair.get("param")
+                api_value = param_pair.get("value")
+                if api_param and api_value is not None:
+                    params[api_param] = api_value
+        else:
+            # Handle original api_param/api_value format
+            api_param = constraint.get("api_param")
+            api_value = constraint.get("api_value")
 
-        if api_param and api_value is not None:
-            # Handle comma-separated values for multi-value params
-            if api_param in params:
-                # Append to existing value
-                params[api_param] = f"{params[api_param]},{api_value}"
-            else:
-                params[api_param] = api_value
+            if api_param and api_value is not None:
+                # Handle comma-separated values for multi-value params
+                if api_param in params:
+                    # Append to existing value
+                    params[api_param] = f"{params[api_param]},{api_value}"
+                else:
+                    params[api_param] = api_value
 
     return params
 

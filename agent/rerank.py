@@ -86,7 +86,7 @@ def rerank_with_claude(
     inferred_constraints: list[dict],
     original_prompt: str,
     api_key: str | None = None,
-    model: str = "claude-sonnet-4-20250514",
+    model: str = "claude-sonnet-4-5",
     max_results: int = 10
 ) -> dict:
     """
@@ -247,7 +247,7 @@ def rerank_movies(
             inferred_constraints,
             original_prompt,
             api_key=api_key,
-            model=model or "claude-sonnet-4-20250514",
+            model=model or "claude-sonnet-4-5",
             max_results=max_results
         )
     elif provider == "openai":
