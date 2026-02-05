@@ -310,3 +310,5 @@ print(f"Inferred: {report.inferred_bits:.2f} bits")
 ## License
 
 MIT
+
+Use of TMDB in this repo is for non-commercial purposes only. this product is not endorsed or certified by TMDB. find out more about TMDB here https://www.themoviedb.org/
