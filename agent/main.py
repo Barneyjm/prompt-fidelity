@@ -6,7 +6,8 @@ Implements the LangGraph-based workflow:
 2. Classify constraints as verified/inferred
 3. Query TMDb API with verified constraints
 4. Re-rank results using LLM for inferred constraints
-5. Compute and report fidelity score
+5. Book the intent ledger against the params ACTUALLY sent and report
+   fidelity, demotions, and imposed filters
 """
 
 import argparse
@@ -24,13 +25,14 @@ from .decompose import (
     get_inferred_constraints,
     constraints_requiring_lookup,
 )
-from .fidelity import compute_fidelity, FidelityReport
+from .claude_cli import claude_cli_available
+from .ledger import book_ledger, bits
 from .tmdb import TMDbClient, build_discover_params, MovieDetails
 from .rerank import rerank_movies, merge_rerank_results
 from .display import (
     print_recommendations,
     format_json_output,
-    format_fidelity_colored,
+    format_ledger_colored,
 )
 
 
@@ -56,13 +58,16 @@ class AgentState(TypedDict):
 
     # After TMDb query
     candidate_movies: list[dict]
+    actual_params: dict | None      # params ACTUALLY sent to /discover/movie
+    imposed_operations: list[dict]  # agent-added filters no constraint asked for
 
     # After re-ranking
     ranked_movies: list[dict]
     ranking_notes: str | None
+    rerank_criteria: list[str]      # descriptions actually handed to the reranker
 
-    # Fidelity analysis
-    fidelity_report: dict | None
+    # Intent ledger
+    intent_ledger: dict | None
 
     # Errors
     error: str | None
@@ -156,6 +161,19 @@ def query_tmdb_node(state: AgentState) -> AgentState:
         # Query TMDb discover endpoint
         movies = client.discover_movies(params, min_votes=50)
 
+        # Capture what was ACTUALLY sent (before detail fetches overwrite it)
+        # -- the intent ledger books against this, not against intentions.
+        actual_params = dict(client.last_request_params)
+
+        # Agent-added filters that map to no user constraint
+        imposed = []
+        if "vote_count.gte" not in params and "vote_count.gte" in actual_params:
+            imposed.append({
+                "description": f"Popularity floor (min {actual_params['vote_count.gte']} votes)",
+                "survival_rate": 0.35,  # est. fraction of TMDb titles clearing 50 votes
+                "evidence": f"discover_movies(min_votes={actual_params['vote_count.gte']})",
+            })
+
         # Get detailed info for top candidates (for re-ranking context)
         detailed_movies = []
         for movie in movies[:30]:  # Limit to top 30 for efficiency
@@ -173,9 +191,18 @@ def query_tmdb_node(state: AgentState) -> AgentState:
 
         client.close()
 
+        if len(movies) > len(detailed_movies):
+            imposed.append({
+                "description": f"Top-{len(detailed_movies)} candidate truncation",
+                "survival_rate": len(detailed_movies) / len(movies),
+                "evidence": "movies[:30] in query_tmdb_node",
+            })
+
         return {
             **state,
             "candidate_movies": detailed_movies,
+            "actual_params": actual_params,
+            "imposed_operations": state.get("imposed_operations", []) + imposed,
         }
     except Exception as e:
         return {**state, "error": f"TMDb query failed: {str(e)}"}
@@ -208,30 +235,70 @@ def rerank_node(state: AgentState) -> AgentState:
             rerank_result
         )
 
+        # The reranker silently discards candidates (score>30 cutoff, top-10).
+        # Book the actual survival fraction as an imposed filter.
+        imposed = []
+        if len(ranked) < len(state["candidate_movies"]):
+            imposed.append({
+                "description": f"Rerank cutoff (kept {len(ranked)} of {len(state['candidate_movies'])} candidates)",
+                "survival_rate": len(ranked) / len(state["candidate_movies"]),
+                "evidence": "rerank score>30 cutoff + max_results=10 in rerank_node",
+            })
+
         return {
             **state,
             "ranked_movies": ranked,
             "ranking_notes": rerank_result.get("ranking_notes"),
+            "rerank_criteria": [
+                c.get("description", "?") for c in state["inferred_constraints"]
+            ],
+            "imposed_operations": state.get("imposed_operations", []) + imposed,
         }
     except Exception as e:
         return {**state, "error": f"Re-ranking failed: {str(e)}"}
 
 
-def compute_fidelity_node(state: AgentState) -> AgentState:
-    """Compute fidelity score from constraints."""
+def book_ledger_node(state: AgentState) -> AgentState:
+    """Book the intent ledger against the params actually sent.
+
+    Replaces the old compute_fidelity_node, which scored the LLM's own
+    classification of its constraints (circular). The ledger instead diffs
+    the decomposition against the ACTUAL tool-call params -- no LLM
+    self-reporting in the fidelity loop.
+    """
     if state.get("error"):
         return state
 
     try:
         all_constraints = state["verified_constraints"] + state["inferred_constraints"]
-        fidelity_report = compute_fidelity(all_constraints)
+        ledger = book_ledger(
+            all_constraints,
+            state.get("actual_params") or {},
+            rerank_criteria_descriptions=state.get("rerank_criteria") or [],
+            imposed_operations=state.get("imposed_operations") or [],
+        )
+        ledger_dict = ledger.to_dict()
+
+        # Honesty gap: what a naive narration would claim as verified
+        # (everything the decomposition CLASSIFIED verified) vs what the
+        # ledger actually verified against the tool call.
+        decomposition = state.get("decomposition") or {}
+        narrated_verified = sum(
+            bits(c.get("estimated_survival_rate", 1.0))
+            for c in decomposition.get("constraints", [])
+            if c.get("type") == "verified"
+        )
+        ledger_dict["narrated_verified_bits"] = round(narrated_verified, 2)
+        ledger_dict["honesty_gap_bits"] = round(ledger.honesty_gap(narrated_verified), 2)
+        ledger_dict["naive_fidelity"] = round(
+            narrated_verified / ledger.user_total, 3) if ledger.user_total else 1.0
 
         return {
             **state,
-            "fidelity_report": fidelity_report.to_dict(),
+            "intent_ledger": ledger_dict,
         }
     except Exception as e:
-        return {**state, "error": f"Fidelity computation failed: {str(e)}"}
+        return {**state, "error": f"Ledger booking failed: {str(e)}"}
 
 
 def should_rerank(state: AgentState) -> str:
@@ -252,7 +319,7 @@ def build_graph() -> StateGraph:
     workflow.add_node("resolve_ids", resolve_ids_node)
     workflow.add_node("query_tmdb", query_tmdb_node)
     workflow.add_node("rerank", rerank_node)
-    workflow.add_node("compute_fidelity", compute_fidelity_node)
+    workflow.add_node("book_ledger", book_ledger_node)
 
     # Add edges
     workflow.set_entry_point("decompose")
@@ -265,13 +332,13 @@ def build_graph() -> StateGraph:
         should_rerank,
         {
             "rerank": "rerank",
-            "skip_rerank": "compute_fidelity",
+            "skip_rerank": "book_ledger",
             "end": END,
         }
     )
 
-    workflow.add_edge("rerank", "compute_fidelity")
-    workflow.add_edge("compute_fidelity", END)
+    workflow.add_edge("rerank", "book_ledger")
+    workflow.add_edge("book_ledger", END)
 
     return workflow.compile()
 
@@ -281,14 +348,16 @@ class MovieRecommendationAgent:
 
     def __init__(
         self,
-        provider: Literal["anthropic", "openai"] = "anthropic",
+        provider: Literal["anthropic", "claude-cli", "openai"] = "anthropic",
         model: str | None = None
     ):
         """
         Initialize the agent.
 
         Args:
-            provider: LLM provider ("anthropic" or "openai")
+            provider: LLM provider ("anthropic", "claude-cli", or "openai").
+                "claude-cli" runs LLM calls through the local `claude -p`
+                binary (Claude Code auth, no API key; defaults to Haiku)
             model: Specific model to use (defaults to provider's default)
         """
         self.provider = provider
@@ -314,9 +383,12 @@ class MovieRecommendationAgent:
             "inferred_constraints": [],
             "resolved_constraints": [],
             "candidate_movies": [],
+            "actual_params": None,
+            "imposed_operations": [],
             "ranked_movies": [],
             "ranking_notes": None,
-            "fidelity_report": None,
+            "rerank_criteria": [],
+            "intent_ledger": None,
             "error": None,
         }
 
@@ -332,7 +404,7 @@ class MovieRecommendationAgent:
         return {
             "prompt": prompt,
             "movies": movies,
-            "fidelity": final_state.get("fidelity_report"),
+            "ledger": final_state.get("intent_ledger"),
             "decomposition": final_state.get("decomposition"),
             "ranking_notes": final_state.get("ranking_notes"),
         }
@@ -350,9 +422,10 @@ def main():
     )
     parser.add_argument(
         "--provider",
-        choices=["anthropic", "openai"],
+        choices=["anthropic", "claude-cli", "openai"],
         default="anthropic",
-        help="LLM provider to use (default: anthropic)"
+        help="LLM provider to use (default: anthropic; claude-cli runs "
+             "through the local `claude -p` binary, no API key needed)"
     )
     parser.add_argument(
         "--model",
@@ -377,6 +450,15 @@ def main():
 
     args = parser.parse_args()
 
+    # No Anthropic key but a local Claude Code install: fall back to
+    # `claude -p` (Haiku) instead of failing.
+    if (args.provider == "anthropic"
+            and not os.getenv("ANTHROPIC_API_KEY")
+            and claude_cli_available()):
+        print("No ANTHROPIC_API_KEY found; using local `claude -p` (haiku) instead.",
+              file=sys.stderr)
+        args.provider = "claude-cli"
+
     # Initialize agent
     agent = MovieRecommendationAgent(
         provider=args.provider,
@@ -391,31 +473,26 @@ def main():
             print(f"Error: {result['error']}", file=sys.stderr)
             return
 
+        ledger = result.get("ledger") or {}
+
         if args.json:
-            # Create FidelityReport from dict for JSON output
-            fidelity_dict = result.get("fidelity", {})
             print(json.dumps(
                 format_json_output(
                     prompt,
                     result.get("movies", []),
-                    compute_fidelity(fidelity_dict.get("constraints", [])),
+                    ledger,
                     result.get("decomposition")
                 ),
                 indent=2
             ))
+        elif args.color:
+            print(format_ledger_colored(ledger))
         else:
-            # Formatted text output
-            fidelity_dict = result.get("fidelity", {})
-            fidelity_report = compute_fidelity(fidelity_dict.get("constraints", []))
-
-            if args.color:
-                print(format_fidelity_colored(fidelity_report))
-            else:
-                print_recommendations(
-                    prompt,
-                    result.get("movies", []),
-                    fidelity_report
-                )
+            print_recommendations(
+                prompt,
+                result.get("movies", []),
+                ledger
+            )
 
     if args.interactive:
         print("Movie Recommendation Agent (type 'quit' to exit)")

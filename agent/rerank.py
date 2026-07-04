@@ -12,6 +12,8 @@ from typing import Literal
 from anthropic import Anthropic
 from openai import OpenAI
 
+from .claude_cli import run_claude_cli
+
 
 RERANK_SYSTEM_PROMPT = """You are a movie expert assistant helping to rank movies based on subjective criteria.
 
@@ -144,6 +146,44 @@ Please rank these movies based on how well they match the inferred criteria. Ret
     return result
 
 
+def rerank_with_claude_cli(
+    movies: list[dict],
+    inferred_constraints: list[dict],
+    original_prompt: str,
+    model: str = "haiku",
+    max_results: int = 10
+) -> dict:
+    """
+    Re-rank movies using the local `claude -p` CLI.
+
+    Uses Claude Code's own authentication -- no ANTHROPIC_API_KEY needed.
+    Defaults to Haiku: reranking a fixed candidate list is a cheap task.
+    """
+    movies_text = format_movies_for_reranking(movies)
+    criteria_text = format_inferred_criteria(inferred_constraints)
+
+    user_message = f"""Original user request: "{original_prompt}"
+
+Candidate movies to evaluate:
+{movies_text}
+
+Inferred criteria to match (these couldn't be verified through the database):
+{criteria_text}
+
+Please rank these movies based on how well they match the inferred criteria. Return the top {max_results} matches."""
+
+    response_text = run_claude_cli(RERANK_SYSTEM_PROMPT, user_message, model=model)
+
+    try:
+        return json.loads(response_text)
+    except json.JSONDecodeError:
+        start = response_text.find('{')
+        end = response_text.rfind('}') + 1
+        if start >= 0 and end > start:
+            return json.loads(response_text[start:end])
+        raise ValueError(f"Could not parse LLM response as JSON: {response_text}")
+
+
 def rerank_with_openai(
     movies: list[dict],
     inferred_constraints: list[dict],
@@ -200,7 +240,7 @@ def rerank_movies(
     movies: list[dict],
     inferred_constraints: list[dict],
     original_prompt: str,
-    provider: Literal["anthropic", "openai"] = "anthropic",
+    provider: Literal["anthropic", "claude-cli", "openai"] = "anthropic",
     api_key: str | None = None,
     model: str | None = None,
     max_results: int = 10
@@ -212,7 +252,7 @@ def rerank_movies(
         movies: List of movie dictionaries from TMDb
         inferred_constraints: List of inferred constraint dicts
         original_prompt: The user's original request
-        provider: LLM provider ("anthropic" or "openai")
+        provider: LLM provider ("anthropic", "claude-cli", or "openai")
         api_key: API key (or uses env var)
         model: Model to use
         max_results: Maximum number of movies to return
@@ -248,6 +288,14 @@ def rerank_movies(
             original_prompt,
             api_key=api_key,
             model=model or "claude-sonnet-4-5",
+            max_results=max_results
+        )
+    elif provider == "claude-cli":
+        return rerank_with_claude_cli(
+            movies,
+            inferred_constraints,
+            original_prompt,
+            model=model or "haiku",
             max_results=max_results
         )
     elif provider == "openai":

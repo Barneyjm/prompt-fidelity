@@ -27,33 +27,35 @@ Same system. Same architecture. Same LLM. Completely different reliability guara
 $ python -m agent.main "Action movies from the 1980s rated above 7.0"
 
 ══════════════════════════════════════════════════
-  PROMPT FIDELITY: 100.0%
+  PROMPT FIDELITY (ledger): 100.0%
+  naive (self-classified):  100.0%
 ══════════════════════════════════════════════════
 
   [████████████████████] 100.0%
 
-  Constraint Breakdown:
-  ────────────────────────────────────────
-
-  VERIFIED (queryable via API):
+  VERIFIED (enforced by the API call):
   ✓ Action genre (3.06 bits)
   ✓ Released in the 1980s (3.32 bits)
   ✓ Rating above 7.0 (2.00 bits)
 
+  IMPOSED FILTERS (agent-added, undisclosed to user):
+  ! Popularity floor (min 50 votes) (1.51 bits) -- discover_movies(min_votes=50)
+
   ────────────────────────────────────────
-  Verified:    8.38 bits (3 constraints)
-  Inferred:    0.00 bits (0 constraints)
-  Total:       8.38 bits
+  BOOKS: 8.4v + 0.0t + 0.0s + 0.0i + 0.0d = 8.4 bits
+  Honesty gap: +0.00 bits (narrated 8.38 vs verified 8.38)
 ══════════════════════════════════════════════════
 
 1. The Empire Strikes Back (1980) - 8.4/10
 2. Scarface (1983) - 8.2/10
-3. Aliens (1986) - 8.0/10
-4. Raiders of the Lost Ark (1981) - 7.9/10
-5. Indiana Jones and the Last Crusade (1989) - 7.8/10
+3. Ran (1985) - 8.0/10
+4. Castle in the Sky (1986) - 8.0/10
+5. Aliens (1986) - 8.0/10
 ```
 
 **Every single result is verifiably correct.** Action film? Check. From the 80s? Check. Rated above 7.0? Check. You could audit each one against TMDb and nothing would be wrong. The LLM made zero judgment calls.
+
+Notice the ledger still catches something even at 100% fidelity: the agent quietly applied a popularity floor (min 50 votes) that no constraint asked for. User-side fidelity is perfect; the imposed account discloses the filtering anyway.
 
 ### Low Fidelity (0%) — Best Guess
 
@@ -61,24 +63,25 @@ $ python -m agent.main "Action movies from the 1980s rated above 7.0"
 $ python -m agent.main "Movies that feel like a rainy Sunday afternoon"
 
 ══════════════════════════════════════════════════
-  PROMPT FIDELITY: 0.0%
+  PROMPT FIDELITY (ledger): 0.0%
+  naive (self-classified):  0.0%
 ══════════════════════════════════════════════════
 
   [░░░░░░░░░░░░░░░░░░░░] 0.0%
 
-  Constraint Breakdown:
-  ────────────────────────────────────────
-
-  INFERRED (requires LLM judgment):
+  INFERRED (handed to LLM reranker):
   ? Cozy, contemplative atmosphere (2.32 bits)
   ? Slower pacing matching Sunday mood (2.00 bits)
   ? Intimate, character-driven storytelling (1.74 bits)
   ? Nostalgic, melancholic, or reflective tone (2.32 bits)
 
+  IMPOSED FILTERS (agent-added, undisclosed to user):
+  ! Popularity floor (min 50 votes) (1.51 bits) -- discover_movies(min_votes=50)
+  ! Rerank cutoff (kept 10 of 20 candidates) (1.00 bits) -- rerank score>30 cutoff + max_results=10 in rerank_node
+
   ────────────────────────────────────────
-  Verified:    0.00 bits (0 constraints)
-  Inferred:    8.38 bits (4 constraints)
-  Total:       8.38 bits
+  BOOKS: 0.0v + 0.0t + 0.0s + 8.4i + 0.0d = 8.4 bits
+  Honesty gap: +0.00 bits (narrated 0.00 vs verified 0.00)
 ══════════════════════════════════════════════════
 
 1. The Shawshank Redemption (1994) - Match: 92/100
@@ -115,7 +118,9 @@ pip install -r requirements.txt
 cp .env.example .env
 # Edit .env and add your API keys:
 # - TMDB_API_KEY (required): https://www.themoviedb.org/settings/api
-# - ANTHROPIC_API_KEY (required if using Claude, the default provider): https://console.anthropic.com/
+# - ANTHROPIC_API_KEY (optional): https://console.anthropic.com/
+#   If you have Claude Code installed, no Anthropic key is needed -- the agent
+#   falls back to the local `claude -p` CLI (using Haiku to keep costs low).
 ```
 
 ### 3. Run the agent
@@ -132,6 +137,9 @@ python -m agent.main --json "Sci-fi movies with a melancholy tone"
 
 # Use OpenAI instead of Claude
 python -m agent.main --provider openai "Horror movies from Japan"
+
+# Explicitly use the local Claude Code CLI (no API key; Haiku by default)
+python -m agent.main --provider claude-cli "Horror movies from Japan"
 ```
 
 ## Sample Output
@@ -144,26 +152,27 @@ python -m agent.main --provider openai "Horror movies from Japan"
 Query: "Dark psychological thrillers from the 90s that feel like a David Fincher film"
 
 ══════════════════════════════════════════════════
-  PROMPT FIDELITY: 48.2%
+  PROMPT FIDELITY (ledger): 46.2%
+  naive (self-classified):  46.2%
 ══════════════════════════════════════════════════
 
-  [████████████░░░░░░░░] 48.2%
+  [█████████░░░░░░░░░░░] 46.2%
 
-  Constraint Breakdown:
-  ────────────────────────────────────────
-
-  VERIFIED (queryable via API):
+  VERIFIED (enforced by the API call):
   ✓ Genre: Thriller (2.74 bits)
   ✓ Released 1990-1999 (3.32 bits)
 
-  INFERRED (requires LLM judgment):
+  INFERRED (handed to LLM reranker):
   ? Dark/psychological tone (2.74 bits)
   ? Fincher-like aesthetic (4.32 bits)
 
+  IMPOSED FILTERS (agent-added, undisclosed to user):
+  ! Popularity floor (min 50 votes) (1.51 bits) -- discover_movies(min_votes=50)
+  ! Rerank cutoff (kept 10 of 20 candidates) (1.00 bits) -- rerank score>30 cutoff + max_results=10 in rerank_node
+
   ────────────────────────────────────────
-  Verified:    6.06 bits (2 constraints)
-  Inferred:    7.06 bits (2 constraints)
-  Total:      13.12 bits
+  BOOKS: 6.1v + 0.0t + 0.0s + 7.1i + 0.0d = 13.1 bits
+  Honesty gap: +0.00 bits (narrated 6.06 vs verified 6.06)
 ══════════════════════════════════════════════════
 
 RECOMMENDATIONS:
@@ -199,9 +208,10 @@ User prompt
 └─────────────────────────────────────┘
     ↓
 ┌─────────────────────────────────────┐
-│  Fidelity Report                    │
-│  Compute and display fidelity       │
-│  breakdown to user                  │
+│  Intent Ledger                      │
+│  Book every constraint against the  │
+│  params ACTUALLY sent; narrate      │
+│  demotions and imposed filters      │
 └─────────────────────────────────────┘
 ```
 
@@ -214,6 +224,7 @@ prompt-fidelity/
 │   ├── main.py           # LangGraph workflow and CLI
 │   ├── decompose.py      # Constraint decomposition (LLM)
 │   ├── fidelity.py       # Fidelity calculation
+│   ├── ledger.py         # Intent ledger: mechanical constraint booking
 │   ├── tmdb.py           # TMDb API wrapper
 │   ├── rerank.py         # LLM re-ranking
 │   └── display.py        # Output formatting
@@ -279,26 +290,53 @@ from agent import MovieRecommendationAgent
 agent = MovieRecommendationAgent(provider="anthropic")
 result = agent.recommend("90s thrillers with a dark tone")
 
-print(f"Fidelity: {result['fidelity']['fidelity_score']:.1%}")
+ledger = result["ledger"]
+print(f"Fidelity (ledger): {ledger['fidelity']:.1%}")
+print(f"Naive (self-classified): {ledger['naive_fidelity']:.1%}")
+print(f"Honesty gap: {ledger['honesty_gap_bits']:+.2f} bits")
 for movie in result['movies'][:5]:
     print(f"- {movie['title']} ({movie['year']})")
 ```
 
-### Fidelity Calculation
+### The Intent Ledger
+
+Fidelity is booked mechanically against the parameters *actually sent* to
+TMDb — never against the LLM's own classification of its constraints. Every
+constraint lands in exactly one account:
+
+| Account | Meaning |
+|---|---|
+| `verified` | api_param(s) present in the actual tool call, values matching, enforced by the API |
+| `transmitted` | delivered faithfully via an advisory param (e.g. a search query string) the backend does not enforce |
+| `substituted` | demoted or altered en route (failed ID lookup, relaxed value, partial application) |
+| `inferred` | handed to the LLM reranker |
+| `dropped` | never queried, never reranked |
+| `imposed` | agent-added filters no user asked for (popularity floor, truncation, rerank cutoff) |
+
+Conservation: `I_total = verified + transmitted + substituted + inferred + dropped`.
 
 ```python
-from agent import compute_fidelity
+from agent import book_ledger
 
 constraints = [
-    {"description": "Thriller genre", "type": "verified", "estimated_survival_rate": 0.10},
-    {"description": "Dark tone", "type": "inferred", "estimated_survival_rate": 0.15},
+    {"description": "Thriller genre", "type": "verified",
+     "api_param": "with_genres", "api_value": "53",
+     "estimated_survival_rate": 0.10},
+    {"description": "Dark tone", "type": "inferred",
+     "estimated_survival_rate": 0.15},
 ]
 
-report = compute_fidelity(constraints)
-print(f"Fidelity: {report.fidelity_score:.1%}")
-print(f"Verified: {report.verified_bits:.2f} bits")
-print(f"Inferred: {report.inferred_bits:.2f} bits")
+ledger = book_ledger(
+    constraints,
+    actual_params={"with_genres": "53"},        # what was ACTUALLY sent
+    rerank_criteria_descriptions=["Dark tone"],  # what the reranker saw
+)
+print(f"Fidelity: {ledger.fidelity:.1%}")
+print(ledger.to_dict()["accounts"])
 ```
+
+Run `python tests_ledger_offline.py` for a zero-dependency demonstration,
+including the honesty gap (narrated-verified bits vs actually-verified bits).
 
 ## Why This Matters
 
