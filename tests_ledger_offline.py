@@ -66,3 +66,45 @@ narrated = sum(-math.log2(c["estimated_survival_rate"])
 print(f"\nNarrated-verified bits: {narrated:.2f}")
 print(f"Actually-verified bits:  {ledger.to_dict()['accounts']['verified']:.2f}")
 print(f"Honesty gap: {ledger.honesty_gap(narrated):.2f} bits overstated")
+
+accounts = {e.description: e.account for e in ledger.entries}
+assert accounts["Science fiction genre"] == "verified"
+assert accounts["Released in the 1970s"] == "verified"
+assert accounts["Directed by Tarkovsky"] == "substituted"
+assert accounts["Obscure / little-known"] == "dropped"
+assert accounts["Slow, meditative pacing"] == "inferred"
+
+# --- transmitted / substituted-by-value: booking against a relevance tool ---
+# A search tool's query string is ADVISORY: the backend transmits it but
+# does not enforce compliance. And the agent quietly relaxed the rating
+# floor the user asked for.
+search_constraints = [
+    {"description": "About space stations", "type": "verified",
+     "api_param": "query", "api_value": "space station",
+     "estimated_survival_rate": 0.02},
+    {"description": "Rated 8.0 or higher", "type": "verified",
+     "api_param": "vote_average.gte", "api_value": "8.0",
+     "estimated_survival_rate": 0.05},
+]
+search_actual = {
+    "query": "space station",       # faithfully passed, but advisory
+    "vote_average.gte": "7.0",      # relaxed en route!
+}
+search_ledger = book_ledger(search_constraints, search_actual,
+                            rerank_criteria_descriptions=[],
+                            advisory_params={"query"})
+search_accounts = {e.description: e.account for e in search_ledger.entries}
+assert search_accounts["About space stations"] == "transmitted", search_accounts
+assert search_accounts["Rated 8.0 or higher"] == "substituted", search_accounts
+
+# Conservation: every user constraint booked exactly once, books balance
+# (tolerance covers to_dict's per-account rounding).
+d = search_ledger.to_dict()
+assert len(search_ledger.entries) == len(search_constraints)
+assert abs(sum(d["accounts"][a] for a in
+               ("verified", "transmitted", "substituted", "inferred", "dropped"))
+           - search_ledger.user_total) < 0.05
+
+print("\ntransmitted/substituted booking:")
+print(json.dumps(d, indent=2))
+print("\nAll assertions passed.")

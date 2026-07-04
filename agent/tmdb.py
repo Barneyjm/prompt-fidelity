@@ -153,6 +153,10 @@ class TMDbClient:
                 "or pass api_key parameter."
             )
         self.client = httpx.Client(timeout=30.0)
+        # Params of the most recent request, as actually sent (minus auth).
+        # This is the mechanical ground truth the intent ledger books against.
+        self.last_request_endpoint: str | None = None
+        self.last_request_params: dict = {}
 
     def _request(self, endpoint: str, params: dict | None = None) -> dict:
         """Make authenticated request to TMDb API."""
@@ -160,6 +164,11 @@ class TMDbClient:
         request_params = {"api_key": self.api_key}
         if params:
             request_params.update(params)
+
+        self.last_request_endpoint = endpoint
+        self.last_request_params = {
+            k: v for k, v in request_params.items() if k != "api_key"
+        }
 
         response = self.client.get(url, params=request_params)
         response.raise_for_status()

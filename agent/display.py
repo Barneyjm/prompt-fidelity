@@ -1,13 +1,96 @@
 """
 Display and output formatting module.
 
-Formats recommendation results with fidelity reports for CLI and other outputs.
+Formats recommendation results with intent-ledger reports for CLI and other
+outputs. The ledger narration is explicit about demotions (constraints that
+silently lost verified status en route) and imposed filters (constraints the
+agent added that no user asked for) -- closing the honesty gap between what
+the agent did and what it tells the user it did.
 """
 
 from typing import TextIO
 import sys
 
 from .fidelity import FidelityReport, Constraint
+
+
+ACCOUNT_ICONS = {
+    "verified": "✓",
+    "transmitted": "→",
+    "substituted": "⇄",
+    "inferred": "?",
+    "dropped": "✗",
+    "imposed": "!",
+}
+
+ACCOUNT_LABELS = {
+    "verified": "VERIFIED (enforced by the API call)",
+    "transmitted": "TRANSMITTED (delivered via advisory param; not enforced)",
+    "substituted": "SUBSTITUTED (demoted or altered en route)",
+    "inferred": "INFERRED (handed to LLM reranker)",
+    "dropped": "DROPPED (never queried, never reranked)",
+}
+
+
+def format_ledger_report(ledger: dict) -> str:
+    """Format an intent ledger for display, narrating demotions and
+    imposed filters instead of hiding them."""
+    if not ledger:
+        return "\n  (no intent ledger available)\n"
+
+    lines = []
+    accounts = ledger.get("accounts", {})
+    entries = ledger.get("entries", [])
+    user_entries = [e for e in entries if e["account"] != "imposed"]
+    imposed_entries = [e for e in entries if e["account"] == "imposed"]
+
+    lines.append(f"\n{'═' * 50}")
+    lines.append(f"  PROMPT FIDELITY (ledger): {ledger.get('fidelity', 0):.1%}")
+    naive = ledger.get("naive_fidelity")
+    if naive is not None:
+        lines.append(f"  naive (self-classified):  {naive:.1%}")
+    lines.append(f"{'═' * 50}")
+    lines.append(f"\n  {format_fidelity_bar(ledger.get('fidelity', 0))}")
+
+    # User constraints grouped by account
+    for account, label in ACCOUNT_LABELS.items():
+        group = [e for e in user_entries if e["account"] == account]
+        if not group:
+            continue
+        lines.append(f"\n  {label}:")
+        for e in group:
+            lines.append(f"  {ACCOUNT_ICONS[account]} {e['description']} ({e['bits']:.2f} bits)")
+
+    # Narrate demotions explicitly -- this is the honesty-gap fix
+    demoted = [e for e in user_entries if e["account"] == "substituted"]
+    if demoted:
+        lines.append(f"\n  DEMOTIONS (silently lost verified status):")
+        for e in demoted:
+            lines.append(f"  ⇄ {e['description']}: {e['evidence']}")
+
+    # Imposed filters the user never asked for
+    if imposed_entries:
+        lines.append(f"\n  IMPOSED FILTERS (agent-added, undisclosed to user):")
+        for e in imposed_entries:
+            lines.append(f"  ! {e['description']} ({e['bits']:.2f} bits) -- {e['evidence']}")
+
+    # Books-balance line: conservation across user accounts
+    total = sum(accounts.get(a, 0.0) for a in ACCOUNT_LABELS)
+    lines.append(f"\n  {'─' * 40}")
+    lines.append(
+        "  BOOKS: "
+        + " + ".join(f"{accounts.get(a, 0.0):.1f}{a[0]}" for a in ACCOUNT_LABELS)
+        + f" = {total:.1f} bits"
+    )
+
+    gap = ledger.get("honesty_gap_bits")
+    if gap is not None:
+        lines.append(f"  Honesty gap: {gap:+.2f} bits "
+                     f"(narrated {ledger.get('narrated_verified_bits', 0):.2f} vs "
+                     f"verified {accounts.get('verified', 0):.2f})")
+    lines.append(f"{'═' * 50}\n")
+
+    return "\n".join(lines)
 
 
 def format_fidelity_bar(score: float, width: int = 20) -> str:
@@ -103,7 +186,7 @@ def format_movie_result(
 def format_recommendations(
     prompt: str,
     movies: list[dict],
-    fidelity_report: FidelityReport,
+    ledger: dict,
     show_explanations: bool = True,
     max_display: int = 10
 ) -> str:
@@ -122,8 +205,8 @@ def format_recommendations(
         prompt_display = prompt
     lines.append(f'\nQuery: "{prompt_display}"')
 
-    # Fidelity report
-    lines.append(format_fidelity_report(fidelity_report))
+    # Intent ledger report
+    lines.append(format_ledger_report(ledger))
 
     # Movies
     lines.append("RECOMMENDATIONS:")
@@ -148,12 +231,12 @@ def format_recommendations(
 def print_recommendations(
     prompt: str,
     movies: list[dict],
-    fidelity_report: FidelityReport,
+    ledger: dict,
     file: TextIO = sys.stdout,
     **kwargs
 ) -> None:
     """Print formatted recommendations to output."""
-    output = format_recommendations(prompt, movies, fidelity_report, **kwargs)
+    output = format_recommendations(prompt, movies, ledger, **kwargs)
     print(output, file=file)
 
 
@@ -168,13 +251,13 @@ def format_fidelity_summary(report: FidelityReport) -> str:
 def format_json_output(
     prompt: str,
     movies: list[dict],
-    fidelity_report: FidelityReport,
+    ledger: dict,
     decomposition: dict | None = None
 ) -> dict:
     """Format complete output as JSON-serializable dict."""
     return {
         "query": prompt,
-        "fidelity": fidelity_report.to_dict(),
+        "ledger": ledger,
         "recommendations": [
             {
                 "rank": i + 1,
@@ -211,6 +294,52 @@ class Colors:
 def colorize(text: str, color: str) -> str:
     """Add ANSI color codes to text."""
     return f"{color}{text}{Colors.END}"
+
+
+def format_ledger_colored(ledger: dict) -> str:
+    """Format an intent ledger with ANSI colors."""
+    if not ledger:
+        return "(no intent ledger available)"
+
+    lines = []
+    score = ledger.get("fidelity", 0)
+    if score >= 0.8:
+        score_color = Colors.GREEN
+    elif score >= 0.5:
+        score_color = Colors.YELLOW
+    else:
+        score_color = Colors.RED
+
+    lines.append(f"\n{Colors.BOLD}PROMPT FIDELITY (ledger):{Colors.END} "
+                 f"{colorize(f'{score:.1%}', score_color)}")
+    naive = ledger.get("naive_fidelity")
+    if naive is not None:
+        lines.append(f"{Colors.BOLD}naive (self-classified):{Colors.END} {naive:.1%}")
+
+    account_colors = {
+        "verified": Colors.GREEN,
+        "transmitted": Colors.CYAN,
+        "substituted": Colors.YELLOW,
+        "inferred": Colors.YELLOW,
+        "dropped": Colors.RED,
+        "imposed": Colors.RED,
+    }
+    for e in ledger.get("entries", []):
+        color = account_colors.get(e["account"], "")
+        icon = ACCOUNT_ICONS.get(e["account"], "·")
+        lines.append(f"  {colorize(icon, color)} "
+                     f"[{colorize(e['account'], color)}] "
+                     f"{e['description']} ({e['bits']:.2f} bits)")
+        if e["account"] in ("substituted", "imposed"):
+            lines.append(f"      {colorize(e['evidence'], Colors.YELLOW)}")
+
+    gap = ledger.get("honesty_gap_bits")
+    if gap is not None:
+        gap_color = Colors.RED if gap > 0 else Colors.GREEN
+        lines.append(f"\n{Colors.BOLD}Honesty gap:{Colors.END} "
+                     f"{colorize(f'{gap:+.2f} bits', gap_color)}")
+
+    return "\n".join(lines)
 
 
 def format_fidelity_colored(report: FidelityReport) -> str:

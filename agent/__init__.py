@@ -18,6 +18,11 @@ from .decompose import (
     get_verified_constraints,
     get_inferred_constraints,
 )
+from .ledger import (
+    IntentLedger,
+    LedgerEntry,
+    book_ledger,
+)
 from .tmdb import (
     TMDbClient,
     Movie,
@@ -31,6 +36,7 @@ from .rerank import (
 from .display import (
     format_recommendations,
     format_fidelity_report,
+    format_ledger_report,
     print_recommendations,
     format_json_output,
 )
@@ -51,6 +57,10 @@ __all__ = [
     "decompose_prompt",
     "get_verified_constraints",
     "get_inferred_constraints",
+    # Intent ledger
+    "IntentLedger",
+    "LedgerEntry",
+    "book_ledger",
     # TMDb
     "TMDbClient",
     "Movie",
@@ -62,6 +72,7 @@ __all__ = [
     # Display
     "format_recommendations",
     "format_fidelity_report",
+    "format_ledger_report",
     "print_recommendations",
     "format_json_output",
     # Main

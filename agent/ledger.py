@@ -6,9 +6,14 @@ the decomposition against ACTUAL tool-call parameters -- no LLM
 self-reporting in the loop.
 
 Accounts (user-side):
-    VERIFIED    -- constraint's api_param(s) appear in the params actually sent
-    SUBSTITUTED -- constraint was demoted/altered en route (e.g. failed ID
-                   lookup converted verified->inferred with a resolution_note)
+    VERIFIED    -- constraint's api_param(s) appear in the params actually
+                   sent, with matching values, via ENFORCED params only
+    TRANSMITTED -- params present and matching, but via an advisory param the
+                   backend does not enforce (e.g. a search engine query
+                   string): faithfully delivered, compliance not guaranteed
+    SUBSTITUTED -- constraint was demoted/altered en route (failed ID lookup
+                   with a resolution_note, a param value changed, or only
+                   some of a multi-param constraint applied)
     INFERRED    -- constraint classified inferred AND handed to the reranker
     DROPPED     -- constraint appears in no tool call and no rerank criteria
 
@@ -17,7 +22,7 @@ Accounts (agent-side):
                    (popularity floors, truncation, score cutoffs)
 
 Conservation: every user constraint is booked exactly once.
-    I_total = I_verified + I_substituted + I_inferred + I_dropped
+    I_total = I_verified + I_transmitted + I_substituted + I_inferred + I_dropped
 """
 
 import math
@@ -38,7 +43,7 @@ def bits(survival_rate: float) -> float:
 @dataclass
 class LedgerEntry:
     description: str
-    account: str            # verified | substituted | inferred | dropped | imposed
+    account: str            # verified | transmitted | substituted | inferred | dropped | imposed
     bits: float
     evidence: str           # the mechanical reason for the booking
 
@@ -57,6 +62,10 @@ class IntentLedger:
     @property
     def fidelity(self) -> float:
         return self._sum("verified") / self.user_total if self.user_total else 1.0
+
+    @property
+    def transmitted_rate(self) -> float:
+        return self._sum("transmitted") / self.user_total if self.user_total else 0.0
 
     @property
     def substitution_rate(self) -> float:
@@ -78,12 +87,13 @@ class IntentLedger:
     def to_dict(self) -> dict:
         return {
             "fidelity": round(self.fidelity, 3),
+            "transmitted_rate": round(self.transmitted_rate, 3),
             "substitution_rate": round(self.substitution_rate, 3),
             "drop_rate": round(self.drop_rate, 3),
             "imposed_bits": round(self.imposed_bits, 2),
             "accounts": {
                 a: round(self._sum(a), 2)
-                for a in ("verified", "substituted", "inferred", "dropped", "imposed")
+                for a in ("verified", "transmitted", "substituted", "inferred", "dropped", "imposed")
             },
             "entries": [
                 {"description": e.description, "account": e.account,
@@ -110,6 +120,7 @@ def book_ledger(
     actual_params: dict,
     rerank_criteria_descriptions: list[str],
     imposed_operations: list[dict] | None = None,
+    advisory_params: set[str] | None = None,
 ) -> IntentLedger:
     """
     Book every constraint mechanically.
@@ -122,10 +133,14 @@ def book_ledger(
         imposed_operations: agent-added filters, e.g.
             [{"description": "min_votes floor", "survival_rate": 0.35,
               "evidence": "discover_movies(min_votes=50)"}]
+        advisory_params: param names the backend transmits but does not
+            enforce (e.g. a free-text search query). Constraints applied
+            via any advisory param book as `transmitted`, not `verified`.
     """
     ledger = IntentLedger()
     actual = {k: str(v) for k, v in actual_params.items()}
     rerank_set = set(rerank_criteria_descriptions)
+    advisory = advisory_params or set()
 
     for c in all_constraints:
         b = bits(c.get("estimated_survival_rate", 1.0))
@@ -142,14 +157,31 @@ def book_ledger(
         if c.get("type") == "verified" and pairs:
             # Verified iff EVERY claimed param made it into the actual call.
             # Comma-joined multi-values count if the value is a member.
-            def present(param, value):
-                if param not in actual:
-                    return False
-                return value in actual[param].split(",")
-            if all(present(p, v) for p, v in pairs):
+            def matches(param, value):
+                return param in actual and value in actual[param].split(",")
+            sent = [(p, v) for p, v in pairs if p in actual]
+            if all(matches(p, v) for p, v in pairs):
+                if any(p in advisory for p, _ in pairs):
+                    ledger.entries.append(LedgerEntry(
+                        desc, "transmitted", b,
+                        f"faithfully passed via advisory param(s) "
+                        f"{sorted(p for p, _ in pairs if p in advisory)}; "
+                        f"backend does not enforce compliance"))
+                else:
+                    ledger.entries.append(LedgerEntry(
+                        desc, "verified", b,
+                        f"params present in tool call: {pairs}"))
+            elif sent and any(not matches(p, v) for p, v in sent):
+                diffs = {p: {"declared": v, "actual": actual[p]}
+                         for p, v in sent if not matches(p, v)}
                 ledger.entries.append(LedgerEntry(
-                    desc, "verified", b,
-                    f"params present in tool call: {pairs}"))
+                    desc, "substituted", b,
+                    f"param value(s) altered en route: {diffs}"))
+            elif sent:
+                missing = sorted(p for p, _ in pairs if p not in actual)
+                ledger.entries.append(LedgerEntry(
+                    desc, "substituted", b,
+                    f"partial application; missing param(s): {missing}"))
             else:
                 ledger.entries.append(LedgerEntry(
                     desc, "dropped", b,
