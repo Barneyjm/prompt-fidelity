@@ -142,7 +142,8 @@ def test_to_dict_shape_matches_dev_promptfidelity_v1():
     assert d["imposed"][0]["description"] == "vote_count.gte"
     summary = d["summary"]
     assert set(summary) == {
-        "fidelity", "verified_bits", "total_bits", "accounts", "constraints_source"
+        "fidelity", "fidelity_basis", "verified_bits", "total_bits", "accounts",
+        "constraints_source"
     }
     assert set(summary["accounts"]) == {
         "verified", "transmitted", "substituted", "inferred", "dropped"
@@ -225,3 +226,30 @@ def test_constraints_source_counts_mixed_provenance():
     assert ledger.to_dict()["summary"]["constraints_source"] == {
         "declared": 1, "rules": 2, "llm": 1
     }
+
+
+def test_counts_basis_fidelity_when_no_entry_carries_bits():
+    """All-p=None ledgers (e.g. pure rules extraction) must not report
+    fidelity 1.0 off an empty bits denominator: a substituted entry has to
+    show up in the headline number, on a counts basis."""
+    constraints = [
+        Constraint(id="c1", description="genre", params={"g": "878"}),
+        Constraint(id="c2", description="rating 8+", params={"r": "8"}),
+    ]
+    ledger = book(constraints, {"g": "878", "r": "7"})
+    accounts = {e.id: e.account for e in ledger.entries}
+    assert accounts == {"c1": "verified", "c2": "substituted"}
+    assert ledger.total_bits == 0
+    assert ledger.fidelity_basis == "counts"
+    assert ledger.fidelity == 0.5
+    assert ledger.to_dict()["summary"]["fidelity_basis"] == "counts"
+
+
+def test_bits_basis_used_whenever_any_entry_carries_bits():
+    constraints = [
+        Constraint(id="c1", description="genre", params={"g": "878"}, p=0.25),
+        Constraint(id="c2", description="rating 8+", params={"r": "8"}),
+    ]
+    ledger = book(constraints, {"g": "878", "r": "7"})
+    assert ledger.fidelity_basis == "bits"
+    assert ledger.fidelity == 1.0  # the only weighted entry is verified

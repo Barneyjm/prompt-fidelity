@@ -197,11 +197,34 @@ class Ledger:
 
     @property
     def fidelity(self) -> float:
-        """Fraction of user intent booked verified. 1.0 when there is no
-        intent to measure (total_bits == 0), matching the "nothing asked,
-        nothing to fail" convention used throughout this package."""
+        """Fraction of user intent booked verified.
+
+        Bits-weighted when any entry carries bits; falls back to a plain
+        entry-count ratio when every entry has bits=None (e.g. all
+        constraints came from rules extraction, which never estimates p) --
+        a run with substituted/dropped entries must not report 1.0 just
+        because nothing was bit-weighted. to_dict() discloses which basis
+        was used as summary["fidelity_basis"]. 1.0 when there are no
+        entries at all ("nothing asked, nothing to fail")."""
         total = self.total_bits
-        return self.verified_bits / total if total else 1.0
+        if total:
+            return self.verified_bits / total
+        return self.fidelity_by_count
+
+    @property
+    def fidelity_by_count(self) -> float:
+        """Fraction of entries booked verified, ignoring bit weights.
+        1.0 when there are no entries."""
+        if not self.entries:
+            return 1.0
+        verified = sum(1 for e in self.entries if e.account == "verified")
+        return verified / len(self.entries)
+
+    @property
+    def fidelity_basis(self) -> str:
+        """Which denominator fidelity used: "bits" (some entry carried a
+        survival estimate) or "counts" (no entry did)."""
+        return "bits" if self.total_bits else "counts"
 
     @property
     def transmission_rate(self) -> float:
@@ -231,6 +254,7 @@ class Ledger:
             "imposed": [e.to_dict() for e in self.imposed],
             "summary": {
                 "fidelity": round(self.fidelity, 3),
+                "fidelity_basis": self.fidelity_basis,
                 "verified_bits": accounts["verified"],
                 "total_bits": round(self.total_bits, 2),
                 "accounts": accounts,

@@ -186,3 +186,14 @@ def test_constraints_ordered_by_position_in_prompt():
     rating_idx = next(i for i, c in enumerate(non_residue)
                        if "vote_average.gte" in c.params)
     assert genre_idx < date_idx < rating_idx
+
+
+def test_decade_extracts_without_leading_the():
+    """'A 90s sci-fi movie' must extract the decade -- the article is
+    optional (regression: it originally required 'the 90s')."""
+    vocab = {"date_param": "primary_release_date"}
+    cs = extract_constraints("A 90s sci-fi movie", vocab=vocab)
+    dated = [c for c in cs if "primary_release_date.gte" in c.params]
+    assert len(dated) == 1
+    assert dated[0].params["primary_release_date.gte"] == "1990-01-01"
+    assert dated[0].params["primary_release_date.lte"] == "1999-12-31"

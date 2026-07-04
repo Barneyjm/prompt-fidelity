@@ -115,7 +115,7 @@ _COMPARATOR_PLUS_RE = re.compile(r"\b(?P<num>\d+(?:\.\d+)?)\+")
 _BETWEEN_RE = re.compile(
     r"\bbetween\s+(?P<y1>(?:19|20)\d{2})\s+and\s+(?P<y2>(?:19|20)\d{2})\b", re.IGNORECASE
 )
-_DECADE_WORD_RE = re.compile(r"\bthe\s+['’]?(?P<dec>\d0)s\b", re.IGNORECASE)
+_DECADE_WORD_RE = re.compile(r"\b(?:the\s+)?['’]?(?P<dec>\d0)s\b", re.IGNORECASE)
 _DECADE_DIGIT_RE = re.compile(r"\b(?P<cent>19|20)(?P<dec>\d)0s\b", re.IGNORECASE)
 _RELATIVE_YEAR_RE = re.compile(
     r"\b(?P<word>from|since|after|before)\s+(?P<year>(?:19|20)\d{2})\b", re.IGNORECASE
