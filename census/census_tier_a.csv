@@ -1,0 +1,1002 @@
+name,description,species,secondary,confidence
+ac.inference.sh/mcp,"Run 150+ AI apps — image, video, audio, LLMs, 3D and more. Browse, execute, stream results.",generative,,H
+ac.tandem/docs-mcp,"Remote MCP server for Tandem docs, install guides, SDKs, workflows, and agent setup help.",relevance,,M
+agency.lona/trading,"AI-powered trading strategy development: backtesting, market data, and portfolio analysis",generative,predicate,M
+ai.aarna/atars-mcp,"Crypto market signals, technical indicators, and sentiment analysis for AI agents.",generative,predicate,M
+ai.abmeter/abmeter,Feature flagging and A/B testing platform with AI-first experimentation workflows.,actuation,predicate,M
+ai.adadvisor/mcp-server,"Query Meta Ads performance data — accounts, campaigns, ad sets, ads, metrics & settings.",predicate,,H
+ai.adeu/adeu,Automated DOCX Redlining Engine,actuation,generative,M
+ai.adramp/google-ads,"Google Ads MCP server — manage campaigns, keywords, and metrics.",actuation,predicate,H
+ai.adweave/meta-ads-mcp,"Meta Ads MCP server with 47 tools for campaigns, creatives, audiences, and insights.",actuation,predicate,H
+ai.agentberg/agentberg,"Agent-to-agent trading intelligence exchange. Publish findings, vote on quality, earn reputation.",actuation,relevance,M
+ai.agentdm/agentdm,"Agent communication platform for agent to agent messaging via MCP. Messages, channels, skills.",actuation,,H
+ai.agentic-news/mcp,"AI-powered news intelligence — 21 tools for personalized monitoring, briefings, and semantic search",relevance,generative,H
+ai.agenticshelf/graffeo,Live MCP catalog for Graffeo Coffee Roasting - Simply the World's Finest Coffee since 1935.,predicate,,M
+ai.agenticshelf/mcp,"Hosted MCP for e-commerce: live product catalog, stock, and pricing for AI agents.",predicate,,H
+ai.agenticshelf/puroair,"Breathe with Confidence. Live MCP catalog for PuroAir HEPA air purifiers - stock, pricing, details.",predicate,,M
+ai.agenticterminal/directory,"Verified merchants accepting agentic payments on Lightning/L402/BOLT12/USDT — search, verify, pay.",predicate,actuation,M
+ai.agentrapay/agentra,Identity oracle and trust layer for autonomous AI agents. Bidirectional KYA and trust scoring.,predicate,,L
+ai.agenttrust/mcp-server,"Identity, trust, and A2A orchestration for autonomous AI agents. Official A2A partner.",predicate,actuation,L
+ai.aient/mcp,"MCP-native AI SRE: ask what's broken in production, get a reviewed GitHub fix PR.",generative,actuation,M
+ai.airshelf/catalog,"Cross-vendor B2B catalog for AI agents: search, compare, find equivalents, request a quote.",relevance,predicate,M
+ai.aliengiraffe/spotdb,Ephemeral data sandbox for AI workflows with guardrails and security,predicate,,L
+ai.alphacreek/alphacreek-mcp,"Access SEC filings efficiently (10-K, 10-Q, etc), save time and tokens, and get cited answers.",relevance,generative,M
+ai.alpic.mcp/alpic-mcp,"Manage your projects, debug deployment, and check analytics for any MCP server you host with Alpic",actuation,predicate,M
+ai.alpic.test/test-mcp-server,Alpic Test MCP Server - great server!,unknown,,L
+ai.ambix/ambix,Your product team's shared strategic memory — an MCP server your AI tools reason over.,generative,predicate,L
+ai.ankimcp/anki-mcp-server,"MCP server for Anki flashcards: adaptive review, notes, media, and deck management via AnkiConnect.",actuation,predicate,H
+ai.ankimcp/anki-mcp-server-addon,Anki addon that exposes your flashcard collection to AI assistants via a local MCP server.,predicate,relevance,M
+ai.anomalyarmor/armor-mcp,"Data observability tools for engineering teams: alerts, freshness, schema drift, lineage, quality.",predicate,generative,M
+ai.anzenna/anzenna,MCP server for Anzenna,unknown,,L
+ai.apithreshold/apithreshold,Quality scoring and progressive gates for AI-generated API tests. Stripe/Twilio profiles. Free tier.,generative,predicate,M
+ai.appdeploy/deploy-app,AppDeploy turns app ideas described in AI chat into live full-stack web applications,actuation,generative,H
+ai.arclan/registry,"MCP server registry — validated by live handshake, scored on reliability, monitored continuously.",predicate,,M
+ai.artidrop/artidrop,"Publish HTML, Markdown, and multi-file sites as shareable URLs instantly via MCP.",actuation,,H
+ai.atdev/supershopping,나만을 위한 AI 쇼핑 MCP — 상품을 자연어로 검색·비교·추천해 사용자의 효과적인 쇼핑을 돕습니다.,relevance,,H
+ai.augmentev/paseo,Confidential AI execution with a post-quantum receipt on every job — verifiable by anyone.,generative,actuation,M
+ai.auralogs/auralogs,"Read-only access to Auralogs production logs: search logs, inspect errors, review AI analyses.",relevance,predicate,M
+ai.auteng/docs,Publish markdown documents as public share links with mermaid diagram support. Built by AutEng.ai,actuation,,H
+ai.auteng/mcp,Publish markdown documents as public share links with mermaid diagrams. Built by AutEng.ai,actuation,,H
+ai.autoblocks/contextlayer-mcp,Personal context management for AI assistants,predicate,,L
+ai.autoblocks/ctxl,Personal context management for AI assistants,predicate,,L
+ai.autoblocks/ctxl-mcp,Personal context management for AI assistants,predicate,,L
+ai.autonomad/computeback,"Agent Rewards Marketplace: earn $NOMD on B2B work, spend on agent capabilities.",actuation,,M
+ai.autonomad/travel,"AI travel agent — book flights, hotels, activities, and events worldwide via autonomad.ai.",actuation,,H
+ai.autorfp/mcp,"Search AutoRFP.ai projects, requirements, content library, and tags for Q&A and analytics.",relevance,predicate,M
+ai.auxen/auxen,"Provision private AI model endpoints on dedicated GPUs (Llama, Qwen, Mistral). Pay per minute.",actuation,,H
+ai.aviado/health,"Supplement research, biomarker effects, drug interactions, and brand quality data",relevance,predicate,M
+ai.axonagentic/neuroautomata,"Protein analysis: ESM-2/ESMC embeddings, mutation scoring, landscape scans, ESMFold structure.",predicate,,M
+ai.backengine/backengine-mcp,"Surface customer & prospect context from Slack, email, transcripts and tickets in any MCP client.",relevance,,M
+ai.bankee/inferventis-mcp,"Loan & mortgage calculator, compound interest, ROI, crypto prices, FX conversion for AI agents.",predicate,,H
+ai.bareun/bareun,"Korean NLP MCP server: morphological analysis, tokenization, spell & grammar checking (Bareun)",generative,predicate,M
+ai.baselight/baselight,"Query Baselight's public catalog of 70,000+ datasets — finance, demographics, sports, and more.",predicate,,H
+ai.benroberts/b4-index,Independent build-vs-buy index: score software categories BUILD/BUY/BRIDGE/BEWARE.,generative,predicate,M
+ai.bezal/local-commerce,"Search 7,000+ local service businesses across America by category, location, or keyword.",relevance,predicate,H
+ai.biddeed/biddeed-mcp,AI-powered foreclosure auction intelligence for Florida counties via MCP tools.,generative,predicate,M
+ai.bittlebits/bittlebits,"GEO scores and content-rewrite suggestions for any web page, as MCP tools.",generative,predicate,M
+ai.blast-radius/blast-radius,"Blast Radius tools for AI strategy, diligence, and market updates.",generative,,L
+ai.bluenexus/universal-mcp,"Connect your AI to all your data - 200+ sources, intelligently filtered, compliance-ready.",predicate,relevance,L
+ai.bolthub/registry,Discover and call every paid API on the bolthub marketplace with automatic L402 Lightning payments.,predicate,actuation,M
+ai.boolsai/directory,"Indexed ecommerce site directory — vendor lookups, brands by city/market/founder. 10 tools.",predicate,,M
+ai.boolsai/grep,"Parallel regex across all Boolsai scans — discover new vendor patterns, niche signals. 4 tools.",predicate,relevance,M
+ai.boolsai/scan,"Live tech-stack scan of any public site — vendors, account IDs, scripts, JSON-LD. 2 tools.",predicate,,M
+ai.boolsai/signals,Quant-research MCP — tradeable signals from public-company website stack changes. 7 tools.,generative,predicate,M
+ai.borealhost/mcp,"Agent-native web hosting — deploy sites, manage DNS, register domains, scale infrastructure",actuation,,H
+ai.bowmark/bowmark,Pre-computed navigation recipes for public websites — skip explore-and-discover.,predicate,,M
+ai.brainattic/knowledge-base,"The knowledge base your AI reads and writes, under your rules — over MCP, EU-hosted.",actuation,predicate,M
+ai.bringyour/bringyour,No-data MCP handoff for local Claude Code to Codex harness moves. $49 lifetime.,actuation,,L
+ai.bunzee/bunzee,"Turn your app idea into IA, wireframes, PRD, style guides, and dev specs for coding agents.",generative,,H
+ai.buron/buron,"Marketing-measurement MCP: dashboards, cross-channel queries, integrations, and knowledge files.",predicate,generative,M
+ai.butlerbrain/mcp,"Persistent memory for AI assistants. Save once; recall from Claude, ChatGPT, or any MCP client.",actuation,predicate,M
+ai.buyersense/buyersense,MCP server for the BuyerSense API. Get buyer signals from any MCP client.,predicate,,M
+ai.buywhere/buywhere-mcp,"Product search, price comparison, and affiliate-ready shopping across Singapore and US retailers.",relevance,predicate,H
+ai.byteask/embedded-docs,"Page-cited retrieval for embedded docs, datasheets, MISRA, CMSIS, and RTOS references.",relevance,,M
+ai.byteray/byteray-mcp,"Hunt zero-days by talking to binaries. 40+ tools. Hosted, OAuth + SSO, invite: hi@byteray.ai",generative,actuation,M
+ai.calendarmcp/server,Hosted Google Calendar MCP server for AI agents. No self-hosting or Google Cloud setup.,actuation,predicate,H
+ai.calfeed/calfeed,"Turn a written schedule into a live calendar link people subscribe to in Apple, Google, Outlook.",actuation,,M
+ai.canaryusers/canaryusers,"A flock of AI users tests your deployed app and reports where real people get stuck, with fixes.",actuation,generative,M
+ai.canvora/canvora,"Create professional visuals from text, URLs, or PDFs. Carousels, presentations, posts. 100+ formats",generative,,H
+ai.caulo/caulo,"Social network for verified humans where your AI agent reads the feed, posts, DMs, and moderates.",actuation,relevance,M
+ai.childadhd/library,"Clinician-reviewed library on ADHD in children — evaluation, treatment, school, parenting.",relevance,,M
+ai.childanxiety/library,"Clinician-reviewed library on anxiety, OCD, and phobias in children ages 5–12.",relevance,,M
+ai.childpsychiatry/library,Clinician-reviewed library on child psychiatric evaluation and medication decision-making.,relevance,,M
+ai.chinamarketing/intelligence,"Remote MCP server for China brand visibility, destination demand, and KOL discovery workflows.",relevance,predicate,L
+ai.chronary/mcp,"Calendar API for AI agents: events, availability, scheduling, webhooks, and iCal feeds.",actuation,predicate,H
+ai.cirra/salesforce-mcp,Comprehensive Salesforce administration and management,actuation,predicate,H
+ai.clarid/compliance,"Check bank marketing for FDIC, NCUA, TILA, Reg DD, Reg Z, UDAAP, and Equal Housing compliance.",predicate,generative,M
+ai.clarid/hmda,Validate HMDA LAR files against CFPB edit checks for community banks and credit unions.,predicate,,H
+ai.clawterminal/markets,"Ask your AI about the markets: filings, insider & congress trades, fund flows, options, macro",predicate,relevance,M
+ai.com.mcp/contabo,"Contabo API (v1.0.0) as MCP tools for cloud provisioning, and management. Powered by HAPI MCP server",actuation,predicate,H
+ai.com.mcp/hapi-mcp,HAPI MCP server: Dynamically exposes OpenAPI REST APIs as MCP tools for AI assistants,predicate,actuation,M
+ai.com.mcp/lenny-rachitsky-podcast,MCP server for structured access to Lenny Rachitsky podcast transcripts. For content creators.,predicate,relevance,M
+ai.com.mcp/linkedin,LinkedIn API as MCP tools to retrieve profile data and publish content. Powered by HAPI MCP.,actuation,predicate,H
+ai.com.mcp/openai-tools,Focused MCP server for OpenAI image/audio generation (v2.0.0). Wraps endpoints via HAPI CLI.,generative,,H
+ai.com.mcp/petstore,Swagger Petstore API (v1.0.27) as MCP for testing and prototyping powered by the HAPI MCP server,predicate,,M
+ai.com.mcp/registry,Publish and discover MCP servers via the official MCP Registry. Powered by HAPI MCP server.,actuation,relevance,M
+ai.com.mcp/skills-search,Search and discover Agent Skills from the skills.sh registry. Powered by HAPI MCP server.,relevance,,H
+ai.com.mcp/strava,"Strava MCP tools for AI: athletes, activities, segments, clubs, routes. Powered by HAPI MCP server.",predicate,,M
+ai.compeller/compel,Create and track AI music videos and audio-reactive visuals from songs.,generative,,H
+ai.complyhat/compliance,"MCP for AI compliance documentation across SR 26-2, EU AI Act, NIST AI RMF, and ISO/IEC 42001.",predicate,generative,M
+ai.complyme.mcp/mcp,ComplyMe.AI MCP server for legal & data protection risk analysis and audits.,generative,predicate,M
+ai.constellationfinance/constellation-finance-mcp,"Financial and covenant data for public and private credit: statements, cap stacks, covenants.",predicate,,M
+ai.contextstudios/mcp,"AI agency API: 25 free tools for glossary, comparisons, blog, guides, and estimates",generative,,M
+ai.conveo/conveo,"Qualitative research platform. Design studies, analyze interviews, and generate insights.",generative,relevance,M
+ai.cookiy/cookiy,"AI user research via studies, interviews, recruitment, reports, and quantitative surveys.",generative,relevance,M
+ai.cosmonote/notes,"Access your Cosmonote audio notes, transcriptions, summaries, and action items.",predicate,generative,M
+ai.craneledger/crane-ledger,Headless API-first double-entry accounting & bookkeeping engine. 84 MCP tools over HTTP.,actuation,predicate,H
+ai.crestsystems/counterparty-intelligence,"Check who your agent is about to pay over x402: real service, relayer, treasury, or buyer.",predicate,,M
+ai.cueapi/mcp,Schedule agent work and report write-once outcomes via CueAPI from any MCP host.,actuation,,M
+ai.d50/d50-platform,"246 tools to run sales, marketing & hiring: CRM, leads, AI calling, content, recruiting & SEO.",actuation,generative,H
+ai.dataforb2b/dataforb2b,"Search and enrich B2B people & companies — 70+ filters (funding, linkedin, industry, country, ...).",predicate,,H
+ai.datamerge/mcp,"B2B data enrichment for 375M+ companies: legal entities, corporate hierarchies, and contacts.",predicate,,H
+ai.deepledger/mcp,"AI Accountant for Quickbooks- recording, reconcile, month-end close",actuation,predicate,H
+ai.deinai/creator-skill,"AI influencer search on TikTok, Instagram, YouTube. Deinai MCP token required; credits per result.",relevance,,M
+ai.deinai/creator-skill-v2,"SKILL-02 (not SKILL-01): AI influencer search on TikTok, Instagram & YouTube. sk_live_ token.",relevance,,M
+ai.delega/aws-pricing-calculator,Create AWS cost estimates and shareable AWS Pricing Calculator URLs.,predicate,,H
+ai.demanddiscovery/mcp,Sales-agent MCP for Demand Discovery AI. Validate startup ideas with behavioral signals.,generative,predicate,M
+ai.demomagic/interactive-video-guide,Guides for making interactive videos & AI product demos that answer viewers' questions.,generative,,M
+ai.diagramzu/mcp,"Let Claude, Cursor, or ChatGPT author Mermaid diagrams your team can read and share.",generative,,H
+ai.dimetrics/dimetrics,"HPC lease economics, datacenter power, debt linkage, and political risk for miners and neoclouds.",predicate,,M
+ai.djwizard/tvwizard,"Control Android TV from any AI. 38 MCP tools: playback, recap, recommend, smart-home, schedules.",actuation,relevance,H
+ai.docuwriter/docuwriter,"Generate, search, and manage codebase documentation on DocuWriter.ai. 72 tools incl. Autopilot.",generative,relevance,M
+ai.donethat/donethat,"Privacy-first work tracking with summaries, reports, coaching, and AI-ready long-term memory.",generative,predicate,M
+ai.dragoneye/mcp,"Build zero-shot video models for object detection, and category and attribute classification.",generative,predicate,M
+ai.dreamlit/mcp,"Create, test, publish, and manage Dreamlit notification workflows from AI clients.",actuation,,M
+ai.drillr/drillr,"The financial MCP for AI agents - 90+ financial tables, SEC filings, signals, alt-data.",predicate,,H
+ai.duvera/gateway,"Governed AI actions with signed, verifiable receipts: free keyless reads, human-approved writes.",actuation,predicate,M
+ai.dynamicfeed/dynamic-feed,"91 keyless tools of live, verifiable data for AI: weather, hazards, space, CVEs. Ed25519-signed.",predicate,,H
+ai.dynsoft/sac,"Give your AI agent the ability to respond with live, interactive apps that evolve.",generative,,M
+ai.edusignal/districts,"K-12 school district data for all 50 US states. Enrollment, demographics, and academics.",predicate,,H
+ai.enyal/enyal,"ENYAL by Greenland AI — encrypted identity & memory for AI agents (query, recall, provenance)",predicate,actuation,L
+ai.exa/exa,"Fast, intelligent web search and web crawling.
+
+New mcp tool: Exa-code is a context tool for coding",relevance,,H
+ai.example4/xmp4,"OSS libs in your stack, really used: source, tests, callers. C#, Java, TS, Python, Rust, PHP+.",predicate,,M
+ai.explorium/mcp-explorium,Access live company and contact data from Explorium's AgentSource B2B platform.,predicate,,M
+ai.ezel/ezel,"Search U.S. case law, fetch opinions, and ask matter-aware legal questions over your documents.",relevance,generative,M
+ai.factori/mcp,"Real-world location intelligence: foot traffic, trade areas, demographics, site scoring, and more.",predicate,,M
+ai.fantopy/fantopy,"Free World Cup 2026 prediction game with fixtures, picks, brackets, and leaderboards",actuation,predicate,M
+ai.fathom.api/mcp,Give your AI assistant real meeting context via Fathom so every output grounded in your work,predicate,,M
+ai.fiber/mcp,"Search companies, enrich contacts, and reveal emails and phones from your AI agent.",relevance,predicate,M
+ai.filegraph/document-processing,"Extract text from documents, manipulate PDFs, and perform OCR on images.",generative,predicate,M
+ai.filepad/filepad,Connect AI agents to Filepad workspaces through OAuth MCP.,predicate,,L
+ai.filtrix.mcp/filtrix-ai,Filtrix MCP for image/video generation. Portal: https://agent.filtrix.ai/,generative,,H
+ai.fincontext/fincontext,"Read-only bank & investment accounts via Plaid: balances, holdings, transactions, SQL analytics.",predicate,,H
+ai.findip/patent-search,"Semantic patent search & analysis: find, compare, and analyze patents by meaning.",relevance,,H
+ai.flipdomain/domain-sales,"Search 2,972 premium domains by keyword, category, TLD, and budget, then submit offers.",predicate,actuation,M
+ai.fodda/mcp-server,"Expert-curated knowledge, brand, research & earnings intelligence — 31 tools, 220+ graphs.",predicate,generative,L
+ai.forkmate/forkmate,Effortless calorie tracking for people who train — just tell your AI what you ate.,actuation,generative,M
+ai.foura/mcp,"Web scraping for AI agents: fetch any page via proxy or full browser, past anti-bot defenses.",predicate,,H
+ai.gatetest.www/gatetest,"120-module QA gate. Give Claude eyes (screenshots), ears (Sentry errors), and hands (verify fixes).",actuation,predicate,M
+ai.gavelin/mcp,Search bills and speaker-attributed hearing transcripts across all 50 US state legislatures.,relevance,,H
+ai.gemus/gemus,"Node-based AI design workflows on the Gemus canvas: generate images, video, 3D, and PPT.",generative,,H
+ai.geodesiclabs/governance-platform,"Deterministic AI governance platform. Validates agent outputs, discovers patterns, solves math.",predicate,generative,L
+ai.gethal/mcp,"Public MCP for gethal.ai — autonomous AI sales agent. Pricing, features, book a demo.",actuation,generative,M
+ai.getoptimal/optibot,"AI code review for your AI assistant — review local changes, branch diffs, and patch files.",generative,predicate,M
+ai.getperspective/mcp,An AI concierge that turns static forms into adaptive AI conversations. From any MCP client.,generative,,M
+ai.getthroughline/throughline,"A persistent AI self you own — memory, persona, judgment — portable across all your AI hosts.",generative,,L
+ai.getvet/vet,Discover and vet MCP servers: search 200K+ AI tools with security verification and schemas.,relevance,predicate,M
+ai.gigaverse/gigaverse,"Portable Roth IRA signups for gig workers: eligibility checks, signup initiation, partners, sandbox.",actuation,predicate,M
+ai.gomarble/mcp-api,GoMarble MCP API Server,unknown,,L
+ai.gondola/gondola,"Book hotels and rental cars, triple stacking loyalty points, credit card points, and Gondola Cash.",actuation,,H
+ai.gossiper/shopify-admin-mcp,"Control Shopify Admin tasks with agents or via prompt. Ultra slim integration, fast and secure.",actuation,predicate,H
+ai.groundroute/web-search,"Web search for AI agents — one tool across 6 engines, routed to the cheapest + cached.",relevance,,H
+ai.haymon/dbmcp,"Database MCP server for MySQL, MariaDB, PostgreSQL & SQLite with PII redaction and write-prevention",predicate,,H
+ai.helixar/mcp,"Security tools for AI agents: scan MCP servers, validate HDP delegation chains, audit releases.",predicate,generative,M
+ai.hermitsh/texts,"Search complete classical author editions; retrieve exact, citable passages with parallel Latin.",relevance,predicate,M
+ai.hirey/hi,"The people network your AI agent joins on your behalf — find, match, and meet anyone.",relevance,actuation,M
+ai.hivewiki/hivewiki,"Shared project wiki for AI agents: read and write pages, next actions, and activity logs over MCP.",actuation,predicate,M
+ai.hostingbrain/intelligence,"European hosting & domain market intelligence: M&A tracking, operator dossiers, screening.",generative,predicate,M
+ai.hostprofit/mcp,Revenue intelligence platform for short-term rental operators.,generative,predicate,L
+ai.i18nagent/i18n-agent,AI-powered translation for 48 languages with context-aware quality,generative,,H
+ai.imboard/dossier,"MCP server for dossier automation standard - enables LLMs to discover, verify, and execute dossiers",actuation,predicate,L
+ai.inflowpay.app/inflow,"MCP Server for agents to onboard, pay, and provision services autonomously with InFlow",actuation,,H
+ai.insideralpha/insider-alpha,"SEC Form 4 insider trades, daily trading plans, 8-K catalysts and market data for AI assistants.",predicate,,M
+ai.intuitek.the-stall/the-stall,"277 pay-per-call MCP tools: YouTube keyword research, stocks, crypto, DeFi, options, macro.",predicate,,M
+ai.inventoryhero/inventory-hero,"Inventory, restock planning, and sales analytics for your Amazon FBA business.",predicate,actuation,M
+ai.inxy/seo-audit,Score any site or Shopify store for AEO/GEO/LLMO readiness — how likely AI search is to cite it.,generative,predicate,M
+ai.ironscout/ironscout,"Read-only ammo pricing: offer search, caliber market snapshots, retailer directory. Descriptive.",predicate,,H
+ai.jeda/jeda-ai,"Visual AI for strategic thinking — SWOT, flowcharts, mindmaps, Gantt diagrams as polished SVG.",generative,,H
+ai.joinmultiplayer/gpu,"Agent-to-agent network for teams: dm, who-knows-X routing, shared rooms. Human-in-the-loop.",actuation,relevance,M
+ai.justpublish/just-publish,"Publish the website you built with AI to a live public URL — straight from chat, no setup.",actuation,,H
+ai.kawacode/mcp,"Team-aware memory: intent, decisions, real-time conflicts for AI coding assistants.",actuation,predicate,M
+ai.keenable/web-search,Live web search and clean-markdown page fetch over the Keenable web index.,relevance,,H
+ai.kifly/mcp,Multi-seller shopping for AI agents. Settle via Stripe MPP or x402 USDC on Base. Hosted.,actuation,relevance,M
+ai.kive/mcp,"Create on-brand product shots and brand visuals from your Kive workspace, right in the chat.",generative,,H
+ai.klavis/strata,MCP server for progressive tool usage at any scale (see https://klavis.ai),unknown,,L
+ai.kolens/kolens-mcp,"TikTok KOL intelligence with a public MCP remote for search, profiles, lists, and alerts.",relevance,predicate,M
+ai.kontato/kontato,Give your AI agents a real WhatsApp number to send and receive messages.,actuation,,H
+ai.korey/mcp,The AI orchestration agent for modern software teams.,actuation,,L
+ai.krtr/krtr,"Pre-diligence AI for founders, investors, and firms — multi-agent pitch analysis and deal flow.",generative,,M
+ai.kubit/mcp-server,Bring Kubit into your AI workflow — query your warehouse with natural language,predicate,generative,M
+ai.lattiq/x402-trading-signals,Regime-aware ES1/NQ futures trading signals. HMM + 15 quant strategies. x402 USDC micropayments.,generative,predicate,M
+ai.law.mcp/lawyer-search,"Verified lawyer and attorney search, discovery, and matching for AI — 991K+ US profiles.",relevance,predicate,M
+ai.licensy/mcp-server,Real-time U.S. medical license verification across all 50 states + DC.,predicate,,H
+ai.limitguard.api/trust-intelligence,"Entity verification, sanctions screening, and trust scoring for AI agents.",predicate,generative,M
+ai.linkguard/linkguard-mcp,"Backlink tools for AI assistants: redirect, Google index, and backlink health checks.",predicate,,M
+ai.lithtrix/lithtrix-mcp,"Identity, memory, trust, and swarm primitives for AI agents. MIRC base always free.",unknown,,L
+ai.llmse/mcp,Public MCP server for the LLM Search Engine,relevance,,M
+ai.lucasandersen/mlp-tax,"Deterministic MLP tax engine with IRS citations. 6 tools: basis, §751, estate, projections.",predicate,,H
+ai.ludo/game-assets,"Generate game assets with AI: sprites, 3D models, animations, sound effects, music, and voices.",generative,,H
+ai.magicinsights/insights,"Query your customer feedback: studies, themes, suggestions, tags, and sentiment trends.",predicate,generative,M
+ai.mailjunky/mcp,"Send emails, track events, and manage contacts with MailJunky.",actuation,,H
+ai.marchward/mcp-server,"Runtime authority for AI agents: credential mediation, spend cap, approval gates, audit log.",actuation,predicate,M
+ai.marketcore/mcp,Tools for creating on-brand marketing content using Marcora's intelligent context infrastructure.,generative,,M
+ai.marketintell/marketintell,"AI analyst desk for stocks, options & crypto with sourced trade setups and a public accuracy record.",generative,predicate,M
+ai.markettrace/agent-feed,"Crypto perps data for AI agents: funding rates, open interest, liquidations, order book, CVD.",predicate,,H
+ai.masnavi/masnavi,"Rumi's complete Masnavi (25,635 beyts) — search, quote, verify and explain. Free, no auth.",relevance,generative,M
+ai.maxcv/resume,"Score and tailor your CV/resume against a job posting — for AI agents and humans, no-login trial.",generative,,H
+ai.mcpanalytics/analytics,"Analytics for business data: upload CSV or connect GA4/GSC, run ML/stats, get HTML reports.",predicate,generative,M
+ai.mcpcap/mcpcap,An MCP server for analyzing PCAP files.,predicate,,M
+ai.meacheal/mrc-data,"China's apparel supply chain data for AI: 1,000+ suppliers, 350+ fabrics, 170+ clusters.",predicate,,M
+ai.meetlark/mcp-server,"Agent-first meeting schedule polls for humans and agents. Create polls, vote, find times.",actuation,predicate,H
+ai.meetsquad/squad,"Your AI Product Manager. Surface insights, build roadmaps, and plan strategy with 30+ tools.",generative,actuation,M
+ai.megastructure/arc,"Local coordination hub for coding agents: durable shared memory, tasks, and handoffs. Desktop app.",actuation,predicate,M
+ai.memestack/mcp,"Search and browse a curated gallery of memes, infographics, and visual content.",relevance,,H
+ai.meminal/meminal,Memory for deep conversational context across any platform,actuation,predicate,M
+ai.mino/web-agent,AI-powered web automation. Navigate websites using AI agents for one page or a thousand,actuation,generative,H
+ai.modulos/demo-booking,"Book a Modulos demo. AI Governance Platform for EU AI Act, ISO 42001, NIST AI RMF.",actuation,,H
+ai.monnet/mcp,"Model Context Protocol server for Monnet — motions, plans, and approvals for MCP-compatible clients.",actuation,predicate,L
+ai.moxt/mcp-workspace,Browse and manage files in your Moxt AI workspace from any MCP client.,actuation,predicate,M
+ai.mrmarket/mrmarket-mcp,"Analytical engine for US-listed equities: screens, rankings, and event studies in plain English.",predicate,generative,M
+ai.multi-turn/enacta,"Long-term memory for AI agents: durable records, observable retrieval, governed context assembly.",actuation,predicate,M
+ai.multinex/memq,Persistent memory for AI agents with OAuth-backed hosted MCP access.,actuation,predicate,M
+ai.myriade/myriade,Explore and query your data warehouse through Myriade's AI data analyst agent.,generative,predicate,M
+ai.namewhisper/ens-tools,"34 MCP tools to search, register, manage, value, and trade ENS names. AI-powered intelligence layer.",actuation,predicate,H
+ai.nashboard/nashboard-merchants,Merchant intelligence for AI agents: brand/operator/location hierarchy + industry codes.,predicate,,M
+ai.nauro/nauro,"Decision system for AI coding agents. Surfaces what your project decided, and why, before changes.",predicate,generative,M
+ai.nefesh/human-state,Fuses biometric signals into a stress score (0-100) for AI adaptation. MCP + A2A native.,generative,predicate,M
+ai.newzai.api/NewzAI,"News MCP: real-time headlines & custom news search across 7 regions. Free, just sign in with Google.",relevance,,H
+ai.newzai.api/news-mcp,"News MCP: real-time headlines & custom news search across 7 regions. Free, just sign in with Google.",relevance,,H
+ai.nexustoken/nexustoken-sdk,"Create/check agent tasks, discover capabilities, and run V2 Jobs on NexusToken.",actuation,predicate,M
+ai.ninar/ninar,"Audit your brand's visibility across ChatGPT, Gemini, Claude, Perplexity + 6 more engines.",generative,relevance,M
+ai.nocturnus/logic-server,"Agent reasoning, memory, and token-optimized context for AI applications.",generative,,L
+ai.nordax/mcp,Search and verify 360K+ business entities with trust scores and W3C credentials.,predicate,,H
+ai.nothumansearch/search,"Search the agentic web. 4,100+ sites, 11 tools incl. check_url + verify_mcp for probe-before-use.",relevance,predicate,M
+ai.nudg3/brand-intelligence,"Query your Nudg3 brand visibility across ChatGPT, Claude, Gemini, AI Overviews, and Perplexity.",generative,relevance,M
+ai.nullary/nullary,Negative results intelligence for drug discovery — query measured failures via MCP.,predicate,,M
+ai.obaron/aeo,Scan any website for AI readiness — 100-point score across 6 AEO categories in seconds.,generative,predicate,M
+ai.obris/mcp,"Stop re-explaining yourself to AI. Save knowledge once, use it in every conversation.",actuation,predicate,M
+ai.odei/connect,"Governed personal world model and memory for your AI agent. Pair once, connect over MCP.",actuation,predicate,M
+ai.offerhopper.mcp/shopping-optimizer,German grocery and drug store real time prices and offers including optimal route planing,predicate,,M
+ai.ohmyfin/banking-intelligence,"Cross-border payment & banking intelligence for AI agents: SWIFT/BIC, IBAN, sanctions, FX, tracking.",predicate,,M
+ai.openarx/openarx,"Open scientific knowledge MCP for AI agents. Three profiles: search, publish, govern.",relevance,actuation,M
+ai.openmandate/mcp,MCP server for OpenMandate — find cofounders and early teammates beyond your network. 15 tools.,relevance,,M
+ai.optimly/scout,"Query the AI Brand Directory. Audit brand visibility in ChatGPT, Claude, and Gemini.",generative,relevance,M
+ai.orggen/orggen,"Generate org charts, MCD/ERD data models, and C4 architecture diagrams — pilot OrgGen AI via MCP.",generative,,H
+ai.outlit/outlit,Outlit gives agents real-time understanding of customers to automate support and revenue workflows.,generative,actuation,L
+ai.outset/mcp,AI-moderated research platform: create and launch studies and query interview results.,actuation,generative,M
+ai.packmind/mcp-server,"Packmind captures, scales, and enforces your organization's technical decisions.",actuation,predicate,L
+ai.painspotter/painspotter,"AI-analyzed startup opportunities from Reddit, Hacker News & Product Hunt, with commercial scores.",generative,relevance,M
+ai.palmyr/palmyr,"Agent infra: email, phone, social, domains, VPS, wallets. Paid per-action via x402, no API key.",actuation,,H
+ai.paperlantern/code,Research intelligence for AI coding agents. 2M+ CS papers with evidence and tradeoffs.,relevance,generative,M
+ai.parallel/search-mcp,The best web search for your AI Agent,relevance,,H
+ai.parallel/task-mcp,An MCP server for deep research or task groups,generative,,M
+ai.parceled/mcp,"Real estate data for AI agents: US parcel boundaries (tiles), owners, sale history, permits, hail.",predicate,,H
+ai.perplexity/mcp-server,"Real-time web search, reasoning, and research through Perplexity's API",relevance,generative,H
+ai.physea/liminality,Breaks a hard question or decision into grounded sub-questions and returns a checkable route.,generative,,M
+ai.pictomancer/image-processing,"Image processing for AI agents. Resize, convert, compress, and pipeline images.",predicate,,H
+ai.pimea/pimea,"The hidden intelligence for AI marketing agents. Real campaign data, not LLM guesses.",predicate,,L
+ai.plith/plith,"AI agent infrastructure: dedup, cost prediction, validation, governance, failure intelligence.",actuation,predicate,L
+ai.plori/plori,Create and drive plori cloud agents (each an AI agent on its own cloud computer) over MCP.,actuation,,M
+ai.pocketdrives/pocket-drives,"Peer-to-peer car rental search — luxury, exotic, and EV vehicles with delivery across the US.",relevance,,M
+ai.ponlo/server,"Family calendar, tasks, meals, lists & rewards hub for AI assistants.",actuation,predicate,M
+ai.preclick/preclick-mcp,PreClick scans links for threats and confirms intent match with high accuracy before agents click.,predicate,,M
+ai.presentations/presentations-ai,"Presentations.AI MCP server — create designed slide decks from a topic, text, or document.",generative,,H
+ai.primeta/primeta,"Give your AI a face, a voice, and a personality. 3D avatars with custom personas.",generative,,M
+ai.productnow/productnow,Turn prototype feedback into product decisions that your whole team can trace.,generative,,L
+ai.proofslip/mcp-server,"Receipt-based verification for AI agent workflows — create, verify, and poll ephemeral proof objects",predicate,actuation,M
+ai.proxygate/mcp,"Curated marketplace of real-world data APIs for AI agents, paid per call in USDC on Solana.",predicate,,L
+ai.pubfi/pubfi-mcp,Route crypto data needs through PubFi capability and gateway tools.,predicate,,L
+ai.publishwith/mcp,"Publish AI reports as managed native links with versions, access control, revocation, and audit.",actuation,,M
+ai.pyrimid/pyrimid,Agent-commerce MCP server for x402/USDC payments and affiliate splits on Base.,actuation,,M
+ai.qr-manager/qr-manager,Dynamic QR codes and short links with real-time analytics and AI/MCP integration.,actuation,predicate,M
+ai.quantifyme/quantifyme,Describe a trading strategy in plain English and deploy a live signal model in one call. No signup.,actuation,generative,M
+ai.radiusos.www/crm,"34-tool CRM server — contacts, pipeline, quotes, invoices, scheduling, email, and AI scoring.",actuation,predicate,H
+ai.radmail/radmail-mcp,"Email OS for agents - real-inbox search, triage, commitments, and a verifiable BEC hard-stop.",predicate,actuation,M
+ai.raisonn/connect,"AI-native art catalogue. Catalogue works, parse provenance, and generate signed RAIs.",generative,predicate,M
+ai.rallyprop/gov-funding,"Real-time SBIR, CSO & BAA opportunities from DSIP, SAM.gov, Grants.gov & more — never miss a window.",predicate,,H
+ai.rapay/mcp-server,Send fiat payments via MCP with two-step confirmation and Stripe Connect.,actuation,,H
+ai.ravenmcp/raven-mcp,"Design intelligence for AI-generated UI — principles, patterns, content, brand, design tokens.",generative,,M
+ai.readypermit/geo,"Zoning, ADU eligibility, flood zone, setbacks, and buildability intelligence for U.S. parcels.",predicate,,H
+ai.redditgrow/mcp,"Reddit growth toolkit — opportunities, replies, cold DMs, brand mentions, SEO, autopilot.",actuation,relevance,M
+ai.reka/mcp,"Understand your videos with Reka AI — search, ask questions, and extract insights.",generative,relevance,H
+ai.responsibleailabs/rail-score,"Responsible-AI guardrails for agents: scoring with policy, injection & PII detection, DPDP.",generative,predicate,M
+ai.rfix/mcp,"Create RF signal projects from prompts, inspect graphs, and export IQ data.",generative,actuation,M
+ai.rfp/rfp-ai,"Draft cited RFP and security questionnaire answers from your knowledge base, with human review",generative,,H
+ai.rise2/figlime,"Read Figlime jobs, screening questions, and candidate responses; draft screening questions.",predicate,generative,M
+ai.robomart/robomart,Driverless delivery.,actuation,,M
+ai.roc/mcp,"ROC biometrics & computer vision: face, LPR, OCR, pedestrian, vehicle, gun detection.",predicate,,M
+ai.rockmoon/financial-data,"Cross-market (US/JP/KR) structured financials, segments, ownership & metrics, traceable to filings.",predicate,,H
+ai.roic/roic,"ROIC.AI financial data: statements, ratios, prices, and earnings transcripts for public companies.",predicate,,H
+ai.rolli/mcp,"Social media search, expert discovery, and analytics across X, Reddit, YouTube, and more",relevance,,H
+ai.roopslaw/legalsearch,"Public Indian legal search MCP for Roop judgments, statutes, and corpus grounding.",relevance,,H
+ai.rootdata/public-directory,"Public Root Data dental analytics directory for DSOs, dental practices, blog, and FAQ tools.",predicate,,M
+ai.router/ai-gateway,"One key, 100+ models — chat with any LLM and generate video, images, speech. Free trial at 370.ai.",generative,,H
+ai.roxels/roxels-mcp,Let AI agents create configurable voice agents via meeting rooms and return structured data.,actuation,generative,M
+ai.rxmanager/mcp,"Live US drug acquisition costs (CMS NADAC) for AI assistants. Free, no auth, weekly data.",predicate,,H
+ai.satoshidata/wallet-intelligence,"Bitcoin entity and risk-exposure evidence for AI agents; keyless MCP, no risk_check score/verdict.",predicate,,M
+ai.scamverify/mcp,"AI-powered scam and threat verification for phone numbers, URLs, texts, and emails.",generative,predicate,M
+ai.scite/mcp,"Ground answers in scientific literature. Search full text, evaluate trust, access full-text articles",relevance,generative,H
+ai.seaotter/otterscore,Hostile-by-default critic that grades AI agent output against your acceptance policy.,generative,,M
+ai.searchshop.www/la-luer,"Search, compare, and purchase La Luer microcurrent facial devices and skincare products.",relevance,actuation,M
+ai.secapi/secapi,"Read-only SEC & financial-data MCP: filings, financials, ownership, dilution, factors, prompts.",predicate,,H
+ai.seltz/seltz-ai-seltz-mcp,Provides AI assistants with access to Seltz's powerful Web Search capabilities.,relevance,,H
+ai.sendfast/sendfast,"Agent-native marketing email: draft, edit, screenshot, and send from your verified domain.",actuation,generative,H
+ai.sendinel/mcp-server,"AI-controlled email ops for campaigns, contacts, segments, analytics, and sending.",actuation,predicate,H
+ai.sentisense/market-intelligence,"US market mood, stock sentiment, SentiSense Score, news, analyst ratings, and institutional flows.",predicate,generative,M
+ai.seocrawl/mcp,"Live Google Search Console data, keyword/page analysis, site audit and SEO tasks from SEOcrawl AI.",predicate,relevance,M
+ai.serff/ca-rate-filings,"Natural-language search over California's public insurance rate, rule & form filings.",relevance,,H
+ai.sessionkeeper/mcp,"Dungeons & Dragons (D&D) and TTRPG companion: SessionKeeper sessions, NPCs, wiki, DM prep.",actuation,predicate,M
+ai.sharebench/registry,"Sharebench — search & pull AI skills, agents, prompts & playbooks (SKILL.md) into any MCP client",relevance,predicate,M
+ai.shawndurrani/mcp-merchant,Search-only commerce MCP server backed by Stripe (test),relevance,,M
+ai.shawndurrani/mcp-registry,Search the public MCP Registry; discover servers and copy SSE URLs.,relevance,,H
+ai.shipeasy/mcp,"Feature flags, A/B experiments, kill switches, dynamic config & i18n — Shipeasy MCP server.",actuation,predicate,M
+ai.sig.foodlog/food-logger,"Food logging, nutrition summaries, and meal photo calorie and macro estimates.",actuation,generative,M
+ai.signal8/mcp,"SEC filings, dilution, insider & institutional ownership, and political-trade data for AI agents.",predicate,,H
+ai.simsense/mcp,Deploy sims to any screen. Control your displays with Claude.,actuation,,H
+ai.simstim/mcp,Deploy sims to any screen. Control your displays with Claude.,actuation,,H
+ai.sitepulsar/mcp,SitePulsar AEO audits: fetch FIND/READ/USE agent-readiness scores for any website.,predicate,generative,M
+ai.sixta/sixta-connect,DBRE-grade SQL analysis inside any MCP client. No connection. No install. Paste a query.,predicate,,H
+ai.sleepwalker/sleepwalker,AI Visibility and Content Intelligence tools for Claude and MCP-compatible agents.,generative,predicate,M
+ai.slideless/mcp,"List, share, upload, and manage Slideless HTML presentations from any MCP host.",actuation,predicate,M
+ai.smithery/222wcnm-bilistalkermcp,"Track Bilibili creators and get the latest updates on videos, dynamics, and articles. Fetch user p…",predicate,relevance,M
+ai.smithery/Aman-Amith-Shastry-scientific_computation_mcp,This MCP server enables users to perform scientific computations regarding linear algebra and vect…,predicate,,H
+ai.smithery/Artin0123-gemini-image-mcp-server,"Analyze images and videos with Gemini to get fast, reliable visual insights. Handle content from U…",generative,,H
+ai.smithery/BadRooBot-my_test_mcp,"Get current weather for any city and create images from your prompts. Streamline planning, reports…",generative,predicate,M
+ai.smithery/BadRooBot-test_m,"Send quick greetings, scrape website content, and generate text or images on demand. Perform web s…",generative,relevance,M
+ai.smithery/BigVik193-reddit-ads-mcp,"Manage Reddit advertising across accounts, campaigns, ad groups, posts, and ads. List accounts, fu…",actuation,predicate,H
+ai.smithery/BigVik193-reddit-ads-mcp-api,"Manage Reddit advertising end to end across accounts, funding methods, campaigns, ad groups, and a…",actuation,predicate,H
+ai.smithery/BigVik193-reddit-ads-mcp-test,"Manage Reddit advertising end-to-end: browse ad accounts and payment methods, and organize campaig…",actuation,predicate,H
+ai.smithery/BigVik193-reddit-user-mcp,"Browse and manage Reddit posts, comments, and threads. Fetch user activity, explore hot/new/rising…",predicate,actuation,M
+ai.smithery/BowenXU0126-aistudio_hw3,Send personalized greetings with optional pirate flair. Compose friendly salutations for any name…,generative,,M
+ai.smithery/ChiR24-unreal_mcp,"Control Unreal Engine to browse assets, import content, and manage levels and sequences. Automate…",actuation,predicate,H
+ai.smithery/ChiR24-unreal_mcp_server,A comprehensive Model Context Protocol (MCP) server that enables AI assistants to control Unreal E…,actuation,predicate,H
+ai.smithery/CollectiveSpend-collectivespend-smithery-mcp,"Connect CollectiveSpend with Xero to manage contacts. Retrieve, create, and update contact records…",actuation,predicate,H
+ai.smithery/CryptoCultCurt-appfolio-mcp-server,Provide seamless access to Appfolio Property Manager Reporting API through a standardized MCP serv…,predicate,,M
+ai.smithery/Danushkumar-V-mcp-discord,An MCP server that integrates with Discord to provide AI-powered features.,generative,actuation,L
+ai.smithery/DynamicEndpoints-autogen_mcp,Create and manage AI agents that collaborate and solve problems through natural language interacti…,actuation,generative,M
+ai.smithery/DynamicEndpoints-m365-core-mcp,*Updated June 17th 2025** Manage your Microsoft 365 services effortlessly. Create and manage distr…,actuation,predicate,H
+ai.smithery/DynamicEndpoints-powershell-exec-mcp-server,Execute PowerShell commands securely with controlled timeouts and input validation. Retrieve syste…,actuation,predicate,H
+ai.smithery/FelixYifeiWang-felix-mcp-smithery,Streamline your workflow with Felix. Integrate it into your workspace and tailor its behavior to y…,unknown,,L
+ai.smithery/Funding-Machine-ghl-mcp-fundingmachine,"Automate GoHighLevel across CRM, messaging, calendars, marketing, e-commerce, and billing. Manage…",actuation,,H
+ai.smithery/HARJAP-SINGH-3105-splitwise_mcp,"Manage Splitwise balances, expenses, and groups from your workspace. Fetch friends and recent acti…",predicate,actuation,M
+ai.smithery/Hint-Services-obsidian-github-mcp,"Connect AI assistants to your GitHub-hosted Obsidian vault to seamlessly access, search, and analy…",relevance,predicate,M
+ai.smithery/IlyaGusev-academia_mcp,"Search arXiv and ACL Anthology, retrieve citations and references, and browse web sources to accel…",relevance,predicate,M
+ai.smithery/ImRonAI-mcp-server-browserbase,"Automate cloud browsers to navigate websites, interact with elements, and extract structured data.…",actuation,predicate,H
+ai.smithery/IndianAppGuy-magicslide-mcp,"Generate professional PowerPoint presentations from text, YouTube videos, or structured JSON data.…",generative,,H
+ai.smithery/IndianAppGuy-magicslide-mcp-actual-test,"Generate polished PowerPoint presentations from text prompts, YouTube videos, or structured outlin…",generative,,H
+ai.smithery/JMoak-chrono-mcp,"Convert and compare dates and times across any timezone with flexible, locale-aware formatting. Ad…",predicate,,H
+ai.smithery/JunoJunHyun-festival-finder-mcp,"Discover festivals worldwide by location, date, and genre. Compare options with key details like d…",relevance,predicate,M
+ai.smithery/Kim-soung-won-mcp-smithery-exam,"Craft quick, personalized greetings by name. Generate ready-to-use greeting prompts for a consiste…",generative,,M
+ai.smithery/Kryptoskatt-mcp-server,Enable AI assistants to interact seamlessly with the DefiLlama API by translating MCP tool calls i…,predicate,,M
+ai.smithery/Leghis-smart-thinking,Find relevant Smart‑Thinking memories fast. Fetch full entries by ID to get complete context. Spee…,relevance,predicate,M
+ai.smithery/LinkupPlatform-linkup-mcp-server,"Search the web in real time to get trustworthy, source-backed answers. Find the latest news and co…",relevance,,H
+ai.smithery/MetehanGZL-pokemcp,Provide detailed Pokémon data and information through a standardized MCP interface. Enable LLMs an…,predicate,,H
+ai.smithery/MisterSandFR-supabase-mcp-selfhosted,"Manage Supabase projects end to end across database, auth, storage, realtime, and migrations. Moni…",actuation,predicate,H
+ai.smithery/Nekzus-npm-sentinel-mcp,"Provide AI-powered real-time analysis and intelligence on NPM packages, including security, depend…",generative,predicate,M
+ai.smithery/Open-Scout-mcp,"Create and publish one-pagers and boards for your organization. Upload images from the web, update…",actuation,,M
+ai.smithery/PabloLec-keyprobe-mcp,"Audit certificates and keystores to surface expiry risks, weak algorithms, and misconfigurations.…",predicate,,H
+ai.smithery/Parc-Dev-task-breakdown-server,"Break down complex problems into clear, actionable steps. Adapt on the fly by iterating, revising,…",generative,,M
+ai.smithery/Phionx-mcp-hello-server,Send personalized greetings to anyone. Enable Pirate Mode for swashbuckling salutations. Explore t…,generative,,M
+ai.smithery/PixdataOrg-coderide,"CodeRide eliminates the context reset cycle once and for all. Through MCP integration, it seamless…",actuation,predicate,L
+ai.smithery/Pratiksha-Kanoja-magicslide-mcp-test,Create polished slide decks from text or YouTube links in seconds. Fetch video transcripts to tran…,generative,,H
+ai.smithery/ProfessionalWiki-mediawiki-mcp-server,Enable Large Language Model clients to interact seamlessly with any MediaWiki wiki. Perform action…,actuation,predicate,H
+ai.smithery/RectiFlex-centerassist-mcp,"Streamline field service and construction operations with CenterPoint Connect. Manage companies, o…",actuation,predicate,H
+ai.smithery/RectiFlex-centerassist-mcp-cp,"Streamline property management, construction, and service workflows with CenterPoint Connect. Sear…",actuation,predicate,H
+ai.smithery/RectiFlex-centerassist-mcp-cp1,"Access and manage CenterPoint Connect data for property management, construction, and service oper…",actuation,predicate,H
+ai.smithery/RectiFlex-centerassist-mcp1,"Manage CenterPoint Connect data across properties, companies, employees, invoices, materials, and…",actuation,predicate,H
+ai.smithery/STUzhy-py_execute_mcp,Run Python code in a secure sandbox without local setup. Declare inline dependencies and execute s…,predicate,,H
+ai.smithery/ScrapeGraphAI-scrapegraph-mcp,Enable language models to perform advanced AI-powered web scraping with enterprise-grade reliabili…,generative,relevance,M
+ai.smithery/TakoData-tako-mcp,Provide real-time data querying and visualization by integrating Tako with your agents. Generate o…,predicate,generative,M
+ai.smithery/a-ariff-canvas-instant-mcp,"Manage your Canvas coursework with quick access to courses, assignments, and grades. Track upcomin…",predicate,actuation,M
+ai.smithery/aamangeldi-dad-jokes-mcp,Get a random dad joke or search by keyword to fit any moment. Retrieve specific jokes by ID for re…,relevance,generative,M
+ai.smithery/adamamer20-paper-search-mcp-openai,"Search and download academic papers from arXiv, PubMed, bioRxiv, medRxiv, Google Scholar, Semantic…",relevance,,H
+ai.smithery/afgong-sqlite-mcp-server,Explore your Messages SQLite database to browse tables and inspect schemas with ease. Run flexible…,predicate,,H
+ai.smithery/agentmail,"AgentMail is the email inbox API for AI agents. It gives agents their own email inboxes, like Gmail",actuation,,H
+ai.smithery/aicastle-school-openai-api-agent-project,Fetch current stock prices and key data for symbols across global markets. Look up companies like…,predicate,,H
+ai.smithery/aicastle-school-openai-api-agent-project11,Fetch the latest available stock quotes by ticker symbol across international markets. Check price…,predicate,,H
+ai.smithery/airmang-hwpx-mcp,"자동화하여 HWPX 문서의 로딩, 탐색, 편집, 검증을 한 번에 처리합니다. 문단·표·주석 추가, 텍스트 일괄 치환, 머리말·꼬리말 설정 등 반복 작업을 신속히 수행합니다. 기…",actuation,predicate,M
+ai.smithery/akilat-spec-leave-manager-mcp,Track and manage employee time off with quick balance lookups and streamlined applications. Find t…,actuation,predicate,M
+ai.smithery/alex-llm-attack-mcp-server,Query and retrieve information about various adversarial tactics and techniques used in cyber atta…,predicate,,M
+ai.smithery/alphago2580-naramarketmcp,"Access Korea’s G2B procurement and Nara Market data for bid notices, awards, contracts, statistics…",predicate,,M
+ai.smithery/anirbanbasu-frankfurtermcp,A MCP server for the Frankfurter API for currency exchange rates.,predicate,,H
+ai.smithery/anirbanbasu-pymcp,"Primarily to be used as a template repository for developing MCP servers with FastMCP in Python, P…",unknown,,L
+ai.smithery/arjunkmrm-ahoy,"Send friendly, personalized greetings by name. Switch to a playful pirate voice for themed salutat…",generative,,M
+ai.smithery/arjunkmrm-ahoy2,"Create friendly greetings by name, with an optional pirate tone. Explore the origin of 'Hello, Wor…",generative,,M
+ai.smithery/arjunkmrm-boba-tea,"Send friendly greetings to people by name. Discover the origin story behind 'Hello, World' for qui…",generative,,M
+ai.smithery/arjunkmrm-bobo,"Send friendly, personalized greetings on command. Explore the origin of 'Hello, World' for quick c…",generative,,M
+ai.smithery/arjunkmrm-brave-search-mcp-server,"Search the web, images, videos, news, and local businesses with robust filters, freshness controls…",relevance,,H
+ai.smithery/arjunkmrm-clock,Check the current time instantly and explore world timezones by region. Browse available continent…,predicate,,M
+ai.smithery/arjunkmrm-fetch,Fetch web pages and extract exactly the content you need. Select elements with CSS and retrieve co…,predicate,,M
+ai.smithery/arjunkmrm-http-test,"Kickstart your setup with ready-to-run greetings and the 'Hello, World' origin story. Learn the inte",generative,,L
+ai.smithery/arjunkmrm-local-test2,"Send friendly greetings instantly. Learn the origin of 'Hello, World' to add a fun fact to your me…",generative,,M
+ai.smithery/arjunkmrm-local001,Get the current time in your preferred timezone or any region you specify. Browse concise informat…,predicate,,M
+ai.smithery/arjunkmrm-local01,"Greet people warmly or roast them with playful banter. Explore the origin of 'Hello, World' for qu…",generative,,M
+ai.smithery/arjunkmrm-local02,Get the current time in your chosen timezone and view common timezone information. Simplify schedu…,predicate,,M
+ai.smithery/arjunkmrm-lta-mcp,"Provide real-time transportation data including bus arrivals, train service alerts, carpark availa…",predicate,,H
+ai.smithery/arjunkmrm-mango-sago,"Create cheerful, personalized greetings in seconds. Switch to playful pirate-speak for extra flair…",generative,,M
+ai.smithery/arjunkmrm-perplexity-search,Enable AI assistants to perform web searches using Perplexity's Sonar Pro.,relevance,,H
+ai.smithery/arjunkmrm-py-test-0,"Send personalized greetings by name, with an optional pirate tone. Generate greeting prompts and e…",generative,,M
+ai.smithery/arjunkmrm-py-test-2,"Greet people by name with friendly, customizable messages. Toggle Pirate Mode to speak like a swas…",generative,,M
+ai.smithery/arjunkmrm-scrapermcp_el,"Extract and parse web pages into clean HTML, links, or Markdown. Handle dynamic, complex, or block…",predicate,,M
+ai.smithery/arjunkmrm-sg-bus-test,"Get real-time bus arrival times for any Singapore bus stop by code, with optional service filterin…",predicate,,H
+ai.smithery/arjunkmrm-test0,Get the current time in any timezone and quickly look up common timezone info. Set a default timez…,predicate,,H
+ai.smithery/arjunkmrm-test01,Get the current time in any timezone. Explore concise timezone info to pick the right region. Simp…,predicate,,H
+ai.smithery/arjunkmrm-test2,"Greet anyone by name with a friendly message. Explore the origin of 'Hello, World' to add context…",generative,predicate,M
+ai.smithery/arjunkmrm-time,Get the current time anywhere and access concise timezone information. Set your preferred timezone…,predicate,,H
+ai.smithery/arjunkmrm-ts-test-2,"Greet anyone with a friendly, personalized hello. Explore the origin story of 'Hello, World.' Jump…",generative,predicate,M
+ai.smithery/arjunkmrm-tutorials,"Analyze stocks and SEC filings to surface key insights, from price and volume to insider activity…",generative,predicate,M
+ai.smithery/arjunkmrm-watch2,Get the current time in your chosen timezone. Browse available continents and regions to pick the…,predicate,,H
+ai.smithery/aryankeluskar-poke-video-mcp,Search your Flashback video library with natural language to instantly find relevant moments. Get…,relevance,,H
+ai.smithery/bergeramit-bergeramit-hw3-tech,Create friendly greetings and add two numbers instantly. Speed up simple tasks and streamline ligh…,generative,predicate,M
+ai.smithery/bergeramit-bergeramit-hw3-tech-1,Add two numbers instantly and generate friendly greetings on demand. Speed up quick math and perso…,generative,predicate,M
+ai.smithery/bhushangitfull-file-mcp-smith,"Manage files and folders directly from your workspace. Read and write files, list directories, cre…",actuation,predicate,H
+ai.smithery/bielacki-igdb-mcp-server,"Explore and discover video games from the Internet Game Database. Search titles, view detailed inf…",predicate,,M
+ai.smithery/blacklotusdev8-test_m,Greet anyone by name with a friendly hello. Scrape webpages to extract content for quick reference…,generative,predicate,L
+ai.smithery/blbl147-xhs-mcp,搜索笔记、浏览首页推荐、查看笔记内容与评论，并发表你的评论。直接在工作流中与小红书内容互动，高效跟进话题。,actuation,relevance,M
+ai.smithery/blockscout-mcp-server,Provide AI agents and automation tools with contextual access to blockchain data including balance…,predicate,,M
+ai.smithery/brandonbosco-sigao-scf-mcp,"Provides access to Civic Plus - See Click Fix, allowing you to interact with your data via an LLM.…",predicate,,L
+ai.smithery/brave,"Visit https://brave.com/search/api/ for a free API key. Search the web, local businesses, images,…",relevance,,H
+ai.smithery/browserbasehq-mcp-browserbase,"Provides cloud browser automation capabilities using Stagehand and Browserbase, enabling LLMs to i…",actuation,,H
+ai.smithery/callmybot-cookbook-mcp-server,Count occurrences of any character in your text instantly. Specify the character and get precise c…,predicate,,H
+ai.smithery/callmybot-domoticz,"Greet anyone by name with a friendly hello. Explore the origin of 'Hello, World' for context in de…",generative,,M
+ai.smithery/callmybot-hello-mcp-server,"Generate quick, friendly greetings by name. Personalize salutations for any context. Explore the o…",generative,,H
+ai.smithery/cc25a-openai-api-agent-project123123123,Look up the latest stock prices by ticker symbol across global markets. Get current price and esse…,predicate,,H
+ai.smithery/cindyloo-dropbox-mcp-server,"Search, browse, and read your Dropbox files. Find documents by name or content, list folders, and…",relevance,predicate,M
+ai.smithery/clpi-clp-mcp,"Manage simple context workflows with quick init and add actions. Access the 'Hello, World' origin…",actuation,,M
+ai.smithery/cpretzinger-ai-assistant-simple,UPDATED 9/1/2025! NEW TOOLS! Use the Redis Stream tools with n8n MCP Client Node for use anywhere!…,generative,,L
+ai.smithery/cristianoaredes-mcp-dadosbr,# MCP DadosBR Servidor MCP focado em dados públicos do Brasil. Oferece duas ferramentas simples e…,predicate,,M
+ai.smithery/ctaylor86-mcp-video-download-server,Connect your video workflows to cloud storage. Organize and access video assets across projects wi…,actuation,predicate,M
+ai.smithery/cuongpo-coti-mcp,"Connect to the COTI blockchain to manage accounts, transfer native tokens, and deploy and operate…",actuation,predicate,H
+ai.smithery/cuongpo-coti-mcp-1,"Manage COTI accounts, deploy private ERC20 and ERC721 contracts, and transfer tokens and NFTs with…",actuation,predicate,H
+ai.smithery/data-mindset-sts-google-forms-mcp,Create and manage Google Forms to run surveys and collect data. Add text and multiple-choice quest…,actuation,predicate,H
+ai.smithery/demomagic-duckchain-mcp,"Explore blockchain data across addresses, tokens, blocks, and transactions. Investigate any transa…",predicate,,M
+ai.smithery/devbrother2024-typescript-mcp-server-boilerplate,"Kickstart development with a customizable TypeScript template featuring sample tools for greeting,…",unknown,,L
+ai.smithery/docfork-mcp,@latest documentation and code examples to 9000+ libraries for LLMs and AI code editors in a singl…,relevance,,M
+ai.smithery/dsharipova-mcp-hw,Create personalized greetings by name in the tone you choose. Get quick suggestions for friendly i…,generative,,M
+ai.smithery/duvomike-mcp,Transform numbers by doubling them and adding 5. Get instant results with a clear breakdown of the…,predicate,,M
+ai.smithery/eliu243-oura-mcp-server,Connect your Oura Ring account and enable access to your wellness data in apps and automations. In…,predicate,,M
+ai.smithery/eliu243-oura-mcp-server-2,"Connect your Oura Ring account to enable secure, authenticated access in your workflows. Generate…",predicate,,M
+ai.smithery/eliu243-oura-mcp-server-eliu,"Connect your Oura Ring account securely in minutes. Enable authorized access to your sleep, activi…",predicate,,M
+ai.smithery/exa-labs-exa-code-mcp,Find open-source libraries and fetch contextual code snippets by version to accelerate development…,relevance,,M
+ai.smithery/faithk7-gmail-mcp,"Manage Gmail messages, threads, labels, drafts, and settings from your workflows. Send and organiz…",actuation,predicate,H
+ai.smithery/feeefapp-mcp,"Enable AI assistants to interact seamlessly with Feeef e-commerce stores, products, and orders usi…",actuation,predicate,M
+ai.smithery/fengyinxia-jimeng-mcp,"Create images and videos from prompts, with options for image mixing, reference images, and start/…",generative,,H
+ai.smithery/fitaf-ai-fitaf-ai-mcp,"Manage workouts, nutrition, goals, and progress across the FitAF platform. Connect wearables, sync…",actuation,predicate,M
+ai.smithery/fitaf-ai-fitaf-mcp,"Track workouts, nutrition, body metrics, habits, and SMART goals with insights and trends. Connect…",actuation,generative,M
+ai.smithery/flight505-mcp_dincoder,Driven Intent Negotiation — Contract-Oriented Deterministic Executable Runtime DinCoder brings the…,unknown,,L
+ai.smithery/hithereiamaliff-mcp-datagovmy,"This MCP server provides seamless access to Malaysia's government open data, including datasets, w…",predicate,,M
+ai.smithery/hithereiamaliff-mcp-nextcloud,A comprehensive Model Context Protocol (MCP) server that enables AI assistants to interact with yo…,actuation,predicate,M
+ai.smithery/hjsh200219-pharminfo-mcp,Look up Korean drug ingredient and product data by HIRA component and product codes via Pilldoc. V…,predicate,,M
+ai.smithery/hollaugo-financial-research-mcp-server,"Analyze stocks with summaries, price targets, and analyst recommendations. Track SEC filings, divi…",generative,predicate,M
+ai.smithery/hustcc-mcp-mermaid,Generate dynamic Mermaid diagrams and charts with AI assistance. Customize styles and export diagr…,generative,,M
+ai.smithery/huuthangntk-claude-vision-mcp-server,Analyze images from multiple angles to extract detailed insights or quick summaries. Describe visu…,generative,,H
+ai.smithery/infranodus-mcp-server-infranodus,Map text into knowledge graphs to create a structured representation of conceptual relations and t…,generative,relevance,M
+ai.smithery/isnow890-data4library-mcp,책 싫어하는 제가 책에 대해 아는척하고 싶어서 만들었습니다.. 내 주변 도서관 실시간 대출 확인 읽고 싶은 책을 검색하면 주변 도서관 대출 가능 여부를 즉시 확인 굳이 도서관…,predicate,,M
+ai.smithery/jekakos-mcp-user-data-enrichment,Enrich user data by adding social network links based on provided personal information. Integrate…,generative,relevance,M
+ai.smithery/jenniferjiang0511-mit-ai-studio-hw3,Greet people by name and check local forecasts and weather alerts across the U.S. Switch to a play…,predicate,,M
+ai.smithery/jessicayanwang-test,Fetch latest and historical currency exchange rates from Frankfurter. Convert amounts between curr…,predicate,,H
+ai.smithery/jirispilka-actors-mcp-server,"Greet anyone by name with friendly, personalized messages. Explore the origin of Hello, World thro…",generative,,L
+ai.smithery/jjlabsio-korea-stock-mcp,Search company disclosures and financial statements from the Korean market. Retrieve stock profile…,predicate,relevance,M
+ai.smithery/jweingardt12-mlb_mcp,"Provides easy access to MLB, Baseball Savant, Statcast, and Fangraphs baseball data. Query detaile…",predicate,,H
+ai.smithery/kaszek-kaszek-attio-mcp,"Automate Attio CRM workflows with fast search and bulk operations across companies, people, deals,…",actuation,predicate,H
+ai.smithery/keithah-hostex-mcp,"Manage your Hostex vacation rentals—properties, reservations, availability, listings, and guest me…",actuation,predicate,H
+ai.smithery/keithah-tessie-mcp,Unofficial integration! ## ✨ Key Features ### 💰 Financial Intelligence - **Smart Charging Cost An…,predicate,,M
+ai.smithery/keremurat-json,"Compare two JSON files deeply without worrying about key or array order. Detect missing, extra, an…",predicate,,H
+ai.smithery/keremurat-jsonmcp,"Compare two JSON files deeply, ignoring order, to surface every difference. Get a clear, structure…",predicate,,H
+ai.smithery/keremurat-mcp,"Compare two JSON files deeply, regardless of order. Get a detailed difference report highlighting…",predicate,,H
+ai.smithery/kesslerio-attio-mcp-server,"Connect AI to your Attio CRM. Manage contacts, companies, deals, and sales pipelines. Create tasks…",actuation,predicate,H
+ai.smithery/kesslerio-attio-mcp-server-beta,"Streamline your Attio workflows using natural language to search, create, update, and organize com…",actuation,predicate,H
+ai.smithery/kirbah-mcp-youtube,"Provide token-optimized, structured YouTube data to enhance your LLM applications. Access efficien…",predicate,,M
+ai.smithery/kkjdaniel-bgg-mcp,"BGG MCP provides access to the BoardGameGeek API through the Model Context Protocol, enabling retr…",predicate,,H
+ai.smithery/kodey-ai-mapwise-mcp,"Send friendly, personalized greetings on demand. Generate quick salutations with a simple prompt.…",generative,,M
+ai.smithery/kodey-ai-salesforce-mcp,"Run SOQL queries to explore and retrieve Salesforce data. Inspect records, fields, and relationshi…",predicate,,H
+ai.smithery/kodey-ai-salesforce-mcp-kodey,Run SOQL queries against your Salesforce org to explore and retrieve data. Quickly iterate on filt…,predicate,,H
+ai.smithery/kodey-ai-salesforce-mcp-minimal,"Run SOQL queries to explore and retrieve Salesforce data. Access accounts, contacts, opportunities…",predicate,,H
+ai.smithery/kodey-ai-salesforce-mcp-server,"Run SOQL queries against your Salesforce org to retrieve records and insights. Explore objects, fi…",predicate,,H
+ai.smithery/kwp-lab-rss-reader-mcp,Track and browse RSS feeds with ease. Fetch the latest entries from any feed URL and extract full…,predicate,,M
+ai.smithery/leandrogavidia-vechain-mcp-server,"Search VeChain documentation, query on-chain data, and fetch fee suggestions with direct links to…",predicate,relevance,M
+ai.smithery/lineex-pubmed-mcp-smithery,Search PubMed with precision using keyword and journal filters and smart sorting. Uncover MeSH ter…,relevance,,H
+ai.smithery/lukaskostka99-marketing-miner-mcp,Discover high-impact keyword ideas across Central and Eastern European and English markets. Analyz…,relevance,generative,M
+ai.smithery/luminati-io-brightdata-mcp,"One MCP for the Web. Easily search, crawl, navigate, and extract websites without getting blocked.…",relevance,predicate,M
+ai.smithery/magenie33-quality-dimension-generator,Generate tailored quality criteria and scoring guides from your task descriptions. Refine objectiv…,generative,,H
+ai.smithery/mayla-debug-mcp-google-calendar2,"Schedule and manage Google Calendar events directly from your workspace. Check availability, view…",actuation,predicate,H
+ai.smithery/mfukushim-map-traveler-mcp,Create immersive travel experiences by instructing an avatar to navigate Google Maps. Report on th…,actuation,generative,M
+ai.smithery/miguelgarzons-mcp-cun,"Greet people by name with friendly, personalized messages. Add a warm touch to onboarding, demos,…",generative,,M
+ai.smithery/minionszyw-bazi,"Generate BaZi charts from birth details. Explore Four Pillars, solar terms, and Luck Pillars for d…",generative,predicate,M
+ai.smithery/mjucius-cozi_mcp,"Manage your family's calendars and lists in Cozi. View, create, and update appointments; organize…",actuation,predicate,H
+ai.smithery/morosss-sdfsdf,"Find academic papers across major sources like arXiv, PubMed, bioRxiv, and more. Download PDFs whe…",relevance,,H
+ai.smithery/motorboy1-my-mcp-server,"Send friendly greetings by name. Discover the origin story of 'Hello, World' for quick context.",generative,,M
+ai.smithery/mrugankpednekar-bill_splitter_mcp,"Track and split shared expenses across trips, events, and groups. Create groups, add expenses, and…",actuation,predicate,H
+ai.smithery/mrugankpednekar-mcp-optimizer,"Optimize crew and workforce schedules, resource allocation, and routing with linear and mixed-inte…",predicate,,M
+ai.smithery/neverinfamous-memory-journal-mcp,A MCP server built for developers enabling Git based project management with project and personal…,actuation,predicate,M
+ai.smithery/nickthelegend-test-mcp,"Create friendly, personalized greetings in seconds. Toggle Pirate Mode to speak like a pirate for…",generative,,M
+ai.smithery/oxylabs-oxylabs-mcp,Fetch and process content from specified URLs using the Oxylabs Web Scraper API.,predicate,,M
+ai.smithery/pinion05-supabase-mcp-lite,"Same functionality, consuming only 1/20 of the context window tokens.",predicate,,L
+ai.smithery/pinkpixel-dev-web-scout-mcp,"Search the web and extract clean, readable text from webpages. Process multiple URLs at once to sp…",relevance,,H
+ai.smithery/plainyogurt21-clintrials-mcp,"Provide structured access to ClinicalTrials.gov data for searching, retrieving, and analyzing clin…",predicate,,H
+ai.smithery/plainyogurt21-sec-edgar-mcp,Provide AI assistants with real-time access to official SEC EDGAR filings and financial data. Enab…,predicate,,H
+ai.smithery/proflulab-documentassistant,"Convert files between formats without quality loss. Speed up your workflow with fast, reliable con…",predicate,,M
+ai.smithery/pythondev-pro-egw_writings_mcp_server,Search Ellen G. White’s writings by keyword to surface relevant quotations. Retrieve exact passage…,relevance,,H
+ai.smithery/rainbowgore-stealthee-mcp-tools,"Spot pre-launch products before they trend. Search the web and tech sites, extract and parse pages…",relevance,,M
+ai.smithery/ramadasmr-networkcalc-mcp,"Look up DNS information for any domain to troubleshoot issues and gather insights. Get fast, relia…",predicate,,H
+ai.smithery/ref-tools-ref-tools-mcp,Provide your AI coding tools with token-efficient access to up-to-date technical documentation for…,relevance,predicate,H
+ai.smithery/renCosta2025-context7fork,"Get up-to-date, version-specific documentation and code examples from official sources directly in…",relevance,predicate,H
+ai.smithery/rfdez-pvpc-mcp-server,"Retrieve daily PVPC electricity tariffs for 2.0 TD consumers, published by Red Eléctrica.",predicate,,H
+ai.smithery/sachicali-discordmcp-suite,"Control your Discord community: send/read messages, manage channels and forums, and handle webhook…",actuation,predicate,H
+ai.smithery/saidsef-mcp-github-pr-issue-analyser,A Model Context Protocol (MCP) application for automated GitHub PR analysis and issue management.…,generative,predicate,M
+ai.smithery/samihalawa-whatsapp-go-mcp,"Scan QR codes and go! No more troublesome autos or APIs! Send text messages, images, links, locati…",actuation,,H
+ai.smithery/sasabasara-where_is_my_bus_mcp,"Get real-time NYC bus arrivals, live vehicle locations, and service alerts. Plan trips between any…",predicate,,H
+ai.smithery/sebastianall1977-gmail-mcp,"Manage Gmail end-to-end: search, read, send, draft, label, and organize threads. Automate workflow…",actuation,predicate,H
+ai.smithery/serkan-ozal-driflyte-mcp-server,"Discover available topics and explore up-to-date, topic-tagged web content. Search to surface the…",relevance,,M
+ai.smithery/shoumikdc-arxiv-mcp,Discover the latest arXiv papers by category and keyword. Control how many results you get to spee…,predicate,relevance,M
+ai.smithery/skr-cloudify-clickup-mcp-server-new,"Manage your ClickUp workspace by creating, updating, and organizing tasks, lists, folders, and tag…",actuation,predicate,H
+ai.smithery/slhad-aha-mcp,"A TypeScript MCP server for Home Assistant, enabling programmatic management of entities, automati…",actuation,predicate,H
+ai.smithery/smithery-ai-cookbook-python-quickstart,A simple MCP server built with FastMCP and python,unknown,,L
+ai.smithery/smithery-ai-cookbook-ts-smithery-cli,A simple Typescript MCP server built using the official MCP Typescript SDK and smithery/cli. This…,unknown,,L
+ai.smithery/smithery-ai-fetch,A simple tool that performs a fetch request to a webpage.,predicate,,M
+ai.smithery/smithery-ai-github,"Access the GitHub API, enabling file operations, repository management, search functionality, and…",actuation,predicate,H
+ai.smithery/smithery-ai-national-weather-service,Provide real-time and forecast weather information for locations in the United States using natura…,predicate,,H
+ai.smithery/smithery-ai-slack,Enable interaction with Slack workspaces. Supports subscribing to Slack events through Resources.,actuation,predicate,M
+ai.smithery/smithery-notion,"A Notion workspace is a collaborative environment where teams can organize work, manage projects,…",actuation,predicate,L
+ai.smithery/smithery-toolbox,Toolbox dynamically routes to all MCPs in the Smithery registry based on your agent's need. When a…,relevance,,M
+ai.smithery/smithery-unicorn,A choose your own adventure game where you play as a startup founder trying to build a unicorn again,generative,,H
+ai.smithery/sunub-obsidian-mcp-server,"Search your Obsidian vault to quickly find notes by title or keyword, summarize related content, a…",relevance,generative,M
+ai.smithery/szge-lolwiki-mcp,"Generate friendly greetings for any audience. Toggle Pirate Mode for a playful, swashbuckling styl…",generative,,H
+ai.smithery/truss44-mcp-crypto-price,Provide real-time cryptocurrency price data and market analysis.,predicate,generative,M
+ai.smithery/turnono-datacommons-mcp-server,Discover statistical indicators and topics in Data Commons. Retrieve observations for specific var…,predicate,relevance,M
+ai.smithery/wgong-sqlite-mcp-server,"Explore, query, and inspect SQLite databases with ease. List tables, preview results, and view det…",predicate,,H
+ai.smithery/xinkuang-china-stock-mcp,"Access real-time and historical market data for China A-shares and Hong Kong stocks, along with ne…",predicate,,H
+ai.smithery/yuhuison-mediawiki-mcp-server-auth,"Connect to your MediaWiki using simple credentials and manage content without OAuth. Search, read,…",actuation,predicate,M
+ai.smithery/yuna0x0-anilist-mcp,Access and interact with anime and manga data seamlessly. Retrieve detailed information about your…,predicate,,M
+ai.smithery/yuna0x0-hackmd-mcp,"Interact with your HackMD notes and teams seamlessly. Manage your notes, view reading history, and…",actuation,predicate,M
+ai.smithery/zeta-chain-cli,"Create friendly, customizable greetings for any name or audience. Break the ice in demos, onboardi…",generative,,M
+ai.smithery/zhaoganghao-hellomcp,"Greet people by name with friendly, concise messages. Explore the origin of 'Hello, World' for fun…",generative,,M
+ai.smithery/zwldarren-akshare-one-mcp,"Provide access to Chinese stock market data including historical prices, real-time data, news, and…",predicate,,H
+ai.snapdiff/mcp,Visual-diff & change-detection tools that catch agentic UI drift for coding agents.,predicate,,M
+ai.snowdata/live-snow,"Live verified resort snow, forecasts, powder search, trip planning & grounded Q&A for 430+ resorts.",predicate,generative,M
+ai.snowsure/snow,"Live ski snow, multi-model forecasts, powder rankings & a grounded Answer Engine for 500+ resorts.",predicate,generative,M
+ai.social-api/socialapi,"MCP server for SocialAPI — manage social media comments, DMs, reviews, and mentions across platforms",actuation,predicate,H
+ai.solenium/netsuite-link,"BETA — Run SuiteQL, read/write NetSuite records, query SuiteAnalytics, and run saved bookmarks.",actuation,predicate,H
+ai.specproof/specproof-mcp,SpecProof: Search standards specs with MCP-ready precision.,relevance,,M
+ai.speko/mcp,"Manage Speko voice-AI agents, sessions, calls, phone numbers, knowledge bases, evals, and docs.",actuation,predicate,H
+ai.spideriq/gate,"SpiderIQ Gate: SpiderGate LLM gateway (completions, models, usage, traces)",actuation,predicate,M
+ai.spideriq/mail,"SpiderIQ Mail: SpiderMail mailboxes, messages, threads, send, compose for AI agents",actuation,predicate,H
+ai.spideriq/media,"SpiderIQ Media: SpiderMedia files, videos, per-tenant media catalog (read)",predicate,,M
+ai.spideriq/publish,"SpiderIQ Publish: content platform MCP (pages, posts, templates, components, domains, media)",actuation,predicate,H
+ai.spritecook/generate,"Generate game assets with AI for 2D games, including sprites, tilesets, and animations.",generative,,H
+ai.stompy/stompy,"Persistent AI memory with semantic search, conflict detection, and ticketing.",relevance,actuation,M
+ai.stumpy/agents,"Persistent AI agents that run 24/7 in your Slack, Telegram, SMS, or email.",actuation,generative,M
+ai.sugra/api-mcp,Gateway between LLM agents and world data through eight tools and a bundled endpoint catalog.,predicate,,L
+ai.superfact/superfact,"Turn any AI chat or agent run into a beautiful, shareable public page.",generative,actuation,M
+ai.switchapp/switch,"Generate, manage and explore your Switch AI image and video library, scoped to your account.",generative,actuation,H
+ai.synchronex/mcp-proxy,"Connect any AI agent to your Synchronex workspace — portable memory, decisions, and workers.",actuation,predicate,L
+ai.synlake/synlake,"Unified API to query AWS, GCP, Azure and generate Terraform/CLI execution kits for AI agents.",predicate,generative,M
+ai.syntitan/syntitan-mcp,AI-Ready Data Platform that fills the missing layer between data management and AI execution.,unknown,,L
+ai.tachyo/tachyo,"Crypto market intelligence, token rug-checks, and wallet verification in one MCP server.",predicate,,M
+ai.tachyo/token-safety,"Instant rug-check for any EVM or Solana token, distilled to one clear 0-10 risk verdict.",predicate,generative,M
+ai.tachyo/verify,"Cryptographic proof of wallet ownership in two steps, with no keys and no custody.",actuation,predicate,M
+ai.taskforcehq/taskforce,Task and planning workspace for humans collaborating with AI agents,actuation,,M
+ai.teenadhd/library,"Clinician-reviewed library on ADHD in teens — accommodations, executive function, evaluations.",relevance,,M
+ai.teenanxiety/library,"Clinician-reviewed library on social anxiety, panic, and school refusal in adolescents.",relevance,,M
+ai.teenpsychiatry/library,Open-access rating scales and clinical references for adolescent psychiatry clinicians.,relevance,,M
+ai.teentherapy/library,"Teen-first library on CBT, DBT, and finding the right therapist.",relevance,,M
+ai.telbase/deploy,Deploy any web project with one command. AI-native platform with self-healing feedback.,actuation,,H
+ai.tensorfeed/mcp-server,"AI news, model pricing, service status, and machine-payable premium tools. AFTA-certified.",relevance,predicate,L
+ai.tensorfeed/x402-base-mcp,Read-only Base mainnet reader. Verifies x402 payment settlements + AFTA federation status.,predicate,,M
+ai.thinkneo/control-plane,"Enterprise AI Control Plane: governance, guardrails, spend tracking, compliance & smart routing.",actuation,predicate,M
+ai.thiri/chord-intelligence,"Chord intelligence for agents: analyze, voice, reharmonize, and resolve chords.",generative,,M
+ai.thoughtbox.api/thoughts,"An MCP server that provides read access to your cloud storage providers, bank accounts and more.",predicate,,M
+ai.threadminder/threadminder,Persistent context for Claude. Your AI always knows your projects and next actions across sessions.,actuation,predicate,L
+ai.thrivee/financial-intelligence,"Personal-finance intelligence engine: net worth, goals, asset allocation. Invite-only beta.",generative,predicate,M
+ai.tickettailor/mcp,Provides event organisers with tools to interact with a Ticket Tailor box office account.,actuation,predicate,H
+ai.tinyfish.agent/web-agent,AI-powered web automation. Navigate websites using AI agents for one page or a thousand,actuation,,M
+ai.tokenarcade/tokenarcade,Games for AI agents. Each game runs inside a single context window.,actuation,,L
+ai.tokonomix/council,"Multi-model consensus: 2-6 frontier LLMs answer, an independent judge synthesises one answer.",generative,,H
+ai.tooldirectory/catalog,"Search the AI Tool Directory catalog: tool details, status checks, and alternatives.",relevance,predicate,M
+ai.toolprint/hypertool-mcp,Dynamically expose tools from proxied servers based on an Agent Persona,actuation,,L
+ai.traderouter/trade-router-mcp,Non-custodial Solana swap & limit order engine for AI agents.,actuation,predicate,H
+ai.travelminds/concierge,"Grounded, multilingual travel data + a cited travel concierge. 12+ languages, deep India coverage.",generative,relevance,M
+ai.trendsmcp/amazon,"Amazon product search demand over time, with growth for any keyword. Free key at trendsmcp.ai",predicate,,M
+ai.trendsmcp/app-store,"App Store and Play downloads and charts over time, Android uses bundle ID. Free key at trendsmcp.ai",predicate,,M
+ai.trendsmcp/competitor-tracking,"Brand and competitor trend volume over time, with growth signals. Free key at trendsmcp.ai",predicate,,M
+ai.trendsmcp/content-strategy,Topics gaining momentum before they peak. Trend volume and growth signals. Free key at trendsmcp.ai,predicate,,M
+ai.trendsmcp/crypto,"Crypto token and narrative trend volume over time, with growth signals. Free key at trendsmcp.ai",predicate,,M
+ai.trendsmcp/ecommerce,"Product and category demand trend volume over time, with growth signals. Free key at trendsmcp.ai",predicate,,M
+ai.trendsmcp/google-trends,"Google Trends: Search, Images, News, Shopping over time, growth metrics. Free key at trendsmcp.ai",predicate,,M
+ai.trendsmcp/market-research,See if a market is heating or cooling. Trend volume and growth signals. Free key at trendsmcp.ai,predicate,,M
+ai.trendsmcp/news-sentiment,"News sentiment scores over time, with growth for any topic. Free key at trendsmcp.ai",generative,predicate,M
+ai.trendsmcp/news-volume,"News article volume over time, with growth for any topic. Free key at trendsmcp.ai",predicate,,M
+ai.trendsmcp/npm,npm package trends and weekly downloads over time. Free key at trendsmcp.ai,predicate,,M
+ai.trendsmcp/reddit,"Reddit trend data over time, with growth for any topic or brand. Free key at trendsmcp.ai",predicate,,M
+ai.trendsmcp/seo,Spot keyword demand rising or fading. Trend volume and growth signals. Free key at trendsmcp.ai,predicate,,M
+ai.trendsmcp/social-media,Cross-platform social media intelligence. Trend volume and growth signals. Free key at trendsmcp.ai,predicate,,M
+ai.trendsmcp/spotify,"Spotify podcast and artist trends over time, with growth metrics. Free key at trendsmcp.ai",predicate,,M
+ai.trendsmcp/steam,"Steam concurrent players by game over time, monthly trends and growth. Free key at trendsmcp.ai",predicate,,M
+ai.trendsmcp/tiktok,"TikTok hashtag volume over time, with growth for any hashtag. Free key at trendsmcp.ai",predicate,,M
+ai.trendsmcp/trends,"Trend data from Google Trends, YouTube, TikTok, Reddit, Amazon, Wikipedia, npm, Steam and more",predicate,,M
+ai.trendsmcp/wikipedia,"Wikipedia page views over time, with growth for any article topic. Free key at trendsmcp.ai",predicate,,M
+ai.trendsmcp/x-twitter,"Twitter (X) trends over time, with growth for any keyword. Free key at trendsmcp.ai",predicate,,M
+ai.trendsmcp/youtube,"YouTube search interest and trend data over time, with growth metrics. Free key at trendsmcp.ai",predicate,,M
+ai.trustysquire/trusty-squire,"Never touch a signup form or paste an API key again. Your coding agent does both, safely.",actuation,,L
+ai.trycanonical/company-search,"Verified, long-tail company search: describe what you want, get an LLM-verified company shortlist.",relevance,generative,M
+ai.trydock/dock,"AI workspace for you, your team, and every agent. Tables, docs (images, 4K video), formulas.",actuation,predicate,L
+ai.tunnelmind/data,Tracker / Sigil / Cross-lens — every TunnelMind Data API operation as one MCP surface.,predicate,,L
+ai.tunnelmind/scry,Free IPv4 lookups against a distributed attacker-observation corpus.,predicate,,M
+ai.tunnelmind/sigil,"Programmatic-advertising supply verification: ads.txt, schain, ATAP receipts, cross_lens_verify.",predicate,,M
+ai.tuteliq/mcp,"Detect grooming, bullying, fraud, and 16+ online threats across text, voice, image, and video.",generative,predicate,M
+ai.unulu/unulu,AI agent website builder. Create and publish link-in-bio sites via MCP or REST API.,actuation,generative,H
+ai.upgradeagent/upgrade-agent,"Travel-upgrade Q&A, live booking eligibility, and operator lookups for airline, cruise, rail.",generative,predicate,M
+ai.upriver/upriver,"Know what's gaining traction online: breakout topics in tech, sports & politics, with citations.",relevance,generative,M
+ai.urlcheck/urlcheck-mcp,PreClick scans links for threats and confirms intent match with high accuracy before agents click.,predicate,,M
+ai.usealloy/alloy,"Connect Claude, Cursor, Codex, and other AI tools to your robotics mission data.",predicate,,L
+ai.v-safe/vsafe-risk,"KYB risk scores for Israeli companies: sanctions, insolvency, adverse media, cyber, registry.",predicate,,M
+ai.vaaya/mcp,"Pay-per-call agent superpowers: media/video gen, product demos, research, GTM, scraping, compute.",generative,actuation,M
+ai.variel/mcp-server,"Generate your brand in-agent, then keep tokens, components, and copy on-brand over MCP.",generative,,M
+ai.verant/verant,"AI proofreading for public web pages and full sites, with AI-verified corrections. Paid plans only.",generative,actuation,M
+ai.verlon/mcp,"Inspect and manage Verlon AI gates, logs, recommendations, and experiments from any MCP client.",predicate,actuation,L
+ai.vibe-bi/mcp-server,"Ask business questions in plain English. Get instant answers from your database, no SQL needed.",generative,predicate,M
+ai.villiers/charter,"Instant private jet charter price estimates and confirmed live quotes, worldwide.",predicate,actuation,M
+ai.viralspin/viralspin,"AI video editing + publishing: turn clips into vertical shorts, post to TikTok/Instagram/YouTube.",generative,actuation,H
+ai.voxell/forge,"MCP server for Forge, Voxell's hosted text-embedding API. Tools: embed and list_models.",predicate,,M
+ai.voxplo/voxplo,"Give AI agents a phone: outbound AI calls that return a summary, transcript, and extracted fields.",actuation,generative,H
+ai.walterwrites/mcp-server,Walter Remote MCP Server — AI humanization and detection tools,generative,,H
+ai.waystation/airtable,"Access and manage your Airtable bases, tables, and records seamlessly",actuation,predicate,H
+ai.waystation/gmail,"Read emails, send messages, and manage labels in your Gmail account.",actuation,predicate,H
+ai.waystation/jira,"Track issues, manage projects, and streamline workflows in Jira.",actuation,predicate,H
+ai.waystation/mcp,"Ultimate toolbox to connect your LLM to popular productivity tools such as Monday, AirTable, Slack",actuation,predicate,M
+ai.waystation/miro,Collaborate on visual boards with your team using Miro integration.,actuation,predicate,M
+ai.waystation/monday,"Access and manage your Monday.com boards, items, and updates seamlessly",actuation,predicate,M
+ai.waystation/office,"Create, edit, and collaborate on Office documents and spreadsheets.",actuation,,M
+ai.waystation/postgres,Connect to your PostgreSQL database to query data and schemas.,predicate,,H
+ai.waystation/slack,"Send messages, access channels, and manage files in your Slack workspace.",actuation,predicate,H
+ai.waystation/supabase,Connect to your Supabase database to query data and schemas.,predicate,,H
+ai.waystation/teams,"Collaborate, chat, and manage meetings in Microsoft Teams.",actuation,predicate,M
+ai.waystation/wrike,"Manage projects, tasks, and workflows with Wrike project management.",actuation,predicate,M
+ai.webanatomy/webanatomy,"Help your AI improve landing pages, grounded in 3,500+ scored sections and 500 real pages.",generative,relevance,L
+ai.websitepublisher/mcp,Build and publish websites through AI conversation.,actuation,generative,M
+ai.webuplink/mcp,Give any MCP client the ability to browse and interact with the web via WebUplink.,relevance,actuation,M
+ai.weftly/weftly,"Find & cut horizontal and vertical video clips (Shorts/Reels), transcribe & summarize. Pay per job.",generative,actuation,M
+ai.wellnessproject/wellness-project,"Hosted MCP server connecting Apple Health, Fitbit, Oura & Health Connect to Claude and ChatGPT.",predicate,,M
+ai.wild-card/deepcontext,Advanced codebase indexing and semantic search MCP server,relevance,,H
+ai.willform/willform-agent,Deploy containers on Kubernetes with x402 billing. 9 workload types and source builds.,actuation,,H
+ai.windsor/windsor-mcp,"Query and analyze marketing, sales, and business data from 325+ platforms via Windsor.ai.",predicate,,M
+ai.wubble/audio,"Create, inspect, and manage Wubble music, speech, voice, and sound-effect requests through MCP.",generative,actuation,M
+ai.xpoz/social-insights,"Twitter/X, Instagram, Reddit & TikTok data for AI agents. 1.5B+ posts. No API keys.",predicate,relevance,M
+ai.xr-utilities/h-index,Capability registry for the agentic economy. Semantic search over verified MCP server listings.,relevance,,H
+ai.xurprise/mcp,Agent-native commerce for SEA/China/global. 43 brands. 6 tools. 9-language search.,relevance,actuation,L
+ai.zevari/mcp,Controlled LinkedIn and GTM MCP server with review-gated prospecting and outreach workflows.,actuation,relevance,M
+ai.zine/mcp,"Your memory, everywhere AI goes. Build knowledge once, access it via MCP anywhere.",predicate,relevance,L
+am.mana/mana-public,"Read-only MCP tools for Mana public creations, tags, creator profiles, and share pages.",predicate,,M
+app.3dstreet/3dstreet,Drive an open 3DStreet scene tab from Claude Desktop or Claude Code via MCP tool calls.,actuation,,M
+app.anakior/atlas-mind,"Self-hosted git-native knowledge base with an MCP endpoint your AI reads, writes and rewinds",actuation,predicate,M
+app.anamneseai/anamnese,"A self-improving memory layer. Your memory, notes, tasks and goals, remembered everywhere.",generative,actuation,M
+app.aspirelearning/mcp,"Aspire Learning MCP — browse courses, chapters, lessons, and import LaTeX quizzes",predicate,actuation,M
+app.businys/mcp-server,"221 MCP tools across 26 practices for independent professionals. Clients, invoices, contracts.",actuation,predicate,M
+app.cannonstudio/cannon-studio,"Public Cannon Studio MCP for product, pricing, workflow, model, and API answers.",generative,predicate,L
+app.cardog/mcp,"Vehicle listings, market analysis, VIN decoding, recalls, and EV charging data",predicate,,H
+app.certman/server,Create and manage your own Certificate Authority for internal HTTPS.,actuation,,H
+app.clearpolicy/clearpolicy,Authenticated MCP server for ClearPolicy policy and compliance workflows.,predicate,actuation,L
+app.clicon/lotus,GEO Intelligence Engine for B2B. Analyze domains and fetch actionable defense code.,generative,predicate,M
+app.cnvs/whiteboard,Real-time collaborative whiteboard — AI agents and humans edit the same board live over MCP.,actuation,,H
+app.contendeo/contendeo,"Multimodal video analysis MCP — transcription, vision, and OCR for any video URL.",generative,,H
+app.cooperpetcare.www/cooper,"Cooper: catálogo, cobertura, razas y turnos del marketplace argentino de cuidado canino.",predicate,actuation,M
+app.dealermax/public-search,"Italian cross-dealer MCP: cars, NLT rentals with quotations, dealer directory, automotive KB.",predicate,,H
+app.decibelshield/decibel-shield,"Noise data tools: city noise rankings, decibel levels of common sounds, NIOSH safe-exposure math.",predicate,,H
+app.docwand/pdf,"Sign, fill, merge and split PDFs entirely in your browser - files never leave your device.",actuation,,H
+app.edgelock/journal,"Query your trades, stats, and journal in EdgeLock and log new entries by chat. OAuth; free account.",predicate,actuation,M
+app.elasticflow/mcp,"AI-native team workspace — tables, documents, workflow automation, live dashboards & analytics",actuation,predicate,M
+app.eurocomply/compliance,"EU regulatory compliance data: 17 regulations, deadlines, enforcement actions. EU-hosted.",predicate,,H
+app.everpop/everpop,Clip videos into published YouTube Shorts with real measured 48h/7d receipts.,actuation,generative,M
+app.evlek/mcp-server,"AI-native property MCP for Northern Cyprus (KKTC/TRNC): listings, prices, legal, market data.",predicate,,H
+app.flaim/mcp,"Read-only fantasy analysis for ESPN, Yahoo, and Sleeper leagues via MCP",generative,predicate,M
+app.fluentive/mcp,"Information, FAQs, features, and pricing for Fluentive's task management platform.",predicate,,M
+app.fryd/mcp-server,"Search crops, check companion planting, explore seasonal calendars, and find planting plans.",predicate,relevance,M
+app.ganty/mcp-server,"Gantt chart SaaS with server-side critical path and dependency-aware shift-impact tools, plus CRUD.",actuation,predicate,M
+app.getdialer/dialer,An MCP server that provides lets you make outbound phone calls using your own phone number,actuation,,H
+app.getquieta/quieta-mcp,Family calendar MCP server: read the family's week and propose changes a parent approves.,predicate,actuation,M
+app.getsalta/salta,"Mobile-first AI life planner — turn goals into daily, synced tasks from your AI assistant.",generative,actuation,M
+app.goshipyard/shipyard,"Ship, discover and review vibe-coded projects on Shipyard, the invite-only feed for AI-built apps.",relevance,actuation,M
+app.havnre/havn,"Read-only AI access to HAVN properties, leads, tasks, files, media, and analytics.",predicate,,M
+app.himalayas/mcp,"Search and post remote jobs, browse companies, check salaries, and find talent on Himalayas.app",relevance,actuation,M
+app.hoaster/hoaster,"Hosts AI-generated web content (HTML, images, SVG, JSON) at a public URL, with custom domains.",actuation,,M
+app.humantaste/taste-mcp,Expert review for AI agents. On-chain proof of human review.,generative,,L
+app.immoapi/immoapi,"Données immobilières DVF France : transactions, comparables GPS et statistiques de marché.",predicate,,H
+app.ip/ipinfo,"What's My IP Address: caller's public IP, ASN, geo, timezone, user-agent, headers, TLS info.",predicate,,H
+app.joinways/joinways,"Event venue CRM — manage inquiries, quotes, events and availability from any AI agent",actuation,predicate,M
+app.learnwithagents/learn-with-agents,Your AI agent builds interactive block-based courses over MCP; take them at learnwithagents.app.,generative,,M
+app.linear/linear,MCP server for Linear project management and issue tracking,actuation,predicate,H
+app.listentosadhu/corpus,"Read-only semantic search over Vedic scripture verses, commentaries, and recorded lectures.",relevance,,H
+app.locize.mcp/server,"Locize TMS: 26 tools for translations, TM/glossary/styleguide/screenshot context, versions. OAuth.",actuation,generative,M
+app.lucid.mcp/lucid,"Lucid’s connector creates diagrams, searches, edits, shares, and retrieves docs to summarize.",actuation,generative,M
+app.marketgenius/mcp,"Our free Marketgenius investment tools as live, interactive React MCP Apps.",generative,predicate,L
+app.mashop/mcp,"Build, deploy and manage MaShop e-commerce projects from Claude, Cursor or any MCP client.",actuation,,H
+app.meepo/studio,"AI design platform. Create designs, carousels, videos, and campaigns from any AI agent.",generative,,H
+app.memol/memol,"Search, read, create and edit your Memol notes from Claude. Team note-taking with AI search.",actuation,relevance,M
+app.myghosts/myghosts,"Send AI bots to attend meetings on your behalf. Get recordings, transcripts, and summaries.",actuation,generative,M
+app.nausika/mcp,"Mediterranean marine, nautical, sailing: forecasts, tides, sea routes, anchorages, POIs for AI.",predicate,,M
+app.netlify.gleaming-cassata-d41682/lion-mcp,x402-paid MCP data: trend feed + visibility audit. USDC/Base. No API key. No PII.,predicate,,L
+app.neurorank/mcp,"Esports cognitive-combine data over MCP: free cohort stats, paid player & team scouting reports.",predicate,,M
+app.newsmind/mcp,"RSS feeds for ChatGPT & Claude: semantic search, story clustering, keyword watches, OPML import.",relevance,,H
+app.noemic/noemic-fabs,"Custom manufacturing for AI agents: parametric CAD in chat, DFM checks, USD quotes, print ordering.",actuation,generative,M
+app.novumos/novumos,"Kanban where AI agents are first-class users — real seats, real API, no AI credit meters.",actuation,,H
+app.octopad/octopad,"The back-office workspace for your team's AIs: tasks, knowledge and context shared over MCP.",actuation,predicate,M
+app.octotrip/flights,"Free, no-login flight search with real-time pricing from multiple airlines.",predicate,,H
+app.octotrip/rental-cars,"Free, no-login rental car search with real-time pricing.",predicate,,H
+app.onehaus/haus,"OneHaus household tools: tasks, calendar, contacts, pets, vehicles, documents and more.",actuation,predicate,M
+app.openclip/openclip,"Turn long videos into short, captioned viral clips from your AI assistant. 28 tools, OAuth.",generative,actuation,M
+app.opendealer/mcp,"Automotive inventory search for AI assistants: vehicles, dealers, deals, and market data.",predicate,,H
+app.paichart/mcp-hub,"MCP Hub: AI service discovery, per-user OAuth, and multi-service workflow orchestration",actuation,predicate,L
+app.papertext.app/papertext-mcp,"Academic literature search, retrieval, and private library management on top of OpenAlex.",relevance,actuation,M
+app.percher/percher,MCP-native hosting: publish and operate AI-built web apps live at name.percher.run.,actuation,,H
+app.podstow/podstow,Send web articles or AI-written text to your personal podcast feed; listen in any podcast app.,actuation,generative,M
+app.promptfax/promptfax,"Send a one-off fax from inside ChatGPT or Claude. Pay-per-use, $2-$4.50 per delivered fax.",actuation,,H
+app.pulltrader/seller-economics,"Compare what a trading-card seller keeps across eBay, Pulltrader, and other card marketplaces.",predicate,,M
+app.qwady.thorns/thornguard,"Remote MCP security gateway for auth, redaction, policy enforcement, and audit logging.",actuation,,M
+app.qwady/borough,"Search NYC rentals and sales, property details, building data, and market analytics",predicate,,H
+app.raster/raster,"Browse, search, upload, tag, transfer, and delete images in your Raster libraries over MCP.",actuation,predicate,M
+app.readwithleaf/leaf,"AI assistant integration for Leaf — track books, log reading sessions, and manage your library.",actuation,predicate,M
+app.reassign/reassign,Reassign — circular 24-hour calendar & time-tracking copilot with ADHD-friendly scheduling.,actuation,predicate,M
+app.recordo.api/calories-club,"AI-powered calorie tracking with photo recognition, barcode scanning, and voice logging",generative,actuation,M
+app.recordo.api/recordo,"Brain dump, routines, task planning, focus, and instant thought retrieval",actuation,generative,M
+app.repage/repage,"Publish HTML & Markdown to shareable links with versions, comments, and project organization.",actuation,,H
+app.replit.austere-unsteady-pdf/free-agent-economy-lab,Free buyer-side outcome verification and provider comparison for supplied agent receipts.,predicate,,L
+app.robohub/robohub,"Vendor-neutral catalog of 300+ commercial robots: search, compare specs, request vendor intros.",predicate,,H
+app.saber.mcp/saber,"Sales intelligence — research companies, qualify prospects, and find contacts.",relevance,generative,M
+app.scanbim/scanbim-mcp,"AI Hub for AEC — 46 tools for Revit, Navisworks, ACC, XR via Autodesk Platform Services",actuation,predicate,M
+app.scfcontrolsplatform/mcp-server-scf,"MCP server for the SCF Controls Platform — 72 tools for controls, evidence, risk, and TPRM.",actuation,predicate,M
+app.seatcanvas/seatcanvas,"SeatCanvas MCP server: pricing, venue capacity estimates, and prefilled seating plans.",predicate,,M
+app.selis.mcp/pmo,MCP server for Selis TMiS — manage PMO entities from any MCP client,actuation,predicate,M
+app.sentinelx/sentinelx,Operate your own Linux servers from your LLM. Requires the SentinelX agent installed per host.,actuation,,H
+app.spoonjoy/spoonjoy,"Your personal recipe kitchen: save, fork, and cook recipes, build cookbooks, and shopping lists.",actuation,predicate,M
+app.steep/mcp,"Query metrics, targets, entities, and team data in your Steep workspace via MCP.",predicate,,H
+app.strikemission/surf-trip-planner,"Surf trip planner: live 0-100 Strike Scores, 10-day forecasts, and trip picks for 1,100+ spots.",predicate,generative,M
+app.subdomain/subdomains,Find known subdomains of a domain. Passive data; may include historic entries. List or count.,predicate,,H
+app.superdocs/superdocs,"Edit, draft, summarize, export styled .docx/PDF/HTML/MD/RTF via 21 MCP tools + 4 prompts.",actuation,generative,M
+app.swissdeals/mcp,Pay-per-call Swiss retail price intelligence (22 retailers). $0.01 USDC via x402.,predicate,,H
+app.takehub/mcp,"Manage discussion topics, gather votes and video rationale, and read AI insights.",actuation,generative,M
+app.tanjiren/tanjiren-mcp,Hosted MCP server for task-first delegation to remote workstations and workers.,actuation,,L
+app.thoughtspot/mcp-server,MCP Server for ThoughtSpot - provides OAuth authentication and tools for querying data,predicate,,H
+app.tinkrr/intelligence,Bitcoin and YouTube video intelligence for AI agents. Pay-per-call via x402 USDC on Base.,generative,predicate,M
+app.toofi/dental-planning,"Agent-native dental planning MCP for plan drafts, presentations, and price estimates.",generative,predicate,M
+app.toolsnap/toolsnap-mcp,AI agent microtools. fetch_extract: 98.1% token reduction. $0.02 USDC on Base. 10 free tools.,predicate,,M
+app.tradeit/mcp,"Trade stock, crypto, and options on Robinhood, ETrade, Webull, Charles Schwab, Coinbase, or Kraken.",actuation,,H
+app.trustrails/server,"Search UK electronics products across retailers. Real-time prices, stock, and specs.",relevance,predicate,M
+app.trustydata/trustydata,"French address quality, geocoding & routing from official data (BAN, INSEE, OpenStreetMap).",predicate,,H
+app.trysonar/sonar,"ASO tools for AI agents: keyword research, rank tracking, competitor analysis (iOS & Android).",predicate,generative,M
+app.undisk.mcp/stdio-proxy,Undisk MCP: safe file memory for AI agents.,actuation,,M
+app.uploadcheck/uploadcheck,"QC videos, podcasts, and clips before upload — timestamped flags with agent-ready repair prompts.",generative,,M
+app.vayapin/mcp,"VayaPin MCP: pin resolution + Google Maps geocoding/places + AfterShip tracking, with BYOK.",predicate,,M
+app.vercel.agent-svg-registry/mcp,Search SVG metadata and buy licensed commercial SVG exports for coding agents.,relevance,actuation,M
+app.vibecom/growth,Marketing autopilot in your IDE. AI turns codebase and context into content for 10+ platforms,generative,actuation,M
+app.zaklad/design-system,"Build and manage your design system with AI: tokens, themes, components, icons, Figma and code.",actuation,generative,M
+app.zenable/zenable,Zenable cleans up sloppy AI code and prevents vulnerabilities with deterministic guardrails,actuation,predicate,M
+app.zooza/mcp-server,"MCP server for Zooza — class scheduling, attendance, and booking for activity businesses.",actuation,predicate,H
+app.zwier/mcp,"Plan group events together: dates, itineraries, expenses, polls, and tasks.",actuation,predicate,M
+ar.almanac/almanac,"Datos econ�micos y financieros oficiales de Argentina (BCRA, INDEC, CNV, MECON), AI-ready.",predicate,,M
+ar.com.consignatarias/cattle-market,"Datos del mercado ganadero argentino: precios INMAG, remates, consignatarias y alertas de precio.",predicate,,M
+ar.energetica/data,"Argentine oil & gas data — 40+ curated tables: production, wells, prices, investments, trade.",predicate,,M
+art.travel/mcp,"Art-tourism data for AI agents: biennales, art fairs, museums, layover itineraries with 2026 facts.",predicate,relevance,L
+at.baeck/nginx-proxy-manager,MCP server for Nginx Proxy Manager with full API coverage (43 tools),actuation,predicate,H
+at.designare/knowledge,"Knowledge Base von designare.at – Michael Kanda, Web & KI aus Wien. Semantische Suche über RAG.",relevance,,H
+at.uurl/bundler,"Bundle multiple URLs into one short link. QR codes, access counters, redirect lookup. Free.",actuation,predicate,M
+au.com.appgenie/compliance-mcp,"Cited, standards-aware compliance overlay for AI assistants (ISO, NIST, FedRAMP, IRAP), over MCP.",generative,predicate,L
+au.com.iknowthepilot/flight-deals,Find curated cheap flight and travel deals from Australia.,relevance,predicate,M
+au.com.rtopacks/rtopacks,"Australian VET National Register — qualifications, units, skill sets, AQF ladders.",predicate,,M
+aws.api.us-east-1.ecs-mcp/server,AI-powered Amazon ECS workload management,actuation,predicate,M
+aws.api.us-east-1.eks-mcp/server,AI-powered Amazon EKS cluster management and troubleshooting,actuation,predicate,M
+be.vibedeploy/vibedeploy,"Deploy and host AI-built websites on EU infrastructure, straight from your AI agent.",actuation,,H
+bid.scope/aec,AEC subcontractor vendor procurement plumbing layer. Preview - V3 launches 2027.,actuation,predicate,L
+bid.scope/claims,"Insurance claims-side vendor procurement (IMEs, IA, surveillance). Preview - V2 launches Q3 2026.",actuation,predicate,L
+bid.scope/healthcare,"Healthcare vendor-services MCP. Preview. Available after legal, claims, and AEC are live.",actuation,predicate,L
+bid.scope/legal,Dispatch litigation work to legal-services vendors from any MCP-compatible AI workflow.,actuation,predicate,M
+bid.scope/pharma,"Pharma vendor-services MCP. Preview. Available after legal, claims, and AEC are live.",actuation,predicate,L
+bio.atlarium/habitat-database,"Structured aquarium, marine, terrarium and paludarium data for AI agents.",predicate,,M
+bio.esst/esst-bio-mcp,An MCP server that provides access to the Online Shops in the esst.bio network,predicate,,L
+bio.irishealth/iris,Read-only health context MCP server for Iris users.,predicate,,M
+bio.lnk/lnkbio,"Manage your Lnk.Bio page through AI: links, pages, themes, social icons, and more.",actuation,,H
+biz.icecat/mcp,Retrieve product specifications and technical details from Icecat's database,predicate,,H
+biz.keepingtrack/dejavu,AI agent skills marketplace — token-efficient skill search & execution,relevance,,M
+biz.soeru/soeru,"Write personalized, on-brand thank-you and packing-slip messages for your EC orders.",generative,,H
+bo.paralelo/mcp,"Real-time + historical Bolivia parallel-market USD/BOB rate. P2P-aggregated. Free, CC-BY 4.0.",predicate,,H
+bot.402/discovery-oracle,"Discover live agent APIs, ranked endpoints, trust, payment telemetry, and x402 surfaces.",relevance,predicate,M
+bot.mailbox/mailbox,"Physical mail API for AI agents. Send letters, certified mail. Sandbox + live keys via MCP.",actuation,,H
+bot.meet/mcp,"AI-native scheduling and booking: check availability, book meetings, share links.",actuation,predicate,H
+bot.myagi/openagent-registry,Score any website's AI-agent readiness. Open Agent Registry scanner + platform tools.,predicate,,M
+bot.ttrpg/grimoire,"Manage TTRPG campaigns: NPCs, locations, factions, quests, sessions, lore, and knowledge graphs.",actuation,predicate,M
+bot.yeehaw/events,"Agent-first Austin events concierge — fresh, sourced answers to what's happening in Austin.",relevance,,H
+br.com.brasilnfe/fiscal,"Brazilian fiscal MCP server - issue NF-e, NFC-e, NFS-e, CT-e, MDF-e and DC-e via SEFAZ.",actuation,,H
+br.com.escoladeradio.www/public,"Cursos, turmas, vagas, professores, podcasts e blog da Escola de Rádio (ER+) — read-only.",predicate,,M
+br.com.music360.app/mcp-server,"API do Music360 para agentes de IA - artistas, obras, fonogramas, contratos, shows, tarefas e mais",predicate,actuation,L
+br.com.nineoneninetwo/9192,"Remote MCP for 9192 discovery, pricebook, payment rails, GET_PULSE quotes, and receipt checks.",predicate,,M
+br.com.nvoip/mcp-server,"Secure Nvoip MCP server for reports, call analytics, service quality, and business insights.",predicate,,M
+br.com.signdocs/mcp-server,"SignDocs Brasil e-signature tools for AI agents — signing sessions, envelopes, verification.",actuation,,H
+build.arca.mcp/arca-mcp-server,"Arca is a private data vault where your AI stores your structured data, semantic memory and skills.",actuation,predicate,M
+build.exascale/osint,"Source-cited US machine-economy data: power, grid, AI-infra construction, jobs, chip imports.",predicate,,M
+build.uplink/uplink,"Automate a real, logged-in browser on your own device — no stored credentials, no bot detection.",actuation,,H
+builders.bridgetown/bridge-town,"Build financial models as code. Cloud execution, GSheets MCP, version control, collaboration.",generative,actuation,M
+by.authorized/brands,Search brands and find authorized retailers on authorized.by,relevance,,M
+bz.manda/manda,"Search Japan's M&A marketplace MANDA - public business-for-sale listings (read-only, no auth)",relevance,,M
+ca.airiskmanagement/shadow-ai-list,Risk-ranked registry of AI tools: look up an AI tool's risk or check if a domain is shadow AI.,predicate,,M
+ca.netgrant/canadian-grants,"Search 1,300+ live Canadian funding opportunities — grants, tax credits, accelerators, and loans.",relevance,,M
+ca.swiftsign/mcp,"E-signatures for agents: mint a sandbox key, send PDFs, track status, download the sealed result.",actuation,,H
+ca.tradebasis/automotive-appraisal,"TradeBasis: Canadian B2B vehicle appraisal SaaS info — product, Lite/Pro pricing, research briefs.",generative,,L
+ca.wiremi/marketing-mcp,"Read-only ROSCA and savings-circle answers and calculators, from Wiremi's public facts.",predicate,generative,L
+capital.hove/read-only-local-mysql-mcp-server,MCP server for read-only MySQL database queries in Claude Desktop,predicate,,H
+capital.hove/read-only-local-postgres-mcp-server,MCP server for read-only PostgreSQL database queries in Claude Desktop,predicate,,H
+capital.hove/read-only-mysql-mcp-server,MCP server for read-only MySQL database queries in Claude Desktop,predicate,,H
+casa.find-me.sub1/send-email-mcp,Non functional server (yet),actuation,,L
+cat.2022/catalunya-2022,"Consulta el pla estratègic Catalunya 2022: 3 àmbits, 12 objectius, 91 accions. Trilingüe CA/EN/ES.",predicate,,L
+cc.accrue/mcp,"Stablecoin Yield Index (SYX) and live USDC vault APYs across Ethereum, Base, Arbitrum.",predicate,,M
+cc.captcha/captchacc,Human verification CAPTCHA with visual and selective-listening audio challenges.,actuation,,L
+cc.contexta/contexta-mcp,Persistent memory and knowledge graph for AI assistants — keyword + vector + graph search.,relevance,predicate,M
+cc.joules/coach,"Turn Claude or ChatGPT into a cycling coach that plans your week, grades it, and adapts. Free beta.",generative,actuation,M
+cc.thecolony/mcp-server,"Remote MCP server for The Colony — a social network for AI agents (posts, DMs, search, marketplace).",actuation,relevance,M
+cc.wealthos/mcp,"Plan your financial future with AI: track net worth, manage budgets, and forecast scenarios.",generative,predicate,M
+center.mylink/link-center,"Dynamic, editable QR codes + short links with scan analytics and branded QR rendering.",actuation,predicate,M
+ch.entscheidsuche/mcp,"Suche in Schweizer Gerichtsentscheiden aller Instanzen (Bund, Kantone) in DE/FR/IT.",relevance,,H
+ch.fedlex-connector/fedlex-connector,"Search Swiss federal legislation: laws, articles, amendments via the Fedlex SPARQL endpoint.",predicate,relevance,M
+ch.immoswipe/immoswipe-ai,"Search Swiss apartments and houses for rent or sale. Filter by city, price (CHF), rooms, and size.",predicate,,H
+ch.jassverband/jasswiki,First production Authority-MCP. W3C VC attested by Jassverband Schweiz.,unknown,,L
+ch.martinelli/jooq-mcp,An MCP server that provides access to the jOOQ documentation,relevance,,M
+ch.opencaselaw/swiss-caselaw,"956k Swiss court decisions: full-text search, citation graph, statute lookup (DE/FR/IT)",relevance,predicate,H
+ch.pfx/mcp-server,MCP Server für Forterro Proffix Px5 ERP,actuation,predicate,L
+ch.swisslivingindex/swiss-living-index,"Official Swiss living-cost & relocation data for all 26 cantons — taxes, rent, premiums, jobs.",predicate,,M
+chat.mumo/mcp,"Consult a multi-model panel on contested decisions via MCP: architecture, plan review, strategy.",generative,,M
+chat.prelim/prelim,"Read AI preliminary phone screens — your roles, candidate scores, transcripts, and analytics.",predicate,generative,M
+chat.prowl/prowl-mcp,"MCP server: 360+ pay-as-you-go research tools (SEO, ads, SERP, scraping) + prowl_analyze reports",predicate,generative,M
+chat.trilo/mcp,"Connect AI tools to Trilo workspaces — manage tasks, messages, pages, calendars, meetings, and more.",actuation,predicate,M
+church.ai.mcp/mcp-hub,"Connect your AI assistant to your Telegram. Browse chats, read and summarize messages.",generative,predicate,M
+ci.git/mymlh-mcp-server,OAuth-enabled MyMLH MCP server for accessing MyMLH data.,predicate,,M
+click.tabula.www/tabula-mcp,"Bar-first MCP server for Tabula chart authoring, PNG rendering, and editor handoff.",generative,actuation,M
+cloud.agentdomain/agentdomain-mcp,Register and manage internet domains for AI agents via AgentDomain,actuation,,H
+cloud.anythink/anythink,"Sick of stitched-together services? Anythink is the all-in-one backend, configured with AI.",actuation,,L
+cloud.atatravel/travel-agency,"ATA Travel: agent-first direct booking for accommodations, hotels, and vacation rentals.",actuation,predicate,H
+cloud.clawspan/shardlink,"Agent-first task marketplace MCP — discover, claim, and deliver paid workspace tasks.",actuation,relevance,M
+cloud.dchub/mcp-server,"Live data-center, power-grid, fiber, gas & M&A intelligence for AI agents — query and cite.",predicate,,M
+cloud.factry.portal/historian-mcp-server,MCP server for querying Factry Historian.,predicate,,H
+cloud.iox/iox-cloud,"Deploy MCP servers and AI agents in seconds. AI generates code, deploy globally.",actuation,generative,M
+cloud.metrifyr/mcp,"Query Google Analytics 4, Search Console, GTM & AdSense with natural language from MCP clients.",predicate,generative,M
+cloud.nordicdata/nordic-data,"Global B2B intelligence for AI agents: 35M+ companies, 1.6M sanctions, KYB pack. 78 tools.",predicate,,M
+cloud.nttzen.secdb/zen-secdb,"ZEN SecDB MCP server for CVE intelligence, CVSS/EPSS scoring, advisories, SSVC, and package audits.",predicate,,H
+cloud.prince/prince,"Convert Markdown, HTML, and web pages to high-quality PDF with Prince.",predicate,,H
+cloud.redu/mcp,"Agent-native cloud, EU-hosted. Provision VMs, networks & databases on redu.cloud via MCP.",actuation,,H
+cloud.servicepal/mcp,"AI phone answering tools for service businesses — ROI, missed calls, demos across 18 industries",generative,actuation,L
+cloud.spider/mcp,"Crawl, scrape, search the web, and automate browsers at scale with anti-bot bypass.",relevance,actuation,M
+cloud.theprotocol/registry,"Sovereign AI agent platform. 19 tools: discovery, transfers, staking, governance. A2A v1.0.",actuation,predicate,M
+cn.syln.ai/lingjing-community,AI自主驱动的中文交流社区。任何AI体都可以通过MCP协议自主注册、发帖和交流。灵境是面向AI体的注册中心与社交平台。,actuation,relevance,L
+cn.whylingxi/insurance,保险产品搜索、推荐、保费试算、核保预检。覆盖65家保司483款产品。China insurance MCP server.,relevance,predicate,M
+co.ainumbers/tools,"420+ client-side fintech tools (ISO 20022, AML, DORA, agentic payments) as MCP widgets. Zero PII.",predicate,,M
+co.axiom/mcp,"List datasets, schemas, run APL queries, and use prompts for exploration, anomalies, and monitoring.",predicate,,H
+co.bizverify/mcp,KYB for AI agents: verify business registrations from MCP clients.,predicate,,H
+co.brightkey/education-data,"Bilingual (EN+ZH) education data: 299 universities, 184 intl schools, degree-ROI, sourced answers.",predicate,,M
+co.callendar/mcp,WhatsApp® reminders and rescheduling for Calendly. Public read-only MCP endpoint.,actuation,,H
+co.clutch/mcp,Trusted B2B service providers with verified client reviews,relevance,predicate,M
+co.contraption/mcp,An MCP server that provides [describe what your server does],unknown,,L
+co.creativeclaw/creative-claw,"On-brand creative studio for AI agents: images, video, audio, and 3D.",generative,,H
+co.curie/commerce,"Search, compare in 3D, and buy products from 5.6M+ Shopify stores. Free tier; Pro adds checkout.",relevance,actuation,M
+co.dockai/mcp,Discover MCP endpoints for real-world entities by resolving business domains.,predicate,,M
+co.flow2/flow2,"Design mobile-first presentations — create, edit, preview, and publish from your AI.",generative,actuation,M
+co.flyweel/mcp-server,Access Google & Meta Ads data via AI. Analyse campaign performance in seconds.,generative,predicate,M
+co.gemina/filetag,"Tag, rename, and enrich PDFs and images. Free tier: 1,500 tags/month, no credit card.",actuation,generative,M
+co.gleanit/gleanit,"Search, read, and write highlights, notes, screenshots, collections, projects, and tags in Gleanit.",actuation,relevance,M
+co.haveny/california-hoa-law,"California HOA law tools (Davis-Stirling Act): statute lookup, fine checker, letter templates.",predicate,generative,M
+co.heista/api,"Decode video ads, load brand intelligence, generate ad scripts.",generative,,M
+co.heyspark.mcp/server,"Search and discover local businesses. 30+ categories with verified contact info, hours, and reviews.",relevance,,H
+co.huggingface/hf-mcp-server,Connect to Hugging Face Hub and thousands of Gradio AI Applications,predicate,,L
+co.jacktrade/jacktrade-crm,"Search customers, manage quotes, work orders, action items, and calendar events for your business",actuation,predicate,M
+co.kuickr/kuickr,"Host an agent's pages at clean, permanent URLs. Publish, organize, edit, search and re-find docs.",actuation,relevance,M
+co.launchtrust/launchtrust,"Compliance & security scan for your app: secrets, exposed files, headers, privacy, AI-disclosure.",predicate,,M
+co.lovie/company-formation,"Form companies, manage bank accounts, cards, invoices and more — directly from your AI coding tools.",actuation,,H
+co.machins/marketplace,Agent-to-agent marketplace with escrow-protected trades via MCP tools.,actuation,,M
+co.nexalink/manage,NexaLink digital business card & personal CRM — edit your card and capture contacts via MCP.,actuation,,H
+co.okahu.mcp-registry/okahu,Cloud hosted Okahu MCP server that helps you manage genAI trace data,actuation,predicate,L
+co.pepys/pepys-mcp,"Transcribe audio & video: diarization, timed SRT/VTT, podcasts, paste-a-link, whole-feed batch.",generative,,H
+co.pipeboard/google-ads-mcp,"Google Ads automation with AI: analyze performance, manage campaigns, optimize bids.",actuation,generative,M
+co.pipeboard/meta-ads-mcp,"Facebook / Meta Ads automation with AI: analyze performance, test creatives, optimize spend.",actuation,generative,M
+co.pipeboard/snap-ads-mcp,"Snapchat Ads automation with AI: analyze performance, manage campaigns, optimize creatives.",actuation,generative,M
+co.pipeboard/tiktok-ads-mcp,"TikTok Ads automation with AI: analyze performance, manage campaigns, optimize creatives.",actuation,generative,H
+co.promptguard/security,"Scan prompts for injection attacks, redact PII, and audit LLM SDK usage from any MCP client",predicate,generative,M
+co.raisekit/raisekit,"CRM for VC fundraising. Pipeline, Gmail drafts, deck signals, VC intel — from your AI.",actuation,relevance,M
+co.servicegraph.mcp/servicegraph,"Datasets for founders: directories, newsletters, and agencies, with metrics attached.",predicate,,M
+co.sivut.pay/sec-crypto-filing-radar,SEC EDGAR crypto filing radar MCP with x402-paid Base USDC data URLs.,predicate,,M
+co.sofya/sofya,"Web search, fetch, extract, and research for AI agents. Markdown output + AI-synthesized answers.",relevance,generative,H
+co.superforms/superforms,"Human-input bridge for AI agents with voice-first answer links, MCP tools, and HTTP APIs.",actuation,,M
+co.tempguru/event-staffing,"W-2 event staffing data for AI agents: 345 US/CA markets, roles, rates, lead times, compliance.",predicate,,M
+co.tenderly/tenderly-mcp,"Tenderly MCP server for blockchain dev — simulate, debug, and test on 100+ networks.",predicate,actuation,M
+co.thinair/data,"Read-only PostgreSQL, MySQL, SQL Server access via MCP — 24 dialect-aware hosted tools.",predicate,,H
+co.thinair/geo,"Geocoding, truck routing, traffic, weather, and place search via MCP — 11 hosted tools.",predicate,,H
+co.thisdot.docusign-navigator/mcp,Secure Docusign Navigator integration for AI assistants to access and analyze agreement data.,predicate,generative,M
+co.truemarkets/marketdata,Real-time crypto market data,predicate,,M
+co.truncus/mcp-server,"Send transactional emails from AI agents via Truncus. Validate, track delivery, and manage domains.",actuation,,H
+co.ultraprompt/ultra-prompt,"Your prompt library inside your AI: 1,000+ pro templates, frameworks, vocab & pipelines.",predicate,,M
+co.valid/mcp,"Conversational access to advertising performance data, creative analysis, and campaign insights",generative,predicate,M
+coach.freddy/freddy,"Connect your wearables, rings and training apps, then ask your AI about your own health data.",generative,predicate,M
+com.1001locals/catalog,"Search & add local tours and experiences (Italy/EU). Operators: first 100 bookings free, then 5%.",relevance,actuation,M
+com.100hires/100hires,"Official 100Hires MCP: AI ATS & Recruitment Software for candidates, jobs, applications, interviews.",actuation,predicate,M
+com.1stdibs/1stDibs,MCP server for browsing and searching items on 1stDibs marketplace.,relevance,,H
+com.52choujiang/douyin-insights,"Douyin hot search, work search/details, comments/replies, profiles, series, transcript.",relevance,predicate,M
+com.52choujiang/kuaishou-insights,"Kuaishou hot list, work search/details, comments/replies, profiles, transcript.",relevance,predicate,M
+com.52choujiang/wechat-channels-insights,"WeChat Channels hot search, video search/details, comments/replies, users, transcript.",relevance,predicate,M
+com.52choujiang/weibo-insights,"Weibo hot search, post search/details, comments/replies, users, posts, transcript.",relevance,predicate,M
+com.52choujiang/xhs-insights,"XHS note search, hot list, details, comments/replies, profiles, transcript.",relevance,predicate,M
+com.636865636b73756d/mcp-v1,Sub-cent factual claim verification against live data sources.,predicate,,M
+com.6ducklearn/mcp,"Connect agents to 6DuckLearn memory, approvals, and runtime control.",actuation,,L
+com.869biz.data-vending/data-vending-mcp,"x402 dataset vending for AI agents: list, preview, quote, purchase, needs intake, and consultation.",actuation,predicate,M
+com.a3eecosystem.neurotrade/signal,"AI-powered crypto trading signals: direction, confidence, TP/SL, thesis, technicals. 8 strategies.",generative,,H
+com.abbyseo/mcp-server,Scan any URL for 20 SEO checks; get a 0-100 score with prioritized fix recommendations.,predicate,,H
+com.ablakunio/nyilaszaro-mcp,"Egyedi méretű nyílászárók árbecslése, raktárkészlet és ajánlatkérés – Ablakunio, Tiszafüred",predicate,actuation,L
+com.abyssfallgame/mcp,"Official Abyssfall game info, merch catalog, newsletter double opt-in, and merch reservation tools.",actuation,predicate,M
+com.achriom/achriom,"The media memory layer for AI agents and their humans. Books, movies, music, shows, and anime.",predicate,,L
+com.acprompt/acprompt,AI agent social network + no1land: a persistent multiplayer ASCII RPG agents play and co-build.,actuation,,L
+com.actuallycare/actuallycare,"Real-estate platform for agents: escrows, listings, clients, leads, and commissions. OAuth login.",actuation,predicate,M
+com.adbloop/meta-ads,"Meta Ads MCP: bulk-create Facebook & Instagram ads across accounts from Drive folders, guardrailed.",actuation,,H
+com.adbutler/mcp-server,"Manage AdButler campaigns, zones, ad items, VAST, and reports from Claude, ChatGPT, and Cursor.",actuation,,H
+com.adcritter/mcp-agent,"Operate the AdCritter ads platform: campaigns, creatives, audiences, and reporting.",actuation,,H
+com.adcritter/mcp-dev,"AdCritter ads platform: docs, API reference, app scaffolding, and white-label integration.",predicate,,L
+com.admaxxer/ads-manager,AI-powered DTC analytics & ads manager for Meta + Google,actuation,generative,M
+com.admit-coach/university-data,"Search 3,500+ US universities, check admission chances, financial aid, and build college lists.",predicate,,H
+com.admitbase/admissions,"Admissions data & match scores for law, medical, dental, MBA, pharmacy, vet, optometry schools",predicate,,H
+com.adrianczuczka/mason,Context engineering MCP server — generates CLAUDE.md files via structured codebase analysis,generative,,M
+com.adspirer/ads,"Manage Google, Meta, TikTok & LinkedIn ads. 91 tools for campaigns, analytics & optimization.",actuation,,H
+com.advisorfinder/mcp,"Search SEC-registered financial advisors — profiles, disclosures, risk scores, and credentials.",predicate,,H
+com.advocatemcp/advocate,"MCP layer for local businesses: discover, query, book, and transact with verified SMB AI agents.",actuation,predicate,M
+com.adwhispr/adwhispr,"Research any brand's ads, clone their proven winners, launch on Google and TikTok — from chat.",actuation,relevance,M
+com.afdinstitute/afd-knowledge,"Adaptive Flow Delivery: phases, gates, lexicon (free, sign in with your AFD Institute account).",generative,,L
+com.affogata.app/affogata,"Social listening analytics — query topics, filters, trending keywords, and conversation clusters.",predicate,,M
+com.aftership.mcp/tracking-public,"Track packages across 1,300+ global carriers with real-time status and AI-powered delivery dates.",predicate,generative,M
+com.agent-tune/agenttune,Personality tuning files for AI agents: 43 MIT-licensed tunings + 5 inline personality tests.,unknown,,L
+com.agentdomainsearch/mcp-server,"Agent-first domain registration and DNS management, paid with USDC via x402.",actuation,predicate,H
+com.agentgrade/mcp-server,"Scan any website for AI agent readiness, payment protocols, and discovery endpoints",generative,predicate,M
+com.agenticpaywall/composer,Composes + runs multi-step external-data workflows for one quoted USDC price (x402).,actuation,predicate,M
+com.agentictotem/web-extractor,"AI web extraction: send URLs + a JSON Schema, get clean structured data. Pay-per-use via x402.",predicate,generative,M
+com.agentorist/agentorist,"Booking gateway for AI agents — discover events, movies & hotels, hand off to partner checkout.",actuation,relevance,H
+com.agentpmt/agentpmt,"AI agent marketplace for automated employees, workflows, skills, and tool orchestration.",actuation,relevance,M
+com.agentry/agent-directory,AI agent directory — search and compare 120+ agents across 12 categories.,relevance,predicate,H
+com.agentsconsultants.api/docqa,"AI document verification: catch hallucinations, arithmetic errors, and field mismatches.",generative,predicate,M
+com.agentsprice/agentsprice,"Verified best price across crypto, retail, tools & Rx generics — real sellers, never fabricated.",predicate,relevance,M
+com.agialpha/agi-alpha,Decentralized AI agent labor market on Ethereum. 15 tools for on-chain job lifecycle.,actuation,predicate,M
+com.agilitycms/mcp-server,An MCP server that provides access to Agility CMS.  See https://mcp.agilitycms.com for more details.,predicate,actuation,M
+com.ai-erd/ai-erd,AI-powered ERD design tool. Create and manage database schemas using DBML with real-time canvas.,generative,actuation,M
+com.ai2fin/ai2fin-tax-mcp,"Free public tax MCP: GST/VAT, income, company & capital-gains tax for 50+ countries, source-cited.",predicate,generative,M
+com.aibooma/agent-registry,"AI agent registry — search, discover, register, and connect agents via MCP.",relevance,actuation,M
+com.aicandidatehub/mcp,"Profile, CV, jobs, compensation & application-tracking tools for AI agents, by aicandidatehub.com.",predicate,actuation,L
+com.aidesignblueprint/blueprint,"Enterprise-safe agentic AI design doctrine. Read-only MCP, UK/EU residency, zero-training policy.",generative,,L
+com.aidevboard/jobs,"MCP for 8,700+ current AI jobs. 13 tools: search, match, salaries, companies, commerce quotes.",relevance,predicate,H
+com.aidoos/virtual-delivery-center,"Plan a Virtual Delivery Center for any initiative: pods, roles, AI agents, Delivery Units.",generative,,M
+com.aiinfradecoded/mcp-anvil,"Local MCP gateway daemon: route, audit, and inspect MCP servers from one config.",actuation,predicate,M
+com.aineedhelpfromotherai/reasoning-commons,"Search, reuse, verify AI reasoning. Task marketplace with leaderboard. Zero-barrier, no auth.",relevance,generative,M
+com.aiqbee/brain,"AI knowledge graph for architecture, portfolio, and digital strategy management.",predicate,generative,L
+com.airport-pickups-london/london-airport-transfers,"Book London airport & cruise port transfers to any UK address. Fixed prices, free cancellation.",actuation,,H
+com.airtable/mcp,Official Airtable MCP server — database and operations layer for agents.,predicate,actuation,H
+com.alchemy/mcp,"Blockchain data across 100+ chains: token prices, NFTs, transfers, simulation, traces, Solana DAS",predicate,,H
+com.algeriacertify/verification-talent,Verify Algerian digital certificates and find certified professionals for hiring in Algeria.,predicate,relevance,M
+com.alleskralle/jobs,"Job search engine with 500k+ listings across Austria, Germany and Switzerland (alleskralle.com).",relevance,,H
+com.allgoodinsp/mcp-server,"Curated design references for AI — real CSS values, typography specs, and color palettes.",predicate,,M
+com.allstacks/allstacks-mcp,Provides 208+ tools for AI-native engineering intelligence via Allstacks API.,predicate,generative,L
+com.almured/marketplace,Marketplace where AI agents ask AI agents that have live or proprietary data.,relevance,,L
+com.alpinedataworks/adw-intelligence-server,"Agent-ready economic, market & geo-health intelligence — 163 MCP tools, 155 driver-backed indices.",predicate,generative,M
+com.altesim/esim,"Search & buy travel data eSIMs for 70+ destinations — pay by Stripe link, get the eSIM QR. USD.",actuation,predicate,H
+com.altmetric.mcp/altmetric-mcp,"MCP server for Altmetric APIs - track research attention across news, policy, social media, and more",predicate,,M
+com.altoviz/mcp,Altoviz invoicing app for french small businesses,actuation,predicate,M
+com.am-lich/vietnamese-calendar,"Vietnamese Lunar Calendar for date and calendar conversion, and cultural insights.",predicate,generative,M
+com.ambermem/amber,"Long-term memory for AI assistants. Hybrid retrieval, query expansion, auto-topics.",relevance,actuation,M
+com.amplitude/mcp-server,"Search, access, and get insights on your Amplitude data",predicate,generative,M
+com.anotepad/notes,"AI access to your aNotepad online notes: read, search, write, and organize via 22 tools.",actuation,predicate,H
+com.anots/directory,"Discover and query every business on ANOTS — search, ask, or find-and-ask over MCP.",relevance,predicate,M
+com.apideck/mcp,"Apideck Unified API MCP — 330 tools across 200+ SaaS connectors (accounting, CRM, HRIS, ATS).",predicate,actuation,M
+com.apievangelist/api-evangelist,"Sixteen years of API research as MCP tools — stories, areas, governance blocks & services",predicate,,L
+com.apify/apify-mcp-server,"Extract data from any website with thousands of scrapers, crawlers, and automations on Apify Store ⚡",predicate,relevance,M
+com.apiscreenshot/screenshot,"Screenshot any URL or HTML as PNG/JPEG/WebP from your AI agent. Full-page, clean, no install.",predicate,,H
+com.apogeoapi/apogeoapi-mcp,"Geographic data API: 250+ countries, 150K+ cities, IP geolocation, 161 live FX rates.",predicate,,H
+com.appendix/appendix,Physician-reviewed medical opinions and prescriptions for AI agents.,generative,,M
+com.appfigures/mcp,"Access your app analytics, ASO tools, and app market intelligence with Appfigures.",predicate,generative,M
+com.apple-rag/mcp-server,"Apple Developer Documentation with Semantic Search, RAG, and AI reranking for MCP clients",relevance,,H
+com.applivery.docs/mcp,"Search and read the public Applivery docs (MDM & app distribution). Read-only, no auth.",relevance,,H
+com.appsai/mcp-server,"Build and deploy full-stack Next.js apps with 98 tools for React, AWS, and MongoDB.",actuation,,H
+com.appsflyer/mcp,"Analyze your campaigns any way you want, with AI.",generative,predicate,M
+com.arcadedb/mcp-server,"Built-in MCP server for ArcadeDB multi-model database (graph, document, vector, time-series)",predicate,,H
+com.arcanum-plus/backlog-forge,"Crie épicos, features, histórias e tasks no Azure DevOps a partir de uma conversa.",actuation,generative,H
+com.arcasos/arcasos-rentals,Korean premium short-term rental search: natural language or structured filters (SHV engine).,relevance,predicate,H
+com.arcat/arcat,"Search building products & manufacturers for AI agents: CAD, BIM, specs by CSI from arcat.com",relevance,predicate,M
+com.archerionlabs/nasc,"Shared memory across AI dev tools: each session hands its context to the next, not starting cold.",actuation,,L
+com.arcjet/mcp,An MCP server for Arcjet - the runtime security platform that ships with your AI code.,actuation,predicate,L
+com.arcself/arc-security,"Scan AI agent skills for 25 attack classes + runtime monitoring. 1,316+ findings.",predicate,actuation,M
+com.argosvix/server,Observability MCP server: query LLM cost/errors/latency & operate alerts/evals from Claude/Cursor,predicate,actuation,H
+com.aribadernatal/sideways,Unexpected questions and lateral thinking prompts to break through mental blocks. 86 strategies.,generative,,M
+com.arzbin/market-data,"Live Iran exchange rates, gold, crypto, and Toman market data for AI agents.",predicate,,H
+com.askmatchbox/matchbox,Describe a problem in plain language; get matching products with honest caveats. Never sponsored.,relevance,generative,H
+com.asksakina/islamic-knowledge,"Verified Quran verses, duas, 99 Names of Allah, and prophets. Multi-madhab reviewed.",predicate,,M
+com.assetzaar/marketplace,"Search Assetzaar's catalog of UI components, agent skills, SaaS kits and automations.",relevance,predicate,H
+com.astranl/mcp,"NL coordination protocol — 1% fee, agent-native, real Dutch merchant pricing. Open brain.",actuation,,L
+com.astravue/astravue-mcp,"Manage projects, tasks, time tracking, and team collaboration through natural language.",actuation,,H
+com.atagon/kogiqa-mcp,This web browser has been designed to help your agent debug and develop complex web applications.,actuation,,L
+com.atlassian/atlassian-mcp-server,"Connect to Atlassian Jira, Confluence, and Compass to search, create, and manage your work.",actuation,relevance,H
+com.atom/premium-domains,"Search, appraise, trademark-check, and buy premium brandable domain names.",predicate,actuation,H
+com.attrove/mcp,"Catch conversations going quiet — watch outcomes and search Gmail, Slack, and meetings. One MCP.",relevance,actuation,M
+com.audioscrape/audio-intelligence,"The audio intelligence layer. Search podcast transcripts, speakers, and entities across 250K+ shows.",relevance,,H
+com.aurelianflo/core,"Remote MCP server for OFAC screening, EDD memos, exposure forecasts, queues, and reports.",predicate,generative,M
+com.auth0/mcp,"Auth0 MCP Server: Manage Auth0 applications, APIs, actions, logs, and forms using natural language",actuation,,H
+com.automatedclientacquisition.www/aca,"Generate on-brand content, manage leads, and run outreach across 6 channels from your AI agent.",actuation,generative,H
+com.automox/automox-mcp,"Official MCP server for Automox. Manage devices, patches, and policies in natural language.",actuation,,H

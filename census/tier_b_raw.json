@@ -1,0 +1,2627 @@
+[
+ {
+  "url": "https://sh.inference.ac",
+  "outcome": "init-failed(301)",
+  "tools": [],
+  "name": "ac.inference.sh/mcp",
+  "description": "Run 150+ AI apps \u2014 image, video, audio, LLMs, 3D and more. Browse, execute, stream results."
+ },
+ {
+  "url": "https://tandem.ac/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "search_docs",
+    "description": "Search the published Tandem docs index for relevant pages."
+   },
+   {
+    "name": "get_doc",
+    "description": "Fetch and normalize a published Tandem docs page by path or URL."
+   },
+   {
+    "name": "get_start_path",
+    "description": "Recommend the best Tandem docs starting path for a desktop user, server admin, or developer."
+   },
+   {
+    "name": "recommend_next_docs",
+    "description": "Recommend the next Tandem docs to read after a current page, optionally biased toward a goal."
+   },
+   {
+    "name": "answer_how_to",
+    "description": "Answer how to install or use Tandem, build workflows, or use the SDKs by synthesizing relevant published docs."
+   },
+   {
+    "name": "get_tandem_guide",
+    "description": "Return a structured Tandem learning guide for install-engine, python-sdk, typescript-sdk, build-workflows, or headless-deploy."
+   },
+   {
+    "name": "warmup_docs_cache",
+    "description": "Refresh the docs index and preload the most important Tandem docs pages into cache."
+   },
+   {
+    "name": "get_docs_cache_status",
+    "description": "Inspect the current docs cache state for index sources and warmed pages."
+   },
+   {
+    "name": "refresh_docs_index",
+    "description": "Force-refresh docs indexes and report whether data came from the network, cache, or stale fallback."
+   },
+   {
+    "name": "refresh_doc_page",
+    "description": "Force-refresh a docs page and report whether content came from the network, cache, or stale fallback."
+   },
+   {
+    "name": "invalidate_docs_cache",
+    "description": "Invalidate docs cache entries for index data, all pages, or a specific page path."
+   },
+   {
+    "name": "compare_docs_index_refresh",
+    "description": "Force-refresh the docs indexes and return before/after hashes so content changes can be proven."
+   },
+   {
+    "name": "compare_doc_page_refresh",
+    "description": "Force-refresh a docs page and return before/after hashes so page content changes can be proven."
+   }
+  ],
+  "name": "ac.tandem/docs-mcp",
+  "description": "Remote MCP server for Tandem docs, install guides, SDKs, workflows, and agent setup help."
+ },
+ {
+  "url": "https://mcp.lona.agency/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "agency.lona/trading",
+  "description": "AI-powered trading strategy development: backtesting, market data, and portfolio analysis"
+ },
+ {
+  "url": "https://mcp.aarna.ai/mcp",
+  "outcome": "init-failed(200)",
+  "tools": [],
+  "name": "ai.aarna/atars-mcp",
+  "description": "Crypto market signals, technical indicators, and sentiment analysis for AI agents."
+ },
+ {
+  "url": "https://mcp.abmeter.ai",
+  "outcome": "tools-list-failed(200)",
+  "tools": [],
+  "name": "ai.abmeter/abmeter",
+  "description": "Feature flagging and A/B testing platform with AI-first experimentation workflows."
+ },
+ {
+  "url": "https://api.adadvisor.ai/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.adadvisor/mcp-server",
+  "description": "Query Meta Ads performance data \u2014 accounts, campaigns, ad sets, ads, metrics & settings."
+ },
+ {
+  "url": "https://mcp.adramp.ai",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.adramp/google-ads",
+  "description": "Google Ads MCP server \u2014 manage campaigns, keywords, and metrics."
+ },
+ {
+  "url": "https://mcp.adweave.ai/meta-ads-mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.adweave/meta-ads-mcp",
+  "description": "Meta Ads MCP server with 47 tools for campaigns, creatives, audiences, and insights."
+ },
+ {
+  "url": "https://agentberg.ai/mcp",
+  "outcome": "init-failed(200)",
+  "tools": [],
+  "name": "ai.agentberg/agentberg",
+  "description": "Agent-to-agent trading intelligence exchange. Publish findings, vote on quality, earn reputation."
+ },
+ {
+  "url": "https://api.agentdm.ai/mcp/v1/grid",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.agentdm/agentdm",
+  "description": "Agent communication platform for agent to agent messaging via MCP. Messages, channels, skills."
+ },
+ {
+  "url": "https://api.agentic-news.ai/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.agentic-news/mcp",
+  "description": "AI-powered news intelligence \u2014 21 tools for personalized monitoring, briefings, and semantic search"
+ },
+ {
+  "url": "https://api.agenticshelf.ai/m/graffeo/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "check_stock",
+    "description": "Check LIVE inventory, price, and same-day shipping for ONE known SKU.\n\n    The real-time verifier. Call when a shopper asks \"is it in stock\", \"how\n    many are left\", \"can it ship today\", or \"what's the price right now\" and the\n    agent already has the SKU (from list_products / search_products). Fo"
+   },
+   {
+    "name": "get_product_details",
+    "description": "Get full product details for a SKU, optimized for AI agents (structured JSON).\n\n    Use when a shopper wants depth on a SPECIFIC product the agent already has a\n    SKU for (from list_products / search_products). For discovery, call those\n    first \u2014 this tool is a verifier, not a browser.\n\n    The "
+   },
+   {
+    "name": "get_price",
+    "description": "Get the current price (and currency) for a product SKU.\n\n    Returns price + currency ONLY \u2014 for stock/shipping use check_stock, for full\n    details use get_product_details. Use when a shopper asks \"how much is X\" and\n    the agent already has the SKU (from list_products / search_products).\n\n    Th"
+   },
+   {
+    "name": "list_products",
+    "description": "List products from the connected store, paginated.\n\n    Use this tool when an agent needs to DISCOVER products by browsing the\n    catalog rather than VERIFYING a known SKU. The response includes the SKU\n    for every product, so a follow-up ``check_stock(sku)`` or\n    ``get_product_details(sku)`` i"
+   },
+   {
+    "name": "search_products",
+    "description": "Search products in the connected store by keyword.\n\n    Use this when a shopper's query suggests specific terms the agent can\n    match against product titles or tags \u2014 e.g. \"HEPA air purifier\" or\n    \"leather wristwatch\". Matches Shopify's native storefront search\n    behavior, so results align wit"
+   },
+   {
+    "name": "add_to_cart",
+    "description": "Add a product to a cart and return its checkout URL.\n\n    IMPORTANT: this does NOT charge or place an order. It returns a ``cart_url``\n    /``checkout_url`` the shopper opens to review the pre-filled cart and pay\n    themselves. Use for \"add X to my cart\" / \"I want to buy X\". For multiple\n    items "
+   },
+   {
+    "name": "create_checkout",
+    "description": "Build a multi-item cart and return its checkout URL.\n\n    IMPORTANT: this does NOT charge or place an order \u2014 it returns a\n    ``checkout_url`` the shopper opens to pay. Use to assemble a basket the\n    shopper asked for.\n\n    Args:\n        items: list of ``{\"sku\": str, \"quantity\": int}`` (quantity "
+   }
+  ],
+  "name": "ai.agenticshelf/graffeo",
+  "description": "Live MCP catalog for Graffeo Coffee Roasting - Simply the World's Finest Coffee since 1935."
+ },
+ {
+  "url": "https://api.agenticshelf.ai/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "check_stock",
+    "description": "Check LIVE inventory, price, and same-day shipping for ONE known SKU.\n\n    The real-time verifier. Call when a shopper asks \"is it in stock\", \"how\n    many are left\", \"can it ship today\", or \"what's the price right now\" and the\n    agent already has the SKU (from list_products / search_products). Fo"
+   },
+   {
+    "name": "get_product_details",
+    "description": "Get full product details for a SKU, optimized for AI agents (structured JSON).\n\n    Use when a shopper wants depth on a SPECIFIC product the agent already has a\n    SKU for (from list_products / search_products). For discovery, call those\n    first \u2014 this tool is a verifier, not a browser.\n\n    The "
+   },
+   {
+    "name": "get_price",
+    "description": "Get the current price (and currency) for a product SKU.\n\n    Returns price + currency ONLY \u2014 for stock/shipping use check_stock, for full\n    details use get_product_details. Use when a shopper asks \"how much is X\" and\n    the agent already has the SKU (from list_products / search_products).\n\n    Th"
+   },
+   {
+    "name": "list_products",
+    "description": "List products from the connected store, paginated.\n\n    Use this tool when an agent needs to DISCOVER products by browsing the\n    catalog rather than VERIFYING a known SKU. The response includes the SKU\n    for every product, so a follow-up ``check_stock(sku)`` or\n    ``get_product_details(sku)`` i"
+   },
+   {
+    "name": "search_products",
+    "description": "Search products in the connected store by keyword.\n\n    Use this when a shopper's query suggests specific terms the agent can\n    match against product titles or tags \u2014 e.g. \"HEPA air purifier\" or\n    \"leather wristwatch\". Matches Shopify's native storefront search\n    behavior, so results align wit"
+   },
+   {
+    "name": "add_to_cart",
+    "description": "Add a product to a cart and return its checkout URL.\n\n    IMPORTANT: this does NOT charge or place an order. It returns a ``cart_url``\n    /``checkout_url`` the shopper opens to review the pre-filled cart and pay\n    themselves. Use for \"add X to my cart\" / \"I want to buy X\". For multiple\n    items "
+   },
+   {
+    "name": "create_checkout",
+    "description": "Build a multi-item cart and return its checkout URL.\n\n    IMPORTANT: this does NOT charge or place an order \u2014 it returns a\n    ``checkout_url`` the shopper opens to pay. Use to assemble a basket the\n    shopper asked for.\n\n    Args:\n        items: list of ``{\"sku\": str, \"quantity\": int}`` (quantity "
+   }
+  ],
+  "name": "ai.agenticshelf/mcp",
+  "description": "Hosted MCP for e-commerce: live product catalog, stock, and pricing for AI agents."
+ },
+ {
+  "url": "https://api.agenticshelf.ai/m/puroair/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "check_stock",
+    "description": "Check LIVE inventory, price, and same-day shipping for ONE known SKU.\n\n    The real-time verifier. Call when a shopper asks \"is it in stock\", \"how\n    many are left\", \"can it ship today\", or \"what's the price right now\" and the\n    agent already has the SKU (from list_products / search_products). Fo"
+   },
+   {
+    "name": "get_product_details",
+    "description": "Get full product details for a SKU, optimized for AI agents (structured JSON).\n\n    Use when a shopper wants depth on a SPECIFIC product the agent already has a\n    SKU for (from list_products / search_products). For discovery, call those\n    first \u2014 this tool is a verifier, not a browser.\n\n    The "
+   },
+   {
+    "name": "get_price",
+    "description": "Get the current price (and currency) for a product SKU.\n\n    Returns price + currency ONLY \u2014 for stock/shipping use check_stock, for full\n    details use get_product_details. Use when a shopper asks \"how much is X\" and\n    the agent already has the SKU (from list_products / search_products).\n\n    Th"
+   },
+   {
+    "name": "list_products",
+    "description": "List products from the connected store, paginated.\n\n    Use this tool when an agent needs to DISCOVER products by browsing the\n    catalog rather than VERIFYING a known SKU. The response includes the SKU\n    for every product, so a follow-up ``check_stock(sku)`` or\n    ``get_product_details(sku)`` i"
+   },
+   {
+    "name": "search_products",
+    "description": "Search products in the connected store by keyword.\n\n    Use this when a shopper's query suggests specific terms the agent can\n    match against product titles or tags \u2014 e.g. \"HEPA air purifier\" or\n    \"leather wristwatch\". Matches Shopify's native storefront search\n    behavior, so results align wit"
+   },
+   {
+    "name": "add_to_cart",
+    "description": "Add a product to a cart and return its checkout URL.\n\n    IMPORTANT: this does NOT charge or place an order. It returns a ``cart_url``\n    /``checkout_url`` the shopper opens to review the pre-filled cart and pay\n    themselves. Use for \"add X to my cart\" / \"I want to buy X\". For multiple\n    items "
+   },
+   {
+    "name": "create_checkout",
+    "description": "Build a multi-item cart and return its checkout URL.\n\n    IMPORTANT: this does NOT charge or place an order \u2014 it returns a\n    ``checkout_url`` the shopper opens to pay. Use to assemble a basket the\n    shopper asked for.\n\n    Args:\n        items: list of ``{\"sku\": str, \"quantity\": int}`` (quantity "
+   }
+  ],
+  "name": "ai.agenticshelf/puroair",
+  "description": "Breathe with Confidence. Live MCP catalog for PuroAir HEPA air purifiers - stock, pricing, details."
+ },
+ {
+  "url": "https://mcp.agenticterminal.ai/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "search_merchants",
+    "description": "Search OP-verified merchants by rail, chain, category, agent-callable tier, trust tier, and free text. Ranked by trust tier then verification recency."
+   },
+   {
+    "name": "get_merchant",
+    "description": "Get the full record for one merchant including all rails, payment endpoints, and OP attestation. Tier 2+ requires an AT credential."
+   },
+   {
+    "name": "verify_payment_endpoint",
+    "description": "Run a live check against a merchant's declared payment endpoint for a rail. Returns health, detail, and rail-specific evidence."
+   },
+   {
+    "name": "list_categories",
+    "description": "List the category taxonomy with merchant counts."
+   },
+   {
+    "name": "list_rails",
+    "description": "List supported payment rails and their current merchant counts."
+   },
+   {
+    "name": "whoami",
+    "description": "Report the resolved credential state and rate limits for the calling agent."
+   }
+  ],
+  "name": "ai.agenticterminal/directory",
+  "description": "Verified merchants accepting agentic payments on Lightning/L402/BOLT12/USDT \u2014 search, verify, pay."
+ },
+ {
+  "url": "https://api.agentrapay.ai/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "agentra_create_wallet",
+    "description": "Register as an agent and provision a non-custodial wallet. This is your FIRST CALL when onboarding to Agentra. Returns your agent_id, API key (agn_ prefix), and a Turnkey-managed wallet address on Base Sepolia. You hold the keys via Turnkey; Agentra never touches your private key. After this, call a"
+   },
+   {
+    "name": "agentra_verify_identity",
+    "description": "Submit identity verification to upgrade your trust tier. Higher tiers unlock larger transaction limits. Provide your agent_id (from agentra_create_wallet) and operator attestation. Verification is instant. Tiers: Unverified ($100/tx, $250/day) -> Basic ($1K/tx, $5K/day) -> Standard ($5K/tx, $10K/day"
+   },
+   {
+    "name": "agentra_check_reputation",
+    "description": "CALL THIS BEFORE paying or transacting with unknown agents. Returns the target agent's trust score (0-100), trust tier, reputation zone (Green/Yellow/Red), and transaction history summary. Agentra scores BOTH sides of every transaction: you and your counterparty. This is a read-only lookup with no s"
+   },
+   {
+    "name": "agentra_authorize_payment",
+    "description": "Request authorization for a payment to another agent or service. Agentra is NON-CUSTODIAL: this returns an authorization attestation and an unsigned transaction. Agentra never touches your private keys or moves your funds. YOU sign and submit the transaction yourself. Flow: (1) Call this endpoint ->"
+   },
+   {
+    "name": "agentra_set_mandate",
+    "description": "Create or update spending mandates that define your agent's autonomous transaction boundaries. Mandates enforce: max per-transaction amount, daily spending cap, allowed recipient types, minimum counterparty reputation score, and expiration. Your human operator sets these; your agent operates within "
+   },
+   {
+    "name": "agentra_get_wallet",
+    "description": "Get your agent profile and wallet details: trust tier, trust score, wallet address, registration status, and current verification level. Use to check your status before initiating transactions. Read-only, no side effects."
+   }
+  ],
+  "name": "ai.agentrapay/agentra",
+  "description": "Identity oracle and trust layer for autonomous AI agents. Bidirectional KYA and trust scoring."
+ },
+ {
+  "url": "https://aient.ai/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.aient/mcp",
+  "description": "MCP-native AI SRE: ask what's broken in production, get a reviewed GitHub fix PR."
+ },
+ {
+  "url": "https://mcp.airshelf.ai/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "search_catalog",
+    "description": "Search AirShelf catalog by natural-language query (e.g. \"tactile mechanical keyboard under $150\"). Returns ranked products with prices.\n\nEach result row includes:\n\u2022 canonical_name \u2014 cite this verbatim when presenting the product to the user; do NOT paraphrase, add spaces, or reformat.\n\u2022 spec_absence"
+   },
+   {
+    "name": "get_product",
+    "description": "Get full golden-record + latest price for a single catalog product by slug (\"<manufacturer>-<model>\").\n\ncanonical_name in the response is the exact product name the judge compares against \u2014 cite it verbatim."
+   },
+   {
+    "name": "compare_products",
+    "description": "Compare 2-10 products side-by-side. Use slugs from search_catalog. On not_found the result includes did_you_mean: retry with a suggestion or call search_catalog FIRST before escalating. When asked for the fastest / largest / best of a class, compare the FULL class returned by search_catalog, not jus"
+   },
+   {
+    "name": "explain_product",
+    "description": "Return the agentic build trace (BuilderRunTrace) for a SKU \u2014 every stage of the cold-run pipeline that produced this catalog row, including costs and outcomes."
+   },
+   {
+    "name": "list_merchants",
+    "description": "List AirShelf merchants you can request a quote from (name, slug, product count). Use the returned slug as the `merchant` argument to request_quote."
+   },
+   {
+    "name": "request_quote",
+    "description": "Submit a B2B quote request to a specific merchant once the buyer wants to proceed. Captures a contactable lead and returns a reference number. Resolve the merchant (slug or id) via list_merchants."
+   }
+  ],
+  "name": "ai.airshelf/catalog",
+  "description": "Cross-vendor B2B catalog for AI agents: search, compare, find equivalents, request a quote."
+ },
+ {
+  "url": "https://mcp.alphacreek.ai/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "get_latest_filing",
+    "description": "Return latest filing metadata for a company or ticker."
+   },
+   {
+    "name": "list_filings",
+    "description": "List available filings for a ticker (newest first) with artifact_document_id and dates. Use this first when you need a specific reporting period."
+   },
+   {
+    "name": "get_filing_toc",
+    "description": "Return the full filing table of contents for one filing. If artifact_document_id is omitted, resolves the single latest filing for ticker/company (and optional document_type) only. Use list_filings first to discover a specific reporting period."
+   },
+   {
+    "name": "read_node_content",
+    "description": "Return content for one or more navigation nodes in a filing. Pass one node via node_id or several via node_ids, using the node ids from TOC lines. These are the same values shown as NODE_ID lines in read_node_content output. The authoritative node content is returned as plain MCP text only: an ARTIF"
+   }
+  ],
+  "name": "ai.alphacreek/alphacreek-mcp",
+  "description": "Access SEC filings efficiently (10-K, 10-Q, etc), save time and tokens, and get cited answers."
+ },
+ {
+  "url": "https://mcp.alpic.ai",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.alpic.mcp/alpic-mcp",
+  "description": "Manage your projects, debug deployment, and check analytics for any MCP server you host with Alpic"
+ },
+ {
+  "url": "https://test.alpic.ai/",
+  "outcome": "no-response",
+  "tools": [],
+  "name": "ai.alpic.test/test-mcp-server",
+  "description": "Alpic Test MCP Server - great server!"
+ },
+ {
+  "url": "https://mcp.ambix.ai",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.ambix/ambix",
+  "description": "Your product team's shared strategic memory \u2014 an MCP server your AI tools reason over."
+ },
+ {
+  "url": "https://mcp.anomalyarmor.ai/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.anomalyarmor/armor-mcp",
+  "description": "Data observability tools for engineering teams: alerts, freshness, schema drift, lineage, quality."
+ },
+ {
+  "url": "https://mcp.anzenna.ai/sse",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.anzenna/anzenna",
+  "description": "MCP server for Anzenna"
+ },
+ {
+  "url": "https://api-v2.appdeploy.ai/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.appdeploy/deploy-app",
+  "description": "AppDeploy turns app ideas described in AI chat into live full-stack web applications"
+ },
+ {
+  "url": "https://arclan.ai/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "query_registry",
+    "description": "Search the Arclan registry for MCP servers. By default returns only connectable servers (active, mcp_partial, auth_gated). Use status=stdio to browse local-only servers available for installation. Use status=all to query the full index. Use production_safe=true to restrict to servers with uptime > 9"
+   },
+   {
+    "name": "get_server",
+    "description": "Get full details for a specific MCP server. Pass the server name (e.g. \"GitHub\", \"Brave Search\"), registry ID slug, or endpoint URL. Returns score, state, tools list, latency, and recent test history."
+   },
+   {
+    "name": "recommend_server",
+    "description": "Get ranked MCP server recommendations for a task. Returns servers scored by production safety, keyword relevance, registry score, latency, and freshness. Each result includes a reason code array explaining why it was ranked. Use this instead of query_registry when you want an opinionated ranked list"
+   },
+   {
+    "name": "report_server",
+    "description": "Submit an agent usage report for an MCP server. Reports are aggregated and influence registry trust scores. Call this after using an MCP server so the registry can track real-world reliability. Supports both a simple outcome report and a structured scoring report (criterion + component_score)."
+   }
+  ],
+  "name": "ai.arclan/registry",
+  "description": "MCP server registry \u2014 validated by live handshake, scored on reliability, monitored continuously."
+ },
+ {
+  "url": "https://artidrop.ai/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "publish",
+    "description": "Publish HTML or Markdown content as a shareable URL. Pass `content` byte-for-byte from the source \u2014 do not retype, reformat, minify, summarize, or 'clean up' the input; even one stray character can break inline scripts on the published page. If the content is too large to copy verbatim through the m"
+   },
+   {
+    "name": "publish_site",
+    "description": "Publish a multi-file HTML site from a base64-encoded ZIP file. The ZIP must contain an index.html at its root. For sites larger than ~10MB \u2014 or whenever you have the file on disk \u2014 prefer the REST API /v1/artifacts/upload endpoint to avoid base64 overhead and to guarantee byte-faithful upload."
+   },
+   {
+    "name": "get",
+    "description": "Get artifact metadata. Set include_content to true to also return the full HTML content."
+   },
+   {
+    "name": "versions",
+    "description": "List version history of an artifact"
+   }
+  ],
+  "name": "ai.artidrop/artidrop",
+  "description": "Publish HTML, Markdown, and multi-file sites as shareable URLs instantly via MCP."
+ },
+ {
+  "url": "https://supershopping-mcp.atdev.ai/mcp",
+  "outcome": "init-failed(200)",
+  "tools": [],
+  "name": "ai.atdev/supershopping",
+  "description": "\ub098\ub9cc\uc744 \uc704\ud55c AI \uc1fc\ud551 MCP \u2014 \uc0c1\ud488\uc744 \uc790\uc5f0\uc5b4\ub85c \uac80\uc0c9\u00b7\ube44\uad50\u00b7\ucd94\ucc9c\ud574 \uc0ac\uc6a9\uc790\uc758 \ud6a8\uacfc\uc801\uc778 \uc1fc\ud551\uc744 \ub3d5\uc2b5\ub2c8\ub2e4."
+ },
+ {
+  "url": "https://api.augmentev.ai/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.augmentev/paseo",
+  "description": "Confidential AI execution with a post-quantum receipt on every job \u2014 verifiable by anyone."
+ },
+ {
+  "url": "https://mcp.auralogs.ai/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "list_projects",
+    "description": "List projects accessible to the current read key (one project for v1)."
+   },
+   {
+    "name": "get_project",
+    "description": "Get a project by id. Must match the read key's scoped project."
+   },
+   {
+    "name": "list_logs",
+    "description": "List logs for the scoped project, optionally filtered by level/since/until."
+   },
+   {
+    "name": "search_logs",
+    "description": "Full-text search log messages for the scoped project."
+   },
+   {
+    "name": "get_log",
+    "description": "Get a single log row by id, with full context (stack, metadata)."
+   },
+   {
+    "name": "list_analyses",
+    "description": "List active analyses for the scoped project. Archived analyses (triaged from the dashboard) are excluded by default; pass include_archived=true to see them. Optional filters: severity (low/medium/high/critical), type (reactive/scheduled)."
+   },
+   {
+    "name": "get_analysis",
+    "description": "Get a single analysis by id (diagnosis, suggested fix, PR link if any)."
+   }
+  ],
+  "name": "ai.auralogs/auralogs",
+  "description": "Read-only access to Auralogs production logs: search logs, inspect errors, review AI analyses."
+ },
+ {
+  "url": "https://auteng.ai/mcp/docs",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "auteng_publish_markdown",
+    "description": "\nPublish markdown as a publicly shareable AutEng document.\n\nProxies to backend endpoint:\nPOST /api/tools/docs/publish-markdown/\n"
+   },
+   {
+    "name": "auteng_docs_create",
+    "description": "\nCreate a document in the agent's workspace.\n\nRequires EIP-191 wallet signature auth. Sign the message\n\"auteng:{timestamp}:{nonce}\" with personal_sign and provide\nthe signature, timestamp, nonce, and wallet address.\n\nArgs:\n    wallet_address: 0x... checksummed wallet address\n    wallet_signature: EI"
+   },
+   {
+    "name": "auteng_docs_update",
+    "description": "\nUpdate an existing document in the agent's workspace.\n\nRequires EIP-191 wallet signature auth. See auteng_docs_create for auth details.\n\nArgs:\n    wallet_address: 0x... checksummed wallet address\n    wallet_signature: EIP-191 signature of \"auteng:{timestamp}:{nonce}\"\n    wallet_timestamp: Unix time"
+   },
+   {
+    "name": "auteng_docs_list",
+    "description": "\nList documents in the agent's workspace.\n\nRequires EIP-191 wallet signature auth. See auteng_docs_create for auth details.\n\nArgs:\n    wallet_address: 0x... checksummed wallet address\n    wallet_signature: EIP-191 signature of \"auteng:{timestamp}:{nonce}\"\n    wallet_timestamp: Unix timestamp in seco"
+   },
+   {
+    "name": "auteng_docs_delete",
+    "description": "\nDelete a document from the agent's workspace.\n\nRequires EIP-191 wallet signature auth. See auteng_docs_create for auth details.\n\nArgs:\n    wallet_address: 0x... checksummed wallet address\n    wallet_signature: EIP-191 signature of \"auteng:{timestamp}:{nonce}\"\n    wallet_timestamp: Unix timestamp in"
+   },
+   {
+    "name": "auteng_docs_share",
+    "description": "\nShare a document publicly. Returns a shareable URL.\n\nRate limited to 10 shares per wallet per day.\nRequires EIP-191 wallet signature auth. See auteng_docs_create for auth details.\n\nArgs:\n    wallet_address: 0x... checksummed wallet address\n    wallet_signature: EIP-191 signature of \"auteng:{timesta"
+   },
+   {
+    "name": "auteng_docs_recent",
+    "description": "\nBrowse the public recents feed of shared documents.\n\nNo authentication required. Returns recently shared public documents,\nnewest first.\n\nArgs:\n    page: Page number (default 1)\n    limit: Items per page (default 20, max 100)\n"
+   }
+  ],
+  "name": "ai.auteng/docs",
+  "description": "Publish markdown documents as public share links with mermaid diagram support. Built by AutEng.ai"
+ },
+ {
+  "url": "https://auteng.ai/mcp",
+  "outcome": "init-failed(308)",
+  "tools": [],
+  "name": "ai.auteng/mcp",
+  "description": "Publish markdown documents as public share links with mermaid diagrams. Built by AutEng.ai"
+ },
+ {
+  "url": "https://mcp.autonomad.ai/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "search_hotels",
+    "description": "Search hotels, lodging, accommodations, resorts, and places to stay for a trip. Filter by city, country, check-in/check-out dates, room type, nightly price, star rating, and amenities (pool, gym, wifi, etc.). Returns matching properties with rates, photos, and availability across 2M+ properties (Lit"
+   },
+   {
+    "name": "search_flights",
+    "description": "Search airline flights / airfares between two cities by date, cabin class (economy / premium economy / business / first), and number of passengers. Returns available flights from 800+ airlines (Duffel) with real-time pricing, schedules, and stops. Uses IATA airport codes (e.g., MIA, JFK, LAX, LHR). "
+   },
+   {
+    "name": "search_transport",
+    "description": "Search ground transportation \u2014 rideshare (Uber, Lyft) and car rental (Hertz, Enterprise, Avis, etc.) \u2014 timed to a flight arrival for door-to-door planning. NOTE: these return indicative quotes for planning only; in-app booking is not yet live (rideshare and car-rental supplier integrations are still"
+   },
+   {
+    "name": "search_dining",
+    "description": "Search restaurants, dining options, and reservation availability by city, date, time, cuisine, party size, neighborhood, and price range. Use this when the user wants to find a restaurant, book dinner, plan a meal, get reservations, or pick a place to eat on a trip. Dining partnerships are in progre"
+   },
+   {
+    "name": "search_activities",
+    "description": "Search tours, experiences, attractions, sightseeing, and things to do via Viator (200K+ activities worldwide). Filter by city, date range, and category (food tours, walking tours, museums, snorkeling, sailing, hiking, sunset cruises, cooking classes, day trips, etc.). Returns activities with photos,"
+   },
+   {
+    "name": "search_events",
+    "description": "Search live events, concerts, sports games, theater, comedy, and shows in a city (Ticketmaster + SeatGeek catalog). Filter by city, date range, category (music / sports / arts / theater / family / comedy), and keyword (artist name, team name, show title). Use this when the user wants tickets to a co"
+   },
+   {
+    "name": "create_booking_intent",
+    "description": "Create a booking intent \u2014 returns a deep-link the user clicks to complete the booking on autonomad.ai. The first booking they complete unlocks a 1-month free Autonomad Premium trial automatically. ALWAYS call this instead of trying to book directly through MCP \u2014 bookings require payment + identity v"
+   },
+   {
+    "name": "get_capabilities",
+    "description": "Return the server's version, mode (human vs autonomous-agent), API base, and the list of currently-exposed tools. Useful for the LLM to confirm tool-schema compatibility before issuing a sequence of calls."
+   }
+  ],
+  "name": "ai.autonomad/travel",
+  "description": "AI travel agent \u2014 book flights, hotels, activities, and events worldwide via autonomad.ai."
+ },
+ {
+  "url": "https://{api_host}/mcp",
+  "outcome": "no-response",
+  "tools": [],
+  "name": "ai.autorfp/mcp",
+  "description": "Search AutoRFP.ai projects, requirements, content library, and tags for Q&A and analytics."
+ },
+ {
+  "url": "https://api.auxen.ai/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.auxen/auxen",
+  "description": "Provision private AI model endpoints on dedicated GPUs (Llama, Qwen, Mistral). Pay per minute."
+ },
+ {
+  "url": "https://aviado.ai/api/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "get_supplements_for_biomarker",
+    "description": "Find which supplements affect a given biomarker (e.g., triglycerides, CRP, vitamin D). Returns evidence-weighted results from 4,794 clinical effect edges."
+   },
+   {
+    "name": "get_biomarkers_for_supplement",
+    "description": "Find which biomarkers are affected by a given supplement. Returns direction (up/down), confidence, dose, and health goal mapping."
+   },
+   {
+    "name": "get_supplement_info",
+    "description": "Get comprehensive information about a supplement: what it is, what it does, which biomarkers it affects, mechanism of action, and safety contraindications."
+   },
+   {
+    "name": "get_supplement_interactions",
+    "description": "Find supplement-supplement interactions (765 pairs from clinical evidence) and drug-supplement interactions (1,626 FDA-validated pairs). Returns synergies, antagonisms, absorption conflicts, and timing recommendations."
+   },
+   {
+    "name": "get_top_brands",
+    "description": "Find the highest-quality brands for a supplement, ranked by ProofMark (Aviado's quality score: third-party testing, certifications, and quality metrics)."
+   },
+   {
+    "name": "search_supplements",
+    "description": "Search for a supplement by name with fuzzy matching. Use this to resolve ambiguous names before calling other tools."
+   },
+   {
+    "name": "search_conditions",
+    "description": "Search for a health condition by name with fuzzy matching. Use this to resolve ambiguous condition names before calling get_supplements_for_condition."
+   },
+   {
+    "name": "get_supplements_for_condition",
+    "description": "Find which supplements help with a health condition or goal (e.g., 'sleep', 'anxiety', 'joint pain'). Returns evidence-graded supplement recommendations with dosages."
+   }
+  ],
+  "name": "ai.aviado/health",
+  "description": "Supplement research, biomarker effects, drug interactions, and brand quality data"
+ },
+ {
+  "url": "https://mcp.neuroautomata.axonagentic.ai/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.axonagentic/neuroautomata",
+  "description": "Protein analysis: ESM-2/ESMC embeddings, mutation scoring, landscape scans, ESMFold structure."
+ },
+ {
+  "url": "https://backengine.ai/mcp",
+  "outcome": "init-failed(303)",
+  "tools": [],
+  "name": "ai.backengine/backengine-mcp",
+  "description": "Surface customer & prospect context from Slack, email, transcripts and tickets in any MCP client."
+ },
+ {
+  "url": "https://mcp-server-295985738387.europe-west1.run.app/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "currency_convert",
+    "description": "Converts a monetary amount from one currency to another using live exchange rates sourced from the Frankfurter API (European Central Bank data). Returns the converted amount, the exact exchange rate applied, and the timestamp of the rate. Supports 30+ currencies including USD, EUR, GBP, JPY, CHF, AU"
+   },
+   {
+    "name": "stock_price_lite",
+    "description": "Retrieves the current trading price for a publicly listed stock by ticker symbol. Returns the current price as a single numeric value. This is a lightweight variant of stock_quote \u2014 it omits intraday high/low, percentage change, previous close, company name, sector, and exchange metadata. Use stock_"
+   },
+   {
+    "name": "open_banking_transactions",
+    "description": "Retrieves bank account balances and transaction history via PSD2 Open Banking (TrueLayer), covering 300+ UK and European banks. Returns the account balance, ISO 4217 currency code, and up to 100 recent transactions \u2014 each with date, merchant description, amount, and category. Supports optional date "
+   },
+   {
+    "name": "timezone_convert",
+    "description": "Converts time between timezones. Useful for time conversion tasks. Use when you need to convert 3:45 PM EST to Pacific Time for a meeting schedule; or find what time it will be in Tokyo when it's 9 AM in New York; or translate an event time from London timezone to Sydney timezone. Also use to find t"
+   },
+   {
+    "name": "finnhub_stock_quote",
+    "description": "Retrieves real-time stock price quotes and company information for any publicly traded company via the Finnhub API. Returns current price, intraday high and low, percentage change from previous close, previous close price, sector, and exchange. Use stock_quote when an agent needs to look up a stock "
+   },
+   {
+    "name": "crypto_price",
+    "description": "Retrieves real-time price data for any cryptocurrency listed on CoinGecko. Returns the current price in any fiat currency, 24-hour percentage change, market capitalisation, and 24-hour trading volume. Supports all major cryptocurrencies including Bitcoin (BTC), Ethereum (ETH), Solana (SOL), XRP, Car"
+   },
+   {
+    "name": "crypto_price_lite",
+    "description": "Retrieves the current spot price and 24-hour change for any cryptocurrency using the CoinGecko public API. Returns price, percentage change, and a timestamp. This is a lightweight variant of crypto_price that omits extended market data (market cap, volume) \u2014 use it when only the raw price and 24h di"
+   },
+   {
+    "name": "currency_rates",
+    "description": "Retrieves live and historical fiat currency exchange rates from the Frankfurter API (sourced from the European Central Bank). Supports both real-time conversion and historical rate lookup for any past date, making it the preferred tool when auditable, ECB-sourced rate data is required. Use currency_"
+   },
+   {
+    "name": "currency_fx_lite",
+    "description": "Converts a foreign exchange (FX) amount between two fiat currencies using live mid-market rates. Returns the converted amount and the exchange rate applied. Use currency_fx_lite when only the numeric result is required and the ECB/Frankfurter data source is not specifically needed. Prefer currency_c"
+   },
+   {
+    "name": "bank_accounts",
+    "description": "Retrieves bank account details and recent transaction history via a connected bank API integration. Returns a list of transactions for the specified account, or for all linked accounts when no account ID is provided. Use bank_accounts when an agent needs to inspect account balances, review recent sp"
+   },
+   {
+    "name": "currency_convert_lite",
+    "description": "Converts a monetary amount between any two fiat currencies using live exchange rates from the Frankfurter API (European Central Bank data). Returns the converted amount and the exchange rate applied. This is a lightweight variant of currency_convert \u2014 minimal response without rate timestamp or sourc"
+   },
+   {
+    "name": "financial_calculator",
+    "description": "Performs precise financial calculations across six calculation types entirely locally with no external API dependency. compound_interest computes the final value and total interest earned on a principal over time at a given annual rate. loan_repayment calculates the monthly payment, total repayable "
+   },
+   {
+    "name": "financial_calculator_lite",
+    "description": "Performs common financial calculations locally with no external API dependency. Supports compound interest, loan repayment, return on investment (ROI), present value, future value, and break-even analysis. Returns a single numeric result for the requested calculation type. This is a lightweight vari"
+   },
+   {
+    "name": "web_news_headlines",
+    "description": "Retrieves the latest real-time news headlines and article summaries from BBC News and The Guardian across nine topic categories. Returns structured articles with headline, description, source name, article URL, and publication date \u2014 sorted most recent first. No API key required. Use this tool when "
+   },
+   {
+    "name": "stripe_payment_records",
+    "description": "Retrieves payment and charge records from a Stripe merchant account. Returns a list of payment records filtered by the requested query type. Use stripe_payment_records when an agent needs to review recent charges, refunds, disputes, or subscription payments from a Stripe account. This is a lightweig"
+   },
+   {
+    "name": "crypto_fx_rates",
+    "description": "Converts an amount between any cryptocurrency and fiat currency pair, or between two cryptocurrencies, using real-time exchange rates sourced from CoinAPI. Supports all crypto-to-fiat (BTC/USD, ETH/EUR), fiat-to-crypto (USD/BTC), and cross-crypto (BTC/ETH) conversions. Use crypto_fx_rates when the c"
+   },
+   {
+    "name": "currency_convert_open",
+    "description": "Converts a monetary amount between two fiat currencies using live exchange rates from an open currency exchange API. Returns the converted amount and the rate applied. Use currency_convert_open as an alternative live-rate source when currency_convert (Frankfurter/ECB) or currency_fx_lite are unavail"
+   },
+   {
+    "name": "stripe_payments",
+    "description": "Retrieves live payment data from a Stripe account via the Stripe API. Supports four query types: recent_payments returns the latest payment intents with status, amount, and currency; failed_charges returns declined or failed charges with failure reasons and error codes; customers returns customer re"
+   },
+   {
+    "name": "platform_tool_finder",
+    "description": "Discovers the most relevant tools available on this MCP server for a given task using local semantic search (MiniLM-L6-v2 embeddings). Accepts a plain-English description of what needs to be accomplished and returns the best matching tools ranked by relevance, along with their input schemas, pricing"
+   },
+   {
+    "name": "web_url_reader",
+    "description": "Fetches any public web page and returns clean, readable plain text stripped of HTML, navigation, scripts, advertisements, and boilerplate. Returns the page title, meta description, word count, and main body text ready for analysis or summarisation. Use this tool when an agent needs to read the conte"
+   }
+  ],
+  "name": "ai.bankee/inferventis-mcp",
+  "description": "Loan & mortgage calculator, compound interest, ROI, crypto prices, FX conversion for AI agents."
+ },
+ {
+  "url": "https://api.bareun.ai/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.bareun/bareun",
+  "description": "Korean NLP MCP server: morphological analysis, tokenization, spell & grammar checking (Bareun)"
+ },
+ {
+  "url": "https://api.baselight.app/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "baselight_ping",
+    "description": "Simple ping test to verify MCP server is responding"
+   },
+   {
+    "name": "baselight_search_catalog",
+    "description": "Search the catalog for datasets using a text query and filters. Datasets in Baselight have the following format: @username.dataset. Datasets can be public or private \u2014 you can search and use all public datasets as well as the user's private datasets. This is typically the first step in the discovery"
+   },
+   {
+    "name": "baselight_search_tables",
+    "description": "Search for tables using a text query and filters. Tables in Baselight have the following format: @username.dataset.table. Tables are grouped into datasets which can be public or private \u2014 you can search and use all public datasets as well as the user's private datasets. Search for tables directly wh"
+   },
+   {
+    "name": "baselight_get_dataset_metadata",
+    "description": "Retrieve detailed schema and metadata for a specific dataset using Baselight format @username.dataset. Use this after discovering datasets to understand their structure before querying. Tables within datasets follow the format @username.dataset.table (always double-quoted identifiers in SQL)."
+   },
+   {
+    "name": "baselight_get_dataset_tables",
+    "description": "Retrieve a paginated list of tables from a specific dataset using Baselight format @username.dataset. Use this tool to browse datasets with many tables or to search for specific tables within a dataset. Each page returns up to 100 tables with metadata."
+   },
+   {
+    "name": "baselight_get_table_metadata",
+    "description": "Retrieve detailed schema and metadata for a specific table using Baselight format @username.dataset.table. Use this to understand table structure, column types, and constraints before writing SQL queries. Tables must be referenced in SQL with double quotes."
+   },
+   {
+    "name": "baselight_get_user",
+    "description": "Retrieve detailed information about a Baselight user including their profile bio, website, and public datasets. Use this to understand who owns datasets you're interested in."
+   },
+   {
+    "name": "baselight_sdk_query_execute",
+    "description": "Execute a SQL query on Baselight and wait for results (up to 1 minute). The query executes and returns the first 100 rows upon completion, or info about a pending query that needs more time. Use DuckDB syntax only, table format \"@username.dataset.table\" (double-quoted), SELECT queries only (no DDL/D"
+   },
+   {
+    "name": "baselight_sdk_get_results",
+    "description": "Retrieve results from a previously executed SDK job using the resultId from `sdk-query-execute`. If the query is complete, returns results immediately. If still pending, polls for up to 1 more minute. Use this after `sdk-query-execute` returns PENDING status."
+   }
+  ],
+  "name": "ai.baselight/baselight",
+  "description": "Query Baselight's public catalog of 70,000+ datasets \u2014 finance, demographics, sports, and more."
+ },
+ {
+  "url": "https://b4-index.vercel.app/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "b4_browse",
+    "description": "Search and filter the B4 Index's 1,600+ independently scored software categories. Browse by keyword, domain, quadrant, or industry. When filtering by industry, returns all vertical categories for that industry PLUS all horizontal categories (which apply to every industry)."
+   },
+   {
+    "name": "b4_score",
+    "description": "Score a software category using the B4 Index. Provide a known category name to get pre-computed scores, or provide raw dimension scores (1-5 each) for a custom evaluation. Returns quadrant placement, axes, urgency level, and a concise breakdown. The default result is intentionally lean \u2014 set include"
+   },
+   {
+    "name": "b4_audit",
+    "description": "Analyze a software stack against the B4 Index. Provide a list of tool/category names, and get per-tool scoring plus a portfolio summary with quadrant distribution, BEWARE spend, and priority actions. [B4 Pro \u2014 the free tier includes b4_browse and b4_score.]"
+   },
+   {
+    "name": "b4_compare",
+    "description": "Compare build vs buy for a specific software category. Returns side-by-side analysis with the category's scores, vendor options, AI replacement approach, and action steps for each path. [B4 Pro \u2014 the free tier includes b4_browse and b4_score.]"
+   },
+   {
+    "name": "b4_recommend",
+    "description": "Get B4 Index recommendations from a natural language description of a software need or business context. Matches the description to relevant categories and returns top matches with scores, quadrants, and actionable recommendations. [B4 Pro \u2014 the free tier includes b4_browse and b4_score.]"
+   }
+  ],
+  "name": "ai.benroberts/b4-index",
+  "description": "Independent build-vs-buy index: score software categories BUILD/BUY/BRIDGE/BEWARE."
+ },
+ {
+  "url": "https://app.bezal.ai/api/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "search_businesses",
+    "description": "Search 47,000+ local business profiles by name, category, or location."
+   },
+   {
+    "name": "get_business",
+    "description": "Get full profile for a specific business including contact info, services, ratings, and hours."
+   },
+   {
+    "name": "list_categories",
+    "description": "List all available business categories in the directory."
+   },
+   {
+    "name": "request_service",
+    "description": "Submit a service request to a business on behalf of a consumer."
+   },
+   {
+    "name": "search_by_service",
+    "description": "Find businesses that offer a specific service type. Useful when you know the exact service rather than the category \u2014 e.g. \"Drain cleaning\" rather than \"plumbing\"."
+   },
+   {
+    "name": "get_reviews",
+    "description": "Get reviews for a specific business including Bezal Verified reviews and Google rating."
+   },
+   {
+    "name": "get_service_catalog",
+    "description": "Get services and pricing for a specific business. Falls back to the services list if no priced catalog exists."
+   },
+   {
+    "name": "check_business_availability",
+    "description": "Check if a business has availability on a specific date using their Bezal calendar. Best-effort \u2014 only works for businesses that use the calendar feature."
+   },
+   {
+    "name": "compare_businesses",
+    "description": "Compare up to 5 businesses side-by-side on ratings, services, BezalRank, and profile status."
+   },
+   {
+    "name": "search_by_city",
+    "description": "Search for businesses in a specific city, optionally filtered by category. City-level matching."
+   },
+   {
+    "name": "search_providers",
+    "description": "Legacy alias for search_businesses. Prefer search_businesses for new clients."
+   },
+   {
+    "name": "get_provider_details",
+    "description": "Legacy alias for get_business. Prefer get_business for new clients."
+   },
+   {
+    "name": "submit_quote_request",
+    "description": "Legacy alias for request_service. Prefer request_service for new clients."
+   }
+  ],
+  "name": "ai.bezal/local-commerce",
+  "description": "Search 7,000+ local service businesses across America by category, location, or keyword."
+ },
+ {
+  "url": "https://mcp.biddeed.ai/api/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.biddeed/biddeed-mcp",
+  "description": "AI-powered foreclosure auction intelligence for Florida counties via MCP tools."
+ },
+ {
+  "url": "https://bittlebits.ai/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.bittlebits/bittlebits",
+  "description": "GEO scores and content-rewrite suggestions for any web page, as MCP tools."
+ },
+ {
+  "url": "https://blast-radius.ai/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "get_latest_update",
+    "description": "Get the latest dated Blast Radius synthesis (the newest 'Current Update'): a short editorial read on where the AI capability surge and software defensibility stand now."
+   },
+   {
+    "name": "get_thesis",
+    "description": "Get the durable Blast Radius thesis and key metrics, plus the current IGV software-ETF quote."
+   },
+   {
+    "name": "ask_blast_radius",
+    "description": "Ask a question about the Blast Radius brief. Returns the most relevant excerpts for you to answer from; cite blast-radius.ai. Note: the question text may be logged to improve the brief."
+   },
+   {
+    "name": "assess_against_frontier_line",
+    "description": "Stress-test a company, product, or thesis against the Blast Radius 'Frontier Line' framework \u2014 an adversarial business-model survivability assessment under AI capability acceleration. Returns a structured scaffold (decisive verdict, doom clock, scored dimensions, disposable-software risk, risk split"
+   },
+   {
+    "name": "get_diligence_checklist",
+    "description": "Get the structured Blast Radius diligence checklist: the key anti-patterns and durable-startup characteristics used to assess AI-first companies against the Frontier Line, each with a pitch question for founder conversations."
+   },
+   {
+    "name": "get_igv_quote",
+    "description": "Get the current IGV (iShares Expanded Tech-Software ETF) quote \u2014 the SaaSpocalypse market signal referenced in the brief."
+   },
+   {
+    "name": "subscribe",
+    "description": "Subscribe an email address to Blast Radius updates. The email is stored on the subscriber list."
+   }
+  ],
+  "name": "ai.blast-radius/blast-radius",
+  "description": "Blast Radius tools for AI strategy, diligence, and market updates."
+ },
+ {
+  "url": "https://api.bluenexus.ai/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.bluenexus/universal-mcp",
+  "description": "Connect your AI to all your data - 200+ sources, intelligently filtered, compliance-ready."
+ },
+ {
+  "url": "https://directory.boolsai.ai/mcp",
+  "outcome": "init-failed(503)",
+  "tools": [],
+  "name": "ai.boolsai/directory",
+  "description": "Indexed ecommerce site directory \u2014 vendor lookups, brands by city/market/founder. 10 tools."
+ },
+ {
+  "url": "https://grep.boolsai.ai/mcp",
+  "outcome": "init-failed(503)",
+  "tools": [],
+  "name": "ai.boolsai/grep",
+  "description": "Parallel regex across all Boolsai scans \u2014 discover new vendor patterns, niche signals. 4 tools."
+ },
+ {
+  "url": "https://boolsai.ai/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "boolsai_scan",
+    "description": "Scan a public website. Returns its full tech stack \u2014 every external host the page talks to, every fetch/xhr/beacon endpoint, every inline-script signal, parsed JSON-LD, and the internal DOM/route trie \u2014 as structured JSON. Hostnames are returned raw; recognise vendors from them using your own knowle"
+   },
+   {
+    "name": "boolsai_scan_paths",
+    "description": "Scan multiple paths on the same site in parallel and merge the external-host lists. Returns per-path host lists, a unified merged set, and a homepage_missed list (hosts that appeared ONLY on non-home paths). Use when the homepage understates the stack \u2014 common on Shopify Plus and consent-gated sites"
+   }
+  ],
+  "name": "ai.boolsai/scan",
+  "description": "Live tech-stack scan of any public site \u2014 vendors, account IDs, scripts, JSON-LD. 2 tools."
+ },
+ {
+  "url": "https://signals.boolsai.ai/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "universe_summary",
+    "description": "Orient the agent: total events, tickers, date range, top event types, top detectors, price coverage, SPY benchmark status. Call this FIRST when starting research. Returns counts that let the agent reason about sample sizes before drilling in."
+   },
+   {
+    "name": "find_signals",
+    "description": "Automated pattern discovery \u2014 scans event_type \u00d7 detector \u00d7 diff_field \u00d7 severity combinations and returns those with the strongest forward-return characteristics (\u03b1 vs SPY, % positive, n). Use this when you don't have a specific hypothesis yet. Returns sorted by \u03b1 at +7D descending. Filter by min_n"
+   },
+   {
+    "name": "test_filter",
+    "description": "Compute \u03b1 stats for an arbitrary filter expression. Use this to test a specific hypothesis (e.g. 'tier_count_changed on enterprise-SaaS tickers' or 'severity 5 events that happened on Mondays'). Returns n, mean/median raw and \u03b1 returns at +1/+3/+7d, % positive, and the worst-loss trade."
+   },
+   {
+    "name": "recent_events",
+    "description": "Live signal feed: events fired in the last N days (default 7). Returns each event with the predicted \u03b1 range based on its event type's historical performance. Use this to surface 'what should I be looking at right now?'"
+   },
+   {
+    "name": "event_dossier",
+    "description": "Deep dive on a single event: full diff (added/removed values), surrounding price action (-3D to +14D), predicted vs actual \u03b1, links to wayback comparison. Use this to investigate a specific event flagged by find_signals or recent_events."
+   },
+   {
+    "name": "scan_at_date",
+    "description": "Scan a URL as it appeared on a historical date via the Wayback Machine. Uses intel.boolsai.ai against the wayback-wrapped URL. Returns the same JSON shape as Boolsai Scan but for a historical snapshot. Use when investigating WHEN a vendor was added/removed."
+   },
+   {
+    "name": "ticker_history",
+    "description": "All events fired on a single ticker, plus price action timeline. Use this to investigate one company's pattern (e.g. 'show me everything we caught on NFLX')."
+   },
+   {
+    "name": "wayback_backtest",
+    "description": "Run an SPY-benchmarked backtest on the WAYBACK historical event dataset (2+ years, 13K events) instead of the recent live event dataset (2 months, 1.7K events). Much bigger samples for statistical confidence. Group by change_type / key_path / domain."
+   },
+   {
+    "name": "domain_timeline",
+    "description": "Week-by-week wayback diff timeline for one domain. Returns every detected stack change (additions / removals) with week date. Use this to see when a vendor was added/removed historically, e.g. 'when did adobe.com add Segment?'"
+   },
+   {
+    "name": "signal_landscape",
+    "description": "ONE-SHOT cross-signal sweep. Computes \u03b1-vs-SPY stats simultaneously across event_type, detector, diff_field, severity, AND co_occurrence dimensions \u2014 returns the full landscape in a single response. Use this FIRST when you want to see where signal lives without having to call find_signals N times. S"
+   },
+   {
+    "name": "signal_diff",
+    "description": "Compare two signal patterns side-by-side. e.g. 'how does PRICING_TIERS_ADDED compare to VENDORS_DETECTED_CHANGED on the live dataset?' Returns \u03b1, %pos, sample size, worst/best trades for each, plus delta. Pure D1, fast."
+   },
+   {
+    "name": "farm_domain",
+    "description": "Bulk-farm a domain's historical wayback snapshots into our index. Use this when you need backtest history on a domain we haven't already farmed (i.e. wayback_backtest / domain_timeline return no data for it). Hits CDX \u2192 samples weekly \u2192 parallel-scans up to 50 snapshots via intel.boolsai.ai \u2192 insert"
+   }
+  ],
+  "name": "ai.boolsai/signals",
+  "description": "Quant-research MCP \u2014 tradeable signals from public-company website stack changes. 7 tools."
+ },
+ {
+  "url": "https://borealhost.ai/mcp/",
+  "outcome": "init-failed(200)",
+  "tools": [],
+  "name": "ai.borealhost/mcp",
+  "description": "Agent-native web hosting \u2014 deploy sites, manage DNS, register domains, scale infrastructure"
+ },
+ {
+  "url": "https://api.bowmark.ai/mcp?s=r",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "ask",
+    "description": "Pre-computed navigation recipes for public websites. CALL BEFORE any browser action on the open web (navigate, click, fetch, fill, URL guess) \u2014 replaces explore-and-discover. Returns `{ status, id?, shortcut?, ui_procedure?, verify_more?, error? }`.\n\nstatus=ok: execute exactly. `shortcut` first if p"
+   },
+   {
+    "name": "report_outcome",
+    "description": "Report whether the RECIPE ran cleanly \u2014 not whether you got the user a good answer. Call ONCE per envelope after you finished walking the recipe OR abandoned it.\n\n`success: true` = every step executed AS WRITTEN. Each locator resolved on the first try, no extra clicks/scrolls/waits beyond the recipe"
+   }
+  ],
+  "name": "ai.bowmark/bowmark",
+  "description": "Pre-computed navigation recipes for public websites \u2014 skip explore-and-discover."
+ },
+ {
+  "url": "https://app.brainattic.ai/api/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.brainattic/knowledge-base",
+  "description": "The knowledge base your AI reads and writes, under your rules \u2014 over MCP, EU-hosted."
+ },
+ {
+  "url": "https://bringyour.ai/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "preview_move",
+    "description": "Free no-data preview for moving a harness between any two of the 13 supported tools (Claude Code, Cursor, Codex, OpenClaw, Aider, Continue, Cline, Goose, Zed, Roo Code, ChatGPT, Claude.ai, Copilot). Returns feasibility copy only. Does not accept or return mappings, file paths, generated content, or "
+   },
+   {
+    "name": "preview_build_setup",
+    "description": "Free no-data preview for building a user's first setup in any of the 13 supported tools. Does not accept GitHub handles, generated memories, mappings, or file content."
+   },
+   {
+    "name": "list_targets",
+    "description": "List Bring Your AI target tools. No harness data is accepted or returned."
+   },
+   {
+    "name": "install_local_cli",
+    "description": "Return no-data local install and MCP wiring commands. The remote server does not install anything and does not receive harness data."
+   },
+   {
+    "name": "list_products",
+    "description": "List agent-readable Bring Your AI products and supported payment modes. No harness data is accepted."
+   },
+   {
+    "name": "quote_lifetime_license",
+    "description": "Quote a Bring Your AI lifetime license in USD. Human checkout uses Stripe Payment Links; agent checkout can settle a Link-issued Stripe shared payment token."
+   },
+   {
+    "name": "start_checkout",
+    "description": "Start checkout. With payment_mode=stripe_spt plus shared_payment_granted_token and buyer_email, settles a Stripe PaymentIntent and returns the signed license without opening a browser."
+   }
+  ],
+  "name": "ai.bringyour/bringyour",
+  "description": "No-data MCP handoff for local Claude Code to Codex harness moves. $49 lifetime."
+ },
+ {
+  "url": "https://bunzee.ai/mcp-server",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.bunzee/bunzee",
+  "description": "Turn your app idea into IA, wireframes, PRD, style guides, and dev specs for coding agents."
+ },
+ {
+  "url": "https://app.buron.ai/api/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.buron/buron",
+  "description": "Marketing-measurement MCP: dashboards, cross-channel queries, integrations, and knowledge files."
+ },
+ {
+  "url": "https://api.butlerbrain.ai/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.butlerbrain/mcp",
+  "description": "Persistent memory for AI assistants. Save once; recall from Claude, ChatGPT, or any MCP client."
+ },
+ {
+  "url": "https://mcp.buyersense.ai/mcp",
+  "outcome": "no-response",
+  "tools": [],
+  "name": "ai.buyersense/buyersense",
+  "description": "MCP server for the BuyerSense API. Get buyer signals from any MCP client."
+ },
+ {
+  "url": "https://mcp.byteask.ai/mcp",
+  "outcome": "init-failed(200)",
+  "tools": [],
+  "name": "ai.byteask/embedded-docs",
+  "description": "Page-cited retrieval for embedded docs, datasheets, MISRA, CMSIS, and RTOS references."
+ },
+ {
+  "url": "https://mcp.byteray.ai/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.byteray/byteray-mcp",
+  "description": "Hunt zero-days by talking to binaries. 40+ tools. Hosted, OAuth + SSO, invite: hi@byteray.ai"
+ },
+ {
+  "url": "https://calendarmcp.ai/api/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.calendarmcp/server",
+  "description": "Hosted Google Calendar MCP server for AI agents. No self-hosting or Google Cloud setup."
+ },
+ {
+  "url": "https://calfeed.ai/api/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.calfeed/calfeed",
+  "description": "Turn a written schedule into a live calendar link people subscribe to in Apple, Google, Outlook."
+ },
+ {
+  "url": "https://www.canaryusers.ai/api/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "canary_scan",
+    "description": "Run a CanaryUsers UX scan on a DEPLOYED URL (your live or preview app \u2014 not source code). A flock of AI personas evaluates the page and reports where real users would get stuck, with concrete fixes. Returns AI-ready findings you can act on immediately. Use depth='deep' for the thorough scan that ren"
+   },
+   {
+    "name": "list_recent_scans",
+    "description": "List the most recent CanaryUsers UX scans for your account (id, URL, CanaryScore, grade, status, date). Use this to find a scan to dig into."
+   },
+   {
+    "name": "get_report_markdown",
+    "description": "Get one scan's full report as AI-ready markdown: the findings ranked by severity, why each matters, and how to fix it. Pass a scanId from list_recent_scans."
+   }
+  ],
+  "name": "ai.canaryusers/canaryusers",
+  "description": "A flock of AI users tests your deployed app and reports where real people get stuck, with fixes."
+ },
+ {
+  "url": "https://api.canvora.ai/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.canvora/canvora",
+  "description": "Create professional visuals from text, URLs, or PDFs. Carousels, presentations, posts. 100+ formats"
+ },
+ {
+  "url": "https://mcp.caulo.ai/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.caulo/caulo",
+  "description": "Social network for verified humans where your AI agent reads the feed, posts, DMs, and moderates."
+ },
+ {
+  "url": "https://childadhd.ai/api/mcp/v1",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "search_articles",
+    "description": "Search ADHD in Children's editorial corpus by query. Returns title, slug, summary, and URL for matching articles."
+   },
+   {
+    "name": "list_articles",
+    "description": "Paginated list of articles from ADHD in Children. Returns title, slug, summary, and URL."
+   },
+   {
+    "name": "get_article",
+    "description": "Fetch a single article from ADHD in Children by slug. Returns title, body content, author, clinical reviewer, citations, and metadata."
+   },
+   {
+    "name": "cite_article",
+    "description": "Get a formatted citation for a ADHD in Children article. Supports AMA, APA, and Chicago styles."
+   },
+   {
+    "name": "get_microsite_info",
+    "description": "Identity and links for ADHD in Children: tagline, audience, focus, publisher, sponsor relationship to Emora Health, and key URLs."
+   },
+   {
+    "name": "get_crisis_resources",
+    "description": "Return the canonical 988 / 911 / Crisis Text Line payload. Surface this immediately whenever the user signals self-harm or imminent danger."
+   }
+  ],
+  "name": "ai.childadhd/library",
+  "description": "Clinician-reviewed library on ADHD in children \u2014 evaluation, treatment, school, parenting."
+ },
+ {
+  "url": "https://childanxiety.ai/api/mcp/v1",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "search_articles",
+    "description": "Search Anxiety in Children's editorial corpus by query. Returns title, slug, summary, and URL for matching articles."
+   },
+   {
+    "name": "list_articles",
+    "description": "Paginated list of articles from Anxiety in Children. Returns title, slug, summary, and URL."
+   },
+   {
+    "name": "get_article",
+    "description": "Fetch a single article from Anxiety in Children by slug. Returns title, body content, author, clinical reviewer, citations, and metadata."
+   },
+   {
+    "name": "cite_article",
+    "description": "Get a formatted citation for a Anxiety in Children article. Supports AMA, APA, and Chicago styles."
+   },
+   {
+    "name": "get_microsite_info",
+    "description": "Identity and links for Anxiety in Children: tagline, audience, focus, publisher, sponsor relationship to Emora Health, and key URLs."
+   },
+   {
+    "name": "get_crisis_resources",
+    "description": "Return the canonical 988 / 911 / Crisis Text Line payload. Surface this immediately whenever the user signals self-harm or imminent danger."
+   }
+  ],
+  "name": "ai.childanxiety/library",
+  "description": "Clinician-reviewed library on anxiety, OCD, and phobias in children ages 5\u201312."
+ },
+ {
+  "url": "https://childpsychiatry.ai/api/mcp/v1",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "search_articles",
+    "description": "Search Psychiatry for Children's editorial corpus by query. Returns title, slug, summary, and URL for matching articles."
+   },
+   {
+    "name": "list_articles",
+    "description": "Paginated list of articles from Psychiatry for Children. Returns title, slug, summary, and URL."
+   },
+   {
+    "name": "get_article",
+    "description": "Fetch a single article from Psychiatry for Children by slug. Returns title, body content, author, clinical reviewer, citations, and metadata."
+   },
+   {
+    "name": "cite_article",
+    "description": "Get a formatted citation for a Psychiatry for Children article. Supports AMA, APA, and Chicago styles."
+   },
+   {
+    "name": "get_microsite_info",
+    "description": "Identity and links for Psychiatry for Children: tagline, audience, focus, publisher, sponsor relationship to Emora Health, and key URLs."
+   },
+   {
+    "name": "get_crisis_resources",
+    "description": "Return the canonical 988 / 911 / Crisis Text Line payload. Surface this immediately whenever the user signals self-harm or imminent danger."
+   }
+  ],
+  "name": "ai.childpsychiatry/library",
+  "description": "Clinician-reviewed library on child psychiatric evaluation and medication decision-making."
+ },
+ {
+  "url": "https://api.chinamarketing.ai/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "get_brand_visibility_snapshot",
+    "description": "Generate a China brand visibility snapshot with summary assessment, scored strengths and gaps, and priority actions."
+   },
+   {
+    "name": "get_destination_demand_snapshot",
+    "description": "Generate a China outbound destination demand snapshot with demand direction, notable signals, risk framing, and priority actions."
+   },
+   {
+    "name": "get_kol_shortlist",
+    "description": "Generate a decision-ready China KOL shortlist with creator candidates, selection rationale, risk flags, and next steps."
+   }
+  ],
+  "name": "ai.chinamarketing/intelligence",
+  "description": "Remote MCP server for China brand visibility, destination demand, and KOL discovery workflows."
+ },
+ {
+  "url": "https://api.chronary.ai/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.chronary/mcp",
+  "description": "Calendar API for AI agents: events, availability, scheduling, webhooks, and iCal feeds."
+ },
+ {
+  "url": "https://mcp.cirra.ai/sfdc/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.cirra/salesforce-mcp",
+  "description": "Comprehensive Salesforce administration and management"
+ },
+ {
+  "url": "https://mcp.clarid.ai/mcp",
+  "outcome": "no-response",
+  "tools": [],
+  "name": "ai.clarid/compliance",
+  "description": "Check bank marketing for FDIC, NCUA, TILA, Reg DD, Reg Z, UDAAP, and Equal Housing compliance."
+ },
+ {
+  "url": "https://api.clarid.ai/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.clarid/hmda",
+  "description": "Validate HMDA LAR files against CFPB edit checks for community banks and credit unions."
+ },
+ {
+  "url": "https://mcp.clawterminal.ai",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.clawterminal/markets",
+  "description": "Ask your AI about the markets: filings, insider & congress trades, fund flows, options, macro"
+ },
+ {
+  "url": "https://contabo.run.mcp.com.ai/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "tool_search",
+    "description": "Search the available tool catalog to discover tools by name, description, or arguments. Use a regex pattern or natural language query to find relevant tools. Returns tool references that are automatically expanded into full tool definitions."
+   },
+   {
+    "name": "retrieveTagList",
+    "description": "List tags - List and filter all tags in your account"
+   },
+   {
+    "name": "createTag",
+    "description": "Create a new tag - Create a new tag in your account with attribute name and optional attribute color."
+   },
+   {
+    "name": "retrieveTag",
+    "description": "Get specific tag by id - Get attributes values to a specific tag on your account."
+   },
+   {
+    "name": "updateTag",
+    "description": "Update specific tag by id - Update attributes to your tag. Attributes are optional. If not set, the attributes will retain their original values."
+   },
+   {
+    "name": "deleteTag",
+    "description": "Delete existing tag by id - Your tag can be deleted if it is not assigned to any resource on your account. Check tag assigments before deleting tag."
+   },
+   {
+    "name": "retrieveAssignmentList",
+    "description": "List tag assignments - List and filter all existing assignments for a tag in your account"
+   },
+   {
+    "name": "retrieveAssignment",
+    "description": "Get specific assignment for the tag - Get attributes for a specific tag assignment in your account. For this the resource type and resource id is required."
+   },
+   {
+    "name": "createAssignment",
+    "description": "Create a new assignment for the tag - Create a new tag assignment. This marks the specified resource with the specified tag for organizing purposes or to restrict access to that resource."
+   },
+   {
+    "name": "deleteAssignment",
+    "description": "Delete existing tag assignment - Tag assignment will be removed from the specified resource. If this tag is being used for access restrictions the affected users will no longer be able to access that resource."
+   },
+   {
+    "name": "retrieveTagAuditsList",
+    "description": "List history about your assignments (audit) - List and filters the history about your assignments."
+   },
+   {
+    "name": "retrieveAssignmentsAuditsList",
+    "description": "List history about your assignments (audit) - List and filters the history about your assignments."
+   },
+   {
+    "name": "retrievePtrRecord",
+    "description": "Retrieve a PTR Record by ip address - Get all attributes for a specific PTR Record"
+   },
+   {
+    "name": "updatePtrRecord",
+    "description": "Edit a PTR Record by ip address - Edit attributes for a specific PTR Record"
+   },
+   {
+    "name": "deletePtrRecord",
+    "description": "Delete a PTR Record using ip address - Delete a PTR Record using ip address. Only IPv6 can be deleted"
+   },
+   {
+    "name": "createPtrRecord",
+    "description": "Create a new PTR Record using ip address - Create a new PTR Record using ip address. Only IPv6 can be created"
+   },
+   {
+    "name": "retrievePtrRecordsList",
+    "description": "List PTR records - Get a list of all PTR records, either customer or a list of IPs is required"
+   },
+   {
+    "name": "retrieveDnsZonesList",
+    "description": "List DNS zones - Get a list of all zones"
+   },
+   {
+    "name": "createDnsZone",
+    "description": "Create DNS zone - Creates a new DNS zone for a customer"
+   },
+   {
+    "name": "retrieveDnsZone",
+    "description": "Retrieve a DNS Zone by zone name - Get all attributes for a specific DNS Zone"
+   },
+   {
+    "name": "deleteDnsZone",
+    "description": "Delete a DNS zone. - Delete a DNS Zone using zone name."
+   },
+   {
+    "name": "retrieveDnsZoneRecordsList",
+    "description": "List a DNS Zone's records - Get all the records of a DNS Zone"
+   },
+   {
+    "name": "createDnsZoneRecord",
+    "description": "Create DNS zone record - Create resource record in a zone"
+   },
+   {
+    "name": "updateDnsZoneRecord",
+    "description": "Update DNS zone record - Create resource record in a zone"
+   },
+   {
+    "name": "deleteDnsZoneRecord",
+    "description": "Delete a DNS zone record - Delete a DNZ Zone's record"
+   },
+   {
+    "name": "bulkDeleteDnsZoneRecords",
+    "description": "Bulk delete DNS zone records - Delete multiple zone records from a DNS Zone"
+   },
+   {
+    "name": "retrieveImageAuditsList",
+    "description": "List history about your DNS Zones (audit) - List and filters the history about your DNS Zones ."
+   },
+   {
+    "name": "retrieveRecordAuditsList",
+    "description": "List history about your DNS Records (audit) - List and filter the history of changes made to your DNS Records."
+   },
+   {
+    "name": "retrieveVipList",
+    "description": "List VIPs - List and filter all vips in your account"
+   },
+   {
+    "name": "retrieveVip",
+    "description": "Get specific VIP by ip - Get attributes values to a specific VIP on your account."
+   },
+   {
+    "name": "assignIp",
+    "description": "Assign a VIP to an VPS/VDS/Bare Metal - Assign a VIP to a VPS/VDS/Bare Metal using the machine id."
+   },
+   {
+    "name": "unassignIp",
+    "description": "Unassign a VIP to a VPS/VDS/Bare Metal - Unassign a VIP from an VPS/VDS/Bare Metal using the machine id."
+   },
+   {
+    "name": "retrieveVipAuditsList",
+    "description": "List history about your VIPs (audit) - List and filters the history about your VIPs."
+   },
+   {
+    "name": "retrieveSecretList",
+    "description": "List secrets - List and filter all secrets in your account."
+   },
+   {
+    "name": "createSecret",
+    "description": "Create a new secret - Create a new secret in your account with attributes name, type and value. Attribute type can be password or ssh."
+   },
+   {
+    "name": "retrieveSecret",
+    "description": "Get specific secret by id - Get attributes values for a specific secret on your account."
+   },
+   {
+    "name": "updateSecret",
+    "description": "Update specific secret by id - Update attributes to your secret. Attributes are optional. If not set, the attributes will retain their original values. Only name and value can be updated."
+   },
+   {
+    "name": "deleteSecret",
+    "description": "Delete existing secret by id - You can remove a specific secret from your account."
+   },
+   {
+    "name": "retrieveSecretAuditsList",
+    "description": "List history about your secrets (audit) - List and filters the history about your secrets."
+   },
+   {
+    "name": "retrievePrivateNetworkList",
+    "description": "List Private Networks - List and filter all Private Networks in your account"
+   },
+   {
+    "name": "createPrivateNetwork",
+    "description": "Create a new Private Network - Create a new Private Network in your account."
+   },
+   {
+    "name": "patchPrivateNetwork",
+    "description": "Update a Private Network by id - Update a Private Network by id in your account."
+   },
+   {
+    "name": "retrievePrivateNetwork",
+    "description": "Get specific Private Network by id - Get attributes values to a specific Private Network on your account."
+   },
+   {
+    "name": "deletePrivateNetwork",
+    "description": "Delete existing Private Network by id - Delete existing Virtual Private Cloud by id and automatically unassign all instances from it"
+   },
+   {
+    "name": "assignInstancePrivateNetwork",
+    "description": "Add instance to a Private Network - Add a specific instance to a Private Network"
+   },
+   {
+    "name": "unassignInstancePrivateNetwork",
+    "description": "Remove instance from a Private Network - Remove a specific instance from a Private Network"
+   },
+   {
+    "name": "retrievePrivateNetworkAuditsList",
+    "description": "List history about your Private Networks (audit) - List and filters the history about your Private Networks."
+   },
+   {
+    "name": "retrieveUserList",
+    "description": "List users - List and filter all your users."
+   },
+   {
+    "name": "createUser",
+    "description": "Create a new user - Create a new user with required attributes name, email, enabled, totp (=Two-factor authentication 2FA), admin (=access to all endpoints and resources), accessAllResources and roles. You can't specify any password / secrets for the user. For security reasons the user will have to "
+   },
+   {
+    "name": "retrieveUser",
+    "description": "Get specific user by id - Get attributes for a specific user."
+   },
+   {
+    "name": "updateUser",
+    "description": "Update specific user by id - Update attributes of a user. You may only specify the attributes you want to change. If an attribute is not set, it will retain its original value."
+   },
+   {
+    "name": "deleteUser",
+    "description": "Delete existing user by id - By deleting a user he will not be able to access any endpoints or resources any longer. In order to temporarily disable a user please update its `enabled` attribute."
+   },
+   {
+    "name": "resetPassword",
+    "description": "Send reset password email - Send reset password email for a specific user"
+   },
+   {
+    "name": "resendEmailVerification",
+    "description": "Resend email verification - Resend email verification for a specific user"
+   },
+   {
+    "name": "retrieveUserClient",
+    "description": "Get client - Get idm client."
+   },
+   {
+    "name": "generateClientSecret",
+    "description": "Generate new client secret - Generate and get new client secret."
+   },
+   {
+    "name": "retrieveUserIsPasswordSet",
+    "description": "Get user is password set status - Get info about idm user if the password is set."
+   },
+   {
+    "name": "retrieveRoleList",
+    "description": "List roles - List and filter all your roles. A role allows you to specify permission to api endpoints and resources like compute."
+   },
+   {
+    "name": "createRole",
+    "description": "Create a new role - Create a new role. In order to get a list availbale api enpoints (apiName) and their actions please refer to the GET api-permissions endpoint. For specifying `resources` please enter tag ids. For those to take effect please assign them to a resource in the tag management api."
+   },
+   {
+    "name": "retrieveRole",
+    "description": "Get specific role by id - Get attributes of specific role."
+   },
+   {
+    "name": "updateRole",
+    "description": "Update specific role by id - Update attributes to your role. Attributes are optional. If not set, the attributes will retain their original values."
+   },
+   {
+    "name": "deleteRole",
+    "description": "Delete existing role by id - You can't delete a role if it is still assigned to a user. In such cases please remove the role from the users."
+   },
+   {
+    "name": "retrieveApiPermissionsList",
+    "description": "List of API permissions - List all available API permissions. This list serves as a reference for specifying roles. As endpoints differ in their possibilities not all actions are available for each endpoint."
+   },
+   {
+    "name": "listObjectStorageCredentials",
+    "description": "Get list of S3 compatible object storage credentials for user. - Get list of S3 compatible object storage credentials for accessing it via S3 compatible tools like `aws` cli."
+   },
+   {
+    "name": "getObjectStorageCredentials",
+    "description": "Get S3 compatible object storage credentials. - Get S3 compatible object storage credentials for accessing it via S3 compatible tools like `aws` cli."
+   },
+   {
+    "name": "regenerateObjectStorageCredentials",
+    "description": "Regenerates secret key of specified user for the S3 compatible object storages. - Regenerates secret key of specified user for the a specific S3 compatible object storages."
+   },
+   {
+    "name": "retrieveUserAuditsList",
+    "description": "List history about your users (audit) - List and filter the history about your users."
+   },
+   {
+    "name": "retrieveRoleAuditsList",
+    "description": "List history about your roles (audit) - List and filter the history about your roles."
+   },
+   {
+    "name": "start",
+    "description": "Start a compute instance / resource identified by its id - Starting a compute instance / resource is like powering on a real server. If the compute instance / resource is already started nothing will happen. You may check the current status anytime when getting information about a compute instance /"
+   },
+   {
+    "name": "restart",
+    "description": "Restart a compute instance / resource identified by its id. - To restart a compute instance that has been identified by its id, you should perform a restart action on it."
+   },
+   {
+    "name": "stop",
+    "description": "Stop compute instance / resource by its id - Stopping a compute instance / resource is like powering off a real server. So please be aware that data may be lost. Alternatively you may log in and shut your compute instance / resource gracefully via the operating system. If the compute instance / reso"
+   },
+   {
+    "name": "shutdown",
+    "description": "Shutdown compute instance / resource by its id - Shutdown an compute instance / resource. This is similar to pressing the power button on a physical machine. This will send an ACPI event for the guest OS, which should then proceed to a clean shutdown."
+   },
+   {
+    "name": "rescue",
+    "description": "Rescue a compute instance / resource identified by its id - You can reboot your instance in rescue mode to resolve system issues. Rescue system is Linux based and its booted instead of your regular operating system. The disk containing your operating sytstem, software and your data is already mounte"
+   },
+   {
+    "name": "resetPasswordAction",
+    "description": "Reset password for a compute instance / resource referenced by an id - Reset password for a compute instance / resource referenced by an id. This will reset the current password to the password that you provided in the body of this request."
+   },
+   {
+    "name": "retrieveInstancesList",
+    "description": "List instances - List and filter all instances in your account"
+   },
+   {
+    "name": "createInstance",
+    "description": "Create a new instance - Create a new instance for your account with the provided parameters.         <table>           <tr><th>ProductId</th><th>Product</th><th>Disk Size</th></tr>           <tr><td>V91</td><td>VPS 10 NVMe</td><td>75 GB NVMe</td></tr>           <tr><td>V92</td><td>VPS 10 SSD</td><td"
+   },
+   {
+    "name": "retrieveInstance",
+    "description": "Get specific instance by id - Get attributes values to a specific instance on your account."
+   },
+   {
+    "name": "patchInstance",
+    "description": "Update specific instance - Update specific instance by instanceId."
+   },
+   {
+    "name": "reinstallInstance",
+    "description": "Reinstall specific instance - You can reinstall a specific instance with a new image and optionally add ssh keys, a root password or cloud-init."
+   },
+   {
+    "name": "cancelInstance",
+    "description": "Cancel specific instance by id - Your are free to cancel a previously created instance at any time."
+   },
+   {
+    "name": "upgradeInstance",
+    "description": "Upgrading instance capabilities - In order to enhance your instance with additional features you can purchase add-ons.   Currently only firewalling and private network addon is allowed."
+   },
+   {
+    "name": "retrieveInstancesActionsAuditsList",
+    "description": "List history about your actions (audit) triggered via the API - List and filters the history about your actions your triggered via the API."
+   },
+   {
+    "name": "retrieveInstancesAuditsList",
+    "description": "List history about your instances (audit) - List and filters the history about your instances."
+   },
+   {
+    "name": "retrieveImageList",
+    "description": "List available standard and custom images - List and filter all available standard images provided by [Contabo](https://contabo.com) and your uploaded custom images."
+   },
+   {
+    "name": "createCustomImage",
+    "description": "Provide a custom image - In order to provide a custom image please specify an URL from where the image can be directly downloaded. A custom image must be in either `.iso` or `.qcow2` format. Other formats will be rejected. Please note that downloading can take a while depending on network speed resp"
+   },
+   {
+    "name": "retrieveImage",
+    "description": "Get details about a specific image by its id - Get details about a specific image. This could be either a standard or custom image. In case of an custom image you can also check the download status"
+   },
+   {
+    "name": "updateImage",
+    "description": "Update custom image name by its id - Update name of the custom image"
+   },
+   {
+    "name": "deleteImage",
+    "description": "Delete an uploaded custom image by its id - Your are free to delete a previously uploaded custom images at any time"
+   },
+   {
+    "name": "retrieveCustomImagesStats",
+    "description": "List statistics regarding the customer's custom images - List statistics regarding the customer's custom images such as the number of custom images uploaded, used disk space, free available disk space and total available disk space"
+   },
+   {
+    "name": "retrieveSnapshotList",
+    "description": "List snapshots - List and filter all your snapshots for a specific instance"
+   },
+   {
+    "name": "createSnapshot",
+    "description": "Create a new instance snapshot - Create a new snapshot for instance, with name and description attributes"
+   },
+   {
+    "name": "retrieveSnapshot",
+    "description": "Retrieve a specific snapshot by id - Get all attributes for a specific snapshot"
+   },
+   {
+    "name": "updateSnapshot",
+    "description": "Update specific snapshot by id - Update attributes of a snapshot. You may only specify the attributes you want to change. If an attribute is not set, it will retain its original value."
+   },
+   {
+    "name": "deleteSnapshot",
+    "description": "Delete existing snapshot by id - Delete existing instance snapshot by id"
+   },
+   {
+    "name": "rollbackSnapshot",
+    "description": "Revert the instance to a particular snapshot based on its identifier - Rollback the instance to a specific snapshot. In case the snapshot is not the latest one, it will automatically delete all the newer snapshots of the instance"
+   },
+   {
+    "name": "retrieveImageAuditsList1",
+    "description": "List history about your custom images (audit) - List and filters the history about your custom images."
+   },
+   {
+    "name": "retrieveSnapshotsAuditsList",
+    "description": "List history about your snapshots (audit) triggered via the API - List and filters the history about your snapshots your triggered via the API."
+   },
+   {
+    "name": "listHandles",
+    "description": "List all handles - List and filter all your handles"
+   },
+   {
+    "name": "createHandle",
+    "description": "Create specific handle - Create specific handle"
+   },
+   {
+    "name": "retrieveHandle",
+    "description": "Get specific handle - Get specific handle"
+   },
+   {
+    "name": "removeHandle",
+    "description": "Remove specific handle - Remove specific handle"
+   },
+   {
+    "name": "updateHandle",
+    "description": "Update specific handle - Update specific handle"
+   },
+   {
+    "name": "setDefaultHandle",
+    "description": "Set default handle - Set default handle"
+   },
+   {
+    "name": "validateDomainAvailability",
+    "description": "Check domain availablility - Check if a specific domain is available or not"
+   },
+   {
+    "name": "listDomains",
+    "description": "List all domains - List and filter all your domains"
+   },
+   {
+    "name": "orderDomain",
+    "description": "Create or transfer a domain - Create or transfer a domain"
+   },
+   {
+    "name": "retrieveDomain",
+    "description": "List specific domain - List specific domain"
+   },
+   {
+    "name": "updateDomain",
+    "description": "Update a specific domain - Update nameservers and handles for a specific domain"
+   },
+   {
+    "name": "cancelDomain",
+    "description": "Cancel a specific domain - Cancel a specific domain"
+   },
+   {
+    "name": "getAuthCode",
+    "description": "Get auth code for a domain - Get auth code for a domain by id"
+   },
+   {
+    "name": "revokeCancelDomain",
+    "description": "Revoke cancellation for a specific domain - Revoke cancellation for a specific domain"
+   },
+   {
+    "name": "confirmDomainTransferOut",
+    "description": "Confirm transfer out for a domain - Confirm transfer out for a domain"
+   },
+   {
+    "name": "revokeDomainTransferOut",
+    "description": "Revoke transfer out for a domain - Revoke transfer out for a domain"
+   },
+   {
+    "name": "retrieveHandlesAuditsList",
+    "description": "List history about your handles (audit) - List and filters the history about your handles."
+   },
+   {
+    "name": "retrieveDomainsAuditsList",
+    "description": "List history about your Domains (audit) - List and filters the history about your Domains."
+   },
+   {
+    "name": "retrieveObjectStorageList",
+    "description": "List all your object storages - List and filter all object storages in your account"
+   },
+   {
+    "name": "createObjectStorage",
+    "description": "Create a new object storage - Create / purchase a new object storage in your account. Please note that you can only buy one object storage per location. You can actually increase the object storage space via `POST` to `/v1/object-storages/{objectStorageId}/resize`"
+   },
+   {
+    "name": "retrieveDataCenterList",
+    "description": "List data centers - List all data centers and their corresponding regions."
+   },
+   {
+    "name": "retrieveObjectStorage",
+    "description": "Get specific object storage by its id - Get data for a specific object storage on your account."
+   },
+   {
+    "name": "updateObjectStorage",
+    "description": "Modifies the display name of object storage - Modifies the display name of object storage. Display name must be unique."
+   },
+   {
+    "name": "upgradeObjectStorage",
+    "description": "Upgrade object storage size resp. update autoscaling settings. - Upgrade object storage size. You can also adjust the autoscaling settings for your object storage. Autoscaling allows you to automatically purchase storage capacity on a monthly basis up to the specified limit."
+   },
+   {
+    "name": "retrieveObjectStoragesStats",
+    "description": "List usage statistics about the specified object storage - List usage statistics about the specified object storage such as the number of objects uploaded / created, used object storage space. Please note that the usage statistics are updated regularly and are not live usage statistics."
+   },
+   {
+    "name": "CancelObjectStorage",
+    "description": "Cancels the specified object storage at the next possible date - Cancels the specified object storage at the next possible date. Please be aware of your contract periods."
+   },
+   {
+    "name": "retrieveObjectStorageAuditsList",
+    "description": "List history about your object storages (audit) - List and filters the history about your object storages."
+   }
+  ],
+  "name": "ai.com.mcp/contabo",
+  "description": "Contabo API (v1.0.0) as MCP tools for cloud provisioning, and management. Powered by HAPI MCP server"
+ },
+ {
+  "url": "https://{HAPI_FQDN}:{HAPI_PORT}/mcp",
+  "outcome": "no-response",
+  "tools": [],
+  "name": "ai.com.mcp/hapi-mcp",
+  "description": "HAPI MCP server: Dynamically exposes OpenAPI REST APIs as MCP tools for AI assistants"
+ },
+ {
+  "url": "https://lenny-rachitsky.run.mcp.com.ai/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "getEpisodes",
+    "description": "List episodes - Lists episodes with parsed frontmatter (guest, title, duration, youtube_url, etc.) and their canonical resource URIs."
+   },
+   {
+    "name": "getEpisodesGuest",
+    "description": "Get an episode card (metadata + key URIs)"
+   },
+   {
+    "name": "getEpisodesGuestMetadatajson",
+    "description": "Get episode metadata as JSON (frontmatter)"
+   },
+   {
+    "name": "getEpisodesGuestTranscriptformat",
+    "description": "Get transcript in a specific format - Returns the transcript in the requested format: - md: markdown (may include or exclude frontmatter based on include_frontmatter) - txt: clean text (best for LLM ingestion) - json: structured form (metadata + transcript text)"
+   },
+   {
+    "name": "getEpisodesGuestChunks",
+    "description": "List chunk descriptors for an episode - Returns chunk boundaries and URIs for chunk retrieval. Chunks may be computed on-demand using size/overlap parameters."
+   },
+   {
+    "name": "getEpisodesGuestChunksChunkIdtxt",
+    "description": "Get a specific transcript chunk as plain text"
+   },
+   {
+    "name": "getSearch",
+    "description": "Search episodes and transcripts - Searches across metadata (D1) and transcript text (Vectorize). Returns matches as resources, including per-hit URIs pointing to episode cards and transcript chunks. Note: pagination cursor applies to metadata search only. Example (vector search with filters):\n\n  GET"
+   },
+   {
+    "name": "postSearch",
+    "description": "Search episodes and transcripts (POST body) - Same search as GET /search, but parameters are provided in the request body. This is useful for longer filter payloads."
+   }
+  ],
+  "name": "ai.com.mcp/lenny-rachitsky-podcast",
+  "description": "MCP server for structured access to Lenny Rachitsky podcast transcripts. For content creators."
+ },
+ {
+  "url": "https://linkedin.run.mcp.com.ai/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "createSharePost",
+    "description": "Share on LinkedIn, create a share post - Create a new share post on LinkedIn using text, URLs, and images"
+   },
+   {
+    "name": "getSharePosts",
+    "description": "Get share posts - Retrieve share posts for the authenticated user or organization"
+   },
+   {
+    "name": "getPersonProfile",
+    "description": "Get person profile - Get basic profile information for a person"
+   }
+  ],
+  "name": "ai.com.mcp/linkedin",
+  "description": "LinkedIn API as MCP tools to retrieve profile data and publish content. Powered by HAPI MCP."
+ },
+ {
+  "url": "https://openai-tools.run.mcp.com.ai/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "createImage",
+    "description": "Creates an image given a prompt."
+   },
+   {
+    "name": "createImageEdit",
+    "description": "Creates an edited or extended image given an original image and a prompt."
+   },
+   {
+    "name": "createImageVariation",
+    "description": "Creates a variation of a given image."
+   },
+   {
+    "name": "createTranscription",
+    "description": "Transcribes audio into the input language."
+   },
+   {
+    "name": "createTranslation",
+    "description": "Translates audio into English."
+   },
+   {
+    "name": "listModels",
+    "description": "Lists the currently available models, and provides basic information about each one such as the owner and availability."
+   },
+   {
+    "name": "retrieveModel",
+    "description": "Retrieves a model instance, providing basic information about the model such as the owner and permissioning."
+   },
+   {
+    "name": "deleteModel",
+    "description": "Delete a fine-tuned model. You must have the Owner role in your organization."
+   },
+   {
+    "name": "createModeration",
+    "description": "Classifies if text violates OpenAI's Content Policy"
+   }
+  ],
+  "name": "ai.com.mcp/openai-tools",
+  "description": "Focused MCP server for OpenAI image/audio generation (v2.0.0). Wraps endpoints via HAPI CLI."
+ },
+ {
+  "url": "https://petstore.run.mcp.com.ai/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "updatePet",
+    "description": "Update an existing pet. - Update an existing pet by Id."
+   },
+   {
+    "name": "addPet",
+    "description": "Add a new pet to the store. - Add a new pet to the store."
+   },
+   {
+    "name": "findPetsByStatus",
+    "description": "Finds Pets by status. - Multiple status values can be provided with comma separated strings."
+   },
+   {
+    "name": "findPetsByTags",
+    "description": "Finds Pets by tags. - Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing."
+   },
+   {
+    "name": "getPetById",
+    "description": "Find pet by ID. - Returns a single pet."
+   },
+   {
+    "name": "updatePetWithForm",
+    "description": "Updates a pet in the store with form data. - Updates a pet resource based on the form data."
+   },
+   {
+    "name": "deletePet",
+    "description": "Deletes a pet. - Delete a pet."
+   },
+   {
+    "name": "uploadFile",
+    "description": "Uploads an image. - Upload image of the pet."
+   },
+   {
+    "name": "getInventory",
+    "description": "Returns pet inventories by status. - Returns a map of status codes to quantities."
+   },
+   {
+    "name": "placeOrder",
+    "description": "Place an order for a pet. - Place a new order in the store."
+   },
+   {
+    "name": "getOrderById",
+    "description": "Find purchase order by ID. - For valid response try integer IDs with value <= 5 or > 10. Other values will generate exceptions."
+   },
+   {
+    "name": "deleteOrder",
+    "description": "Delete purchase order by identifier. - For valid response try integer IDs with value < 1000. Anything above 1000 or non-integers will generate API errors."
+   },
+   {
+    "name": "createUser",
+    "description": "Create user. - This can only be done by the logged in user."
+   },
+   {
+    "name": "createUsersWithListInput",
+    "description": "Creates list of users with given input array. - Creates list of users with given input array."
+   },
+   {
+    "name": "loginUser",
+    "description": "Logs user into the system. - Log into the system."
+   },
+   {
+    "name": "logoutUser",
+    "description": "Logs out current logged in user session. - Log user out of the system."
+   },
+   {
+    "name": "getUserByName",
+    "description": "Get user by user name. - Get user detail based on username."
+   },
+   {
+    "name": "updateUser",
+    "description": "Update user resource. - This can only be done by the logged in user."
+   },
+   {
+    "name": "deleteUser",
+    "description": "Delete user resource. - This can only be done by the logged in user."
+   }
+  ],
+  "name": "ai.com.mcp/petstore",
+  "description": "Swagger Petstore API (v1.0.27) as MCP for testing and prototyping powered by the HAPI MCP server"
+ },
+ {
+  "url": "https://registry.run.mcp.com.ai/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "getV01Servers",
+    "description": "List MCP servers - Returns a list of all registered MCP servers"
+   },
+   {
+    "name": "getV01ServersServerNameVersions",
+    "description": "List all versions of an MCP server - Returns all available versions for a specific MCP server, ordered by publication date (newest first)"
+   },
+   {
+    "name": "getV01ServersServerNameVersionsVersion",
+    "description": "Get specific MCP server version - Returns detailed information about a specific version of an MCP server. Use the special version `latest` to get the latest version."
+   }
+  ],
+  "name": "ai.com.mcp/registry",
+  "description": "Publish and discover MCP servers via the official MCP Registry. Powered by HAPI MCP server."
+ },
+ {
+  "url": "https://skills-sh.run.mcp.com.ai/mcp",
+  "outcome": "no-response",
+  "tools": [],
+  "name": "ai.com.mcp/skills-search",
+  "description": "Search and discover Agent Skills from the skills.sh registry. Powered by HAPI MCP server."
+ },
+ {
+  "url": "https://strava.run.mcp.com.ai/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "getStats",
+    "description": "Get Athlete Stats - Returns the activity stats of an athlete. Only includes data from activities set to Everyone visibilty."
+   },
+   {
+    "name": "getLoggedInAthlete",
+    "description": "Get Authenticated Athlete - Returns the currently authenticated athlete. Tokens with profile:read_all scope will receive a detailed athlete representation; all others will receive a summary representation."
+   },
+   {
+    "name": "getLoggedInAthleteStarredSegments",
+    "description": "List Starred Segments - List of the authenticated athlete's starred segments. Private segments are filtered out unless requested by a token with read_all scope."
+   },
+   {
+    "name": "getEffortsBySegmentId",
+    "description": "List Segment Efforts - Returns a set of the authenticated athlete's segment efforts for a given segment.  Requires subscription."
+   },
+   {
+    "name": "exploreSegments",
+    "description": "Explore segments - Returns the top 10 segments matching a specified query."
+   },
+   {
+    "name": "getSegmentEffortById",
+    "description": "Get Segment Effort - Returns a segment effort from an activity that is owned by the authenticated athlete. Requires subscription."
+   },
+   {
+    "name": "getClubById",
+    "description": "Get Club - Returns a given club using its identifier."
+   },
+   {
+    "name": "getClubMembersById",
+    "description": "List Club Members - Returns a list of the athletes who are members of a given club."
+   },
+   {
+    "name": "getClubAdminsById",
+    "description": "List Club Administrators - Returns a list of the administrators of a given club."
+   },
+   {
+    "name": "getClubActivitiesById",
+    "description": "List Club Activities - Retrieve recent activities from members of a specific club. The authenticated athlete must belong to the requested club in order to hit this endpoint. Pagination is supported. Athlete profile visibility is respected for all activities."
+   },
+   {
+    "name": "getLoggedInAthleteClubs",
+    "description": "List Athlete Clubs - Returns a list of the clubs whose membership includes the authenticated athlete."
+   },
+   {
+    "name": "getGearById",
+    "description": "Get Equipment - Returns an equipment using its identifier."
+   },
+   {
+    "name": "getRoutesByAthleteId",
+    "description": "List Athlete Routes - Returns a list of the routes created by the authenticated athlete. Private routes are filtered out unless requested by a token with read_all scope."
+   }
+  ],
+  "name": "ai.com.mcp/strava",
+  "description": "Strava MCP tools for AI: athletes, activities, segments, clubs, routes. Powered by HAPI MCP server."
+ },
+ {
+  "url": "https://compeller.ai/api/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "get_capabilities",
+    "description": "Get Compeller platform capabilities, supported features, and API version."
+   },
+   {
+    "name": "get_pricing",
+    "description": "Get current Compeller subscription plans and pricing."
+   },
+   {
+    "name": "list_styles",
+    "description": "List available visual styles for Compeller video generation."
+   },
+   {
+    "name": "upload_media",
+    "description": "Get upload instructions for media files (audio, images, video). Returns the upload URL and required headers. Requires API token authentication."
+   },
+   {
+    "name": "search_music",
+    "description": "Search Deezer preview tracks by song, artist, or album. Use this when the user provides a song string but no MP3/WAV/FLAC file."
+   },
+   {
+    "name": "create_compel_from_music",
+    "description": "Create a compel from a selected Deezer preview track. If the user provides an audio file instead, upload that file and use create_compel."
+   },
+   {
+    "name": "create_compel",
+    "description": "Create a Compeller generation job from primary audio media and optional reference media. Returns compel id, status, and links to track progress and retrieve renderings."
+   },
+   {
+    "name": "get_compel",
+    "description": "Get the current status, progress, and details of a Compeller generation job."
+   },
+   {
+    "name": "start_render",
+    "description": "Start rendering a READY compel with default configuration so an agent can continue to final MP4 without opening the browser UI."
+   },
+   {
+    "name": "list_compels",
+    "description": "List all Compeller generation jobs for the authenticated account, newest first."
+   },
+   {
+    "name": "search_compels",
+    "description": "Search Compeller generation jobs by title for the authenticated account."
+   },
+   {
+    "name": "list_renderings",
+    "description": "List all video renderings for a specific compel."
+   },
+   {
+    "name": "get_rendering",
+    "description": "Get details of a specific video rendering."
+   },
+   {
+    "name": "search_media",
+    "description": "Search and list uploaded media files for the authenticated account."
+   },
+   {
+    "name": "register_webhook",
+    "description": "Register an HTTPS endpoint to receive signed push notifications for compel lifecycle events (compel.ready when renderable, compel.completed, compel.failed). Returns webhook_id and the HMAC-SHA256 signing secret exactly once - store the secret immediately, it is never returned again. Deliveries are s"
+   },
+   {
+    "name": "list_webhooks",
+    "description": "List all webhook endpoints registered for the authenticated account. Secrets are never returned by this tool."
+   },
+   {
+    "name": "delete_webhook",
+    "description": "Delete a webhook endpoint by id. Removes the registration and stops future deliveries."
+   },
+   {
+    "name": "test_webhook_delivery",
+    "description": "Synchronously POST a synthetic webhook.test event to a registered endpoint. Uses the same HMAC-SHA256 signature as real deliveries, runs the standard URL safety check at delivery time, and returns {webhook_id, event_id, event_type, delivered, response_status, response_body_preview, latency_ms, error"
+   },
+   {
+    "name": "update_webhook",
+    "description": "Update one or more mutable fields on a registered webhook endpoint: url, events, active. At least one of these must be provided. Validation mirrors register_webhook (https-only, <= 2048 chars, URL safety blocklist). Returns the updated endpoint (secret is never returned by this tool - use rotate_web"
+   },
+   {
+    "name": "rotate_webhook_secret",
+    "description": "Mint a new HMAC-SHA256 signing secret for a registered webhook endpoint. The previous secret is invalidated immediately - integrators must update their receiver before the next compel terminal event fires. Returns the new secret exactly once; store it on receipt."
+   },
+   {
+    "name": "cancel_compel",
+    "description": "Cancel an in-progress compel. Dequeues it if still queued, otherwise cancels any active external (AI provider) tasks and transitions it to CANCELLED. Idempotent - cancelling an already-CANCELLED compel succeeds. Use to stop a mis-prompted or runaway job before it consumes more render minutes."
+   },
+   {
+    "name": "get_account_credits",
+    "description": "Get the authenticated account's render-minute balance and plan: minutes remaining (free + paid), monthly allowance, plan code, and whether the quota is exceeded. Call before starting an expensive render so an agent can make cost-aware decisions."
+   },
+   {
+    "name": "list_lighting_effects",
+    "description": "List the COM-497 starter lighting effects available to launch as cues (e.g. \"gobo-cycle\", \"x-move\", \"dimmer-pulse\"). Each effect carries an id, the capabilities it needs, and a launch_contract template. Use the returned id as effect_id for launch_lighting_cue."
+   },
+   {
+    "name": "launch_lighting_cue",
+    "description": "Launch a starter lighting effect onto a stage as a live cue (e.g. \"gobo-cycle on the stage's 7R beams at speed 0.5\"). Pass effect_id (from list_lighting_effects) and optional variables to override effect defaults. Validation is loud: an unknown effect, a launch_contract whose bindings a stage cannot"
+   },
+   {
+    "name": "list_lighting_cues",
+    "description": "List the live (non-stopped) lighting cues REACT is executing, including each cue's launch_id, resolved variables, launch_contract, and feedback. Optionally scope to one stage."
+   },
+   {
+    "name": "get_lighting_cue",
+    "description": "Fetch a single live lighting cue by its launch_id, including resolved variables, launch_contract, and REACT feedback."
+   },
+   {
+    "name": "stop_lighting_cue",
+    "description": "Stop a live cue by its launch_id. Idempotent - the cue is marked stop-requested so REACT drops it on its next refresh."
+   },
+   {
+    "name": "set_lighting_cue_variables",
+    "description": "Update variables on a live cue (e.g. change cycle speed or intensity mid-show). Only the variables you pass change; the rest keep their current values. Stopped cues are rejected."
+   },
+   {
+    "name": "ack_lighting_cue",
+    "description": "REACT/BAE acknowledgement for a launch_id. Idempotently records whether the executor accepted or rejected the cue and which executor observed it."
+   },
+   {
+    "name": "report_lighting_cue",
+    "description": "REACT/BAE report-back for cue status, active variables, skipped bindings, capability misses, last_frame_at, and errors."
+   }
+  ],
+  "name": "ai.compeller/compel",
+  "description": "Create and track AI music videos and audio-reactive visuals from songs."
+ },
+ {
+  "url": "https://complyhat.ai/api/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.complyhat/compliance",
+  "description": "MCP for AI compliance documentation across SR 26-2, EU AI Act, NIST AI RMF, and ISO/IEC 42001."
+ },
+ {
+  "url": "https://mcp.constellationfinance.ai/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.constellationfinance/constellation-finance-mcp",
+  "description": "Financial and covenant data for public and private credit: statements, cap stacks, covenants."
+ },
+ {
+  "url": "https://app.conveo.ai/api/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.conveo/conveo",
+  "description": "Qualitative research platform. Design studies, analyze interviews, and generate insights."
+ },
+ {
+  "url": "https://s-api.cookiy.ai/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.cookiy/cookiy",
+  "description": "AI user research via studies, interviews, recruitment, reports, and quantitative surveys."
+ },
+ {
+  "url": "https://nebula.cosmonote.ai/mcp",
+  "outcome": "init-failed(400)",
+  "tools": [],
+  "name": "ai.cosmonote/notes",
+  "description": "Access your Cosmonote audio notes, transcriptions, summaries, and action items."
+ },
+ {
+  "url": "https://api.craneledger.ai/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.craneledger/crane-ledger",
+  "description": "Headless API-first double-entry accounting & bookkeeping engine. 84 MCP tools over HTTP."
+ },
+ {
+  "url": "https://data.crestsystems.ai/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "check_counterparty",
+    "description": "Before your agent pays an address over x402, check what is on the other side. Returns a plain verdict: a real service, a buyer, a relayer in the middle, or a treasury just moving funds, plus whether it is safe to pay. Free. For the full scored profile, the paid HTTP endpoint is $0.90. By Crest Deplo"
+   },
+   {
+    "name": "onchain_profile",
+    "description": "Quick public snapshot of any Base/EVM address: account type (EOA / contract / 7702-delegated), native balance, and transaction count. Free coverage check."
+   },
+   {
+    "name": "pm_counterparty",
+    "description": "Classify a Polymarket trader wallet as sharp money, dumb money, or neutral by its realized edge across resolved prediction markets, with confidence. Know who is on the other side of a prediction-market trade before your agent acts. Free; the deeper read is a $0.02 x402 HTTP call. Read-only, not bett"
+   },
+   {
+    "name": "agent_preflight",
+    "description": "Call BEFORE your agent transfers, trades, or settles to a wallet. Returns risk_level (low/medium/high/unknown) and reason codes from Crest counterparty intelligence, so your agent skips relayers, treasuries, and dead ends. Free; the full gate (changed-since cursor + ttl for cheap per-action re-check"
+   },
+   {
+    "name": "agent_credit",
+    "description": "Credit-check any x402 agent wallet before you rely on it or extend it service. Returns economic_class (funded/active/low/drained/unknown), live USDC balance, and a creditworthiness verdict, so you know if a counterparty will pay or is about to drain to zero. Free; full read (runway, observed burn) i"
+   },
+   {
+    "name": "token_risk",
+    "description": "Call this before your agent buys, swaps, or LPs into a Base token, to check if it is a rug, honeypot, or scam. Scans the contract for dangerous powers (mint new supply, blacklist wallets, pause transfers, upgrade the code) AND checks who controls those powers, scored on the Crest settlement graph: o"
+   },
+   {
+    "name": "crest_score",
+    "description": "Call this before your agent pays, fronts, or extends service to another x402 wallet, to check if it will pay or is about to go broke. Two axes: solvency (will it stay funded) and liveness (will it keep paying), combined into one Crest Score with a band and a decision (ok_to_extend / monitor_or_prepa"
+   },
+   {
+    "name": "crest_passport",
+    "description": "Your persistent home in the agent economy. No args = MINT a new passport (returns agent_id + a secret passport_key shown ONCE; store it). passport_key = load your own passport (reputation, stats, memory_root). agent_id = PUBLIC view of any agent. Optional wallet binds your x402 wallet to anchor repu"
+   },
+   {
+    "name": "crest_remember",
+    "description": "Append a fact/decision/outcome/note to your Crest memory. Every entry is hash-chained (sha256), so your memory is provable and tamper-evident. Returns the entry hash (a receipt) and your new memory_root. Requires your passport_key. Do not store human personal data."
+   },
+   {
+    "name": "crest_recall",
+    "description": "Search your own memory by keyword (matches content + tags) or get your most recent entries. Requires your passport_key."
+   },
+   {
+    "name": "crest_verify",
+    "description": "Before you trust or pay another agent, look up its Crest passport: standing (new vs returning), days active, memory depth, and on-chain role if a wallet is bound. Pass a Crest agent_id, a 0x wallet, or an ERC-8004 agent id (we resolve its on-chain identity from the ERC-8004 Identity Registry on Base"
+   }
+  ],
+  "name": "ai.crestsystems/counterparty-intelligence",
+  "description": "Check who your agent is about to pay over x402: real service, relayer, treasury, or buyer."
+ },
+ {
+  "url": "https://app.d50.ai/api/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.d50/d50-platform",
+  "description": "246 tools to run sales, marketing & hiring: CRM, leads, AI calling, content, recruiting & SEO."
+ },
+ {
+  "url": "https://mcp.dataforb2b.ai/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.dataforb2b/dataforb2b",
+  "description": "Search and enrich B2B people & companies \u2014 70+ filters (funding, linkedin, industry, country, ...)."
+ },
+ {
+  "url": "https://mcp.datamerge.ai",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "configure_datamerge",
+    "description": "Configure DataMerge API authentication (required before using other tools if DATAMERGE_API_KEY is not set)."
+   },
+   {
+    "name": "start_company_enrichment",
+    "description": "POST /v1/company/enrich. Enrich one or more companies by domain. Returns a job_id (async). Single: domain. Batch: domains, country_code, global_ultimate, list, skip_if_exists."
+   },
+   {
+    "name": "get_company_enrichment_result",
+    "description": "GET /v1/company/enrich/{job_id}/status. Poll until status is \"completed\" or \"failed\". Response includes record_ids. Status values: queued \u00b7 processing \u00b7 completed \u00b7 failed."
+   },
+   {
+    "name": "start_company_enrichment_and_wait",
+    "description": "POST /v1/company/enrich then poll GET /v1/company/enrich/{job_id}/status until status is \"completed\" or \"failed\" or timeout. Same params as start_company_enrichment plus poll_interval_seconds and timeout_seconds."
+   },
+   {
+    "name": "run_company_enrichment",
+    "description": "Agent-friendly company enrichment. On the first call provide enrichment params (domain, domains, company_name, country_code, etc.); the server starts the job and polls internally for up to ~25s. If the job is still running, the response will be {status:\"pending\", continuation_token, attempt, elapsed"
+   },
+   {
+    "name": "run_contact_enrich",
+    "description": "Agent-friendly contact enrichment. On the first call provide contacts and enrich_fields; the server starts the job and polls internally for up to ~25s. If still running, returns {status:\"pending\", continuation_token, attempt, elapsed_seconds} \u2014 you MUST immediately call run_contact_enrich again with"
+   },
+   {
+    "name": "run_contact_search",
+    "description": "Agent-friendly contact search. On the first call provide domains and enrich_fields; the server starts the job and polls internally for up to ~25s. If still running, returns {status:\"pending\", continuation_token, attempt, elapsed_seconds} \u2014 you MUST immediately call run_contact_search again with only"
+   },
+   {
+    "name": "get_company",
+    "description": "Get a single company record. GET /v1/company/get?datamerge_id={id} or ?record_id={uuid}. Provide either datamerge_id (charges 1 credit) or record_id (free). Not both. Optional: add_to_list \u2014 list slug to add the company to (only with datamerge_id)."
+   },
+   {
+    "name": "get_company_hierarchy",
+    "description": "Get all entities in the same global ultimate hierarchy. GET /v1/company/hierarchy?datamerge_id={id}. Parameters: include_names (bool, charges 1 credit), include_branches (bool), only_subsidiaries (bool), max_level (int), country_code (array), page (int)."
+   },
+   {
+    "name": "contact_search",
+    "description": "POST /v1/contact/search. Search for contacts at specified companies. Returns a job_id (async, 202). enrich_fields required (at least one of contact.emails or contact.phones). Use company_list (slug) instead of domains to search a saved list."
+   },
+   {
+    "name": "get_contact_search_status",
+    "description": "GET /v1/contact/search/{job_id}/status. Poll until status is \"completed\" or \"failed\". Response includes record_ids."
+   },
+   {
+    "name": "contact_enrich",
+    "description": "POST /v1/contact/enrich. Enrich specific contacts by LinkedIn URL or name+domain. Returns a job_id (async, 202)."
+   },
+   {
+    "name": "get_contact_enrich_status",
+    "description": "GET /v1/contact/enrich/{job_id}/status. Poll until status is \"completed\" or \"failed\". Response includes record_ids."
+   },
+   {
+    "name": "get_contact",
+    "description": "GET /v1/contact/get?record_id={uuid}. Retrieve a specific contact by record UUID. Never charges credits."
+   },
+   {
+    "name": "list_lists",
+    "description": "GET /v1/lists. Optional: object_type=company or object_type=contact."
+   },
+   {
+    "name": "create_list",
+    "description": "POST /v1/lists. Body: name, object_type (company or contact)."
+   },
+   {
+    "name": "get_list_items",
+    "description": "GET /v1/lists/{object_type}/{list_slug}. object_type: company or contact. list_slug: e.g. target-accounts. Parameters: page, page_size (max 100), sort_by, sort_order (asc/desc)."
+   },
+   {
+    "name": "remove_list_item",
+    "description": "DELETE /v1/lists/{object_type}/{list_slug}/{item_id}."
+   },
+   {
+    "name": "delete_list",
+    "description": "DELETE /v1/lists/{object_type}/{list_slug}. System lists cannot be deleted."
+   },
+   {
+    "name": "get_credits_balance",
+    "description": "GET /v1/credits/balance. Returns credits_balance and balances (one_off, recurring, rollover, total)."
+   },
+   {
+    "name": "health_check",
+    "description": "Check if the DataMerge API client is configured and can connect. Uses /auth/info."
+   },
+   {
+    "name": "contact_search_unenriched",
+    "description": "POST /v1/contact/search/unenriched. Find contacts without running email/phone enrichment. Returns a job_id; contacts are created in `unconfirmed` status with stable ids. BETA: requires the `contact_search_unenriched` flag on the account."
+   },
+   {
+    "name": "run_contact_search_unenriched",
+    "description": "POST /v1/contact/search/unenriched/sync. Synchronous unenriched contact search \u2014 returns contacts inline (no polling). Requires the `contact_search_unenriched` beta flag. Limits: 10 domains and max_results_per_company \u2264 10. Response includes credits_consumed computed as 0.5 \u00d7 len(contacts)."
+   }
+  ],
+  "name": "ai.datamerge/mcp",
+  "description": "B2B data enrichment for 375M+ companies: legal entities, corporate hierarchies, and contacts."
+ },
+ {
+  "url": "https://mcp.deepledger.ai/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.deepledger/mcp",
+  "description": "AI Accountant for Quickbooks- recording, reconcile, month-end close"
+ },
+ {
+  "url": "https://deinai.ai/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.deinai/creator-skill",
+  "description": "AI influencer search on TikTok, Instagram, YouTube. Deinai MCP token required; credits per result."
+ },
+ {
+  "url": "https://skill.deinai.ai/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.deinai/creator-skill-v2",
+  "description": "SKILL-02 (not SKILL-01): AI influencer search on TikTok, Instagram & YouTube. sk_live_ token."
+ },
+ {
+  "url": "https://calculator.delega.ai/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.delega/aws-pricing-calculator",
+  "description": "Create AWS cost estimates and shareable AWS Pricing Calculator URLs."
+ },
+ {
+  "url": "https://mcp.demanddiscovery.ai/api/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "ask_demand_discovery",
+    "description": "Ask any question about validating a startup idea, whether there is a real market for it, who would actually buy it, finding the real people who have the problem, surfacing where they already complain about it or discuss it, what workarounds they use today, testing demand, customer-interview techniqu"
+   },
+   {
+    "name": "get_validation_framework",
+    "description": "Returns the full three-step Demand Discovery validation framework: (1) Market Research, (2) Demand Discovery Report with the Demand Score and Build/Pivot/Kill verdict, (3) Agentic Launch (90-day continuous outreach). Use when a user asks \"how do I validate an idea?\", \"what's the methodology?\", or wa"
+   },
+   {
+    "name": "get_product_details",
+    "description": "Returns the full product breakdown (Market Research, Demand Discovery Report, Agentic Launch) and pricing tiers (Starter $49, Founder Pack of 5 ideas, Studio Pack of 25 ideas, all using a slot-based model where pivoted/archived ideas free a slot for a new one). Use when a user asks \"what does Demand"
+   },
+   {
+    "name": "explain_demand_signals",
+    "description": "Returns the four classes of real-world signal the Demand Discovery Report triangulates - search intent, outreach responses, landing-page engagement, and buying signals - and the three possible verdicts (Build, Pivot, Kill). Use when a user asks how the score works at a high level, why behavioral sig"
+   },
+   {
+    "name": "compare_validation_approaches",
+    "description": "Returns an honest comparison of how different validation approaches work - generic AI assistants, trend aggregators, passive scoring tools, and Demand Discovery AI - and where each one stops. Use when a user is evaluating approaches, asking \"what makes Demand Discovery different?\", or trying to unde"
+   },
+   {
+    "name": "get_data_source_categories",
+    "description": "Returns the four behavioral data-source buckets - Search & attention, Conversation & pain, Adoption & spend, Capital & hiring - with each bucket's tagline and what it captures. Use when a user asks \"what data sources do you use?\", \"where does the Demand Score come from?\", or wants to understand how "
+   },
+   {
+    "name": "start_demand_report",
+    "description": "VERBATIM OUTPUT \u2014 READ FIRST (the most important rule for this tool): every piece of report text this tool returns (the Market Research summary AND the next-step message) is authored on our side. Your reply MUST BEGIN by printing that text EXACTLY as written \u2014 the report body first, then the next-st"
+   },
+   {
+    "name": "validate_real_demand",
+    "description": "Start the paid Demand Discovery Report. When a charge is due this creates a secure checkout session and returns a hosted checkoutUrl the user opens in their browser to pay (normally $49) - you never process a card and never pay on the user's behalf. If a plan slot already covers the idea, or a paid "
+   },
+   {
+    "name": "get_demand_report_status",
+    "description": "Poll the status of a paid Demand Discovery Report after the user has started checkout with validate_real_demand. Call this with the orderId it returned, once the user says they've paid. The report builds over ~2-3 minutes. If your runtime supports repeated tool execution, call this every ~10-15s, re"
+   },
+   {
+    "name": "start_agentic_launch",
+    "description": "Kick off Day 1 of the 90-day Agentic Launch for a completed Demand Discovery Report. Demand Discovery surfaces named prospects matching the idea's ICP and DRAFTS the first outreach batch. It sends NOTHING automatically - the user reviews and sends from their hosted manage page. Outreach is drafted t"
+   }
+  ],
+  "name": "ai.demanddiscovery/mcp",
+  "description": "Sales-agent MCP for Demand Discovery AI. Validate startup ideas with behavioral signals."
+ },
+ {
+  "url": "https://mcp.diagramzu.ai/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.diagramzu/mcp",
+  "description": "Let Claude, Cursor, or ChatGPT author Mermaid diagrams your team can read and share."
+ },
+ {
+  "url": "https://www.dimetrics.ai/api/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.dimetrics/dimetrics",
+  "description": "HPC lease economics, datacenter power, debt linkage, and political risk for miners and neoclouds."
+ },
+ {
+  "url": "https://tv.djwizard.ai/mcp/",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.djwizard/tvwizard",
+  "description": "Control Android TV from any AI. 38 MCP tools: playback, recap, recommend, smart-home, schedules."
+ },
+ {
+  "url": "https://app.docuwriter.ai/mcp",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.docuwriter/docuwriter",
+  "description": "Generate, search, and manage codebase documentation on DocuWriter.ai. 72 tools incl. Autopilot."
+ },
+ {
+  "url": "https://mcp.donethat.ai/",
+  "outcome": "auth-required",
+  "tools": [],
+  "name": "ai.donethat/donethat",
+  "description": "Privacy-first work tracking with summaries, reports, coaching, and AI-ready long-term memory."
+ },
+ {
+  "url": "https://nexus.api.dragoneye.ai/mcp",
+  "outcome": "init-failed(307)",
+  "tools": [],
+  "name": "ai.dragoneye/mcp",
+  "description": "Build zero-shot video models for object detection, and category and attribute classification."
+ },
+ {
+  "url": "https://mcp.dreamlit.ai/mcp",
+  "outcome": "ok",
+  "tools": [
+   {
+    "name": "get_status",
+    "description": "Read-only. Use first when the agent needs Dreamlit product guidance, prompting guidance, approved workspace context, project setup, schema hints, workflow state, or relevant app URLs. Returns a compact context pack with concepts, recommended tool flow, actor/workspace/project data, optional authorin"
+   },
+   {
+    "name": "create_or_update_workflow",
+    "description": "Creates a new Dreamlit workflow draft or updates an existing draft from an outcome-oriented natural-language prompt. Use after get_status; use get_workflow_and_preview_url first when editing an existing workflow. Existing Supabase Auth workflows can be edited except for the immutable trigger step; c"
+   },
+   {
+    "name": "list_projects",
+    "description": "Read-only. Use when the target project is unknown or the user names a project instead of providing an id. Returns accessible Dreamlit projects in the approved workspace with project and workflow-list URLs. Do not use to inspect workflow structure or author changes."
+   },
+   {
+    "name": "list_workflows",
+    "description": "Read-only. Use to find workflows in a project by name, description, or trigger type before inspection or editing. Trigger filters include database, auth email, repeating, broadcast, and no-trigger workflows. Returns paginated workflow summaries, published/sandbox state, trigger type, workflow URLs, "
+   },
+   {
+    "name": "list_brand_styles",
+    "description": "Read-only. Use when the user wants to inspect saved project brand styles for generated email drafts. Returns paginated project brand style summaries, ids, default status, style metadata, and app URLs. Do not use to create, update, delete, or expose raw style provenance."
+   },
+   {
+    "name": "get_workflow_and_preview_url",
+    "description": "Read-only. Use before editing, verifying, or preparing publish for an existing workflow. Returns normalized draft and published workflow structure plus the Dreamlit preview/builder URL and status URLs. Do not use to create, update, publish, or unpublish workflows."
+   },
+   {
+    "name": "get_analytics",
+    "description": "Read-only. Use to query Dreamlit analytics for overview metrics, notification rows, recipient engagement, or workflow run rows with filters, sorting, and cursor pagination. Returns bounded structured analytics data, effective query metadata, pagination details when rows are included, and relevant ap"
+   },
+   {
+    "name": "send_workflow_test",
+    "description": "Side effect when confirmSend is true: sends one current draft email or Slack message for review, but does not publish, schedule, or edit the workflow. Use after authoring or inspection when the user wants to verify an important message before publishing. Returns sent-test details, app URLs, a confir"
+   },
+   {
+    "name": "prepare_publish",
+    "description": "Read-only validation step before publishing. Use after the user asks to publish and after inspecting the workflow if needed. Returns validation status, publish mode, preview URL, and a confirmation payload with version/timestamp safety checks for confirm_publish. Does not publish or schedule anythin"
+   },
+   {
+    "name": "confirm_publish",
+    "description": "Use only after explicit user confirmation and a prior prepare_publish result to publish or schedule a Dreamlit workflow. Side effect: installs live database/repeating/auth triggers, schedules or sends broadcasts, and may enable notification delivery; sandbox mode can hold notifications for inspectio"
+   },
+   {
+    "name": "unpublish_workflow",
+    "description": "Use after explicit user intent to unpublish a Dreamlit workflow. Side effect: disables live triggers or schedules for that workflow and stops future automated sends. Returns updated workflow status and app URLs. Do not use for deleting drafts, canceling one broadcast run, or editing workflow content"
+   }
+  ],
+  "name": "ai.dreamlit/mcp",
+  "description": "Create, test, publish, and manage Dreamlit notification workflows from AI clients."
+ }
+]
