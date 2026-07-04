@@ -44,6 +44,72 @@ pip install promptfidelity[langchain] # + a LangChain callback handler
 pip install promptfidelity[mcp]       # + MCP/FastMCP middleware and client session
 ```
 
+## Drop-in usage
+
+The fastest way in: wrap your LLM client and let `promptfidelity` pull
+constraints straight out of the first user message.
+
+```python
+import anthropic
+import promptfidelity as pf
+
+client = pf.wrap(anthropic.Anthropic())
+
+response = client.messages.create(
+    model="claude-...", tools=[...],
+    messages=[{"role": "user", "content": "a slow sci-fi movie from the 90s, rated above 7"}],
+)
+
+client.fidelity.ledger().fidelity   # how much of that intent actually landed
+```
+
+`pf.wrap()` works against both Anthropic-shaped (`.messages.create`) and
+OpenAI-shaped (`.chat.completions.create`) clients, detected structurally --
+it's a delegating proxy, so everything else about the client passes through
+untouched. It extracts constraints once (from the first user message it
+sees), then records every tool call the model proposes into
+`client.fidelity` (a `Recorder` -- same `.ledger()`/`.calls`/`.constraints`
+as `trace()` below).
+
+Prefer to keep using `trace()` directly? Give it a prompt instead of a
+hand-built constraint list and it runs the same extraction:
+
+```python
+with pf.trace(prompt="a slow sci-fi movie from the 90s, rated above 7") as rec:
+    run_agent(...)
+ledger = rec.ledger()
+```
+
+### Tiered extraction and provenance
+
+Constraints can come from three places, and every one of them is tagged so
+a reader can tell which:
+
+| `source` | Where it came from | Trust |
+|---|---|---|
+| `declared` | a human/caller wrote the Constraint directly | as good as the human |
+| `rules` | `promptfidelity.extraction.extract_constraints` -- deterministic regex/vocab transcription (Tier 1), no LLM, no scoring | mechanical, auditable |
+| `llm` | a pluggable `extractor` callable, typically model-backed (Tier 2) | probabilistic transcription |
+
+`declared` > `rules` > `llm` isn't a ranking of *virtue* -- it's a ranking
+of *how mechanically checkable the transcription step was*. Extraction is
+always transcription (prompt text -> falsifiable params), never judgment:
+nothing in this layer scores or grades anything, and no extractor --
+rules or LLM -- ever assigns an *account*; that's still exclusively
+`book()`'s job (see the hard rule below). `Ledger.to_dict()["summary"]
+["constraints_source"]` totals up entries per tag, e.g.
+`{"declared": 2, "rules": 3, "llm": 1}`, so the receipt discloses how much
+of a fidelity number rests on LLM transcription versus deterministic rules
+versus a human stating intent directly.
+
+**Proposed vs. executed.** Both `wrap()` and the MCP client's auto
+`call_tool()` (below) record what the model *proposed* to call --
+arguments straight out of a `tool_use`/`tool_calls` block. If your harness
+rewrites those arguments before actually executing them (clamping a limit,
+normalizing a param, injecting a key), the ledger diverges from what really
+ran downstream. Combine with `@pf.instrument` on your *executed* tool
+functions for ground truth on what actually happened.
+
 ## Quickstart: core
 
 ```python
@@ -124,6 +190,8 @@ from promptfidelity.mcp_ext import FidelityMiddleware
 
 mcp = FastMCP("my-server")
 mcp.add_middleware(FidelityMiddleware(advisory_params={"search": {"query"}}))
+# or let it infer advisory params from each tool's JSON Schema instead:
+mcp.add_middleware(FidelityMiddleware(advisory_params="auto"))
 ```
 
 Client side — declare constraints on the call and read back whatever ledger
@@ -140,14 +208,26 @@ result, ledger = await client.call_tool_with_intent(
 ledger["booked_by"]  # "server" or "client"
 ```
 
+Or skip declaring intent per call and just call tools normally — plain
+`call_tool()` auto-records into whatever `pf.trace()` is open (advisory
+params inferred from each tool's cached schema via `infer_advisory_params`):
+
+```python
+with pf.trace(constraints) as rec:
+    await client.call_tool("discover_movies", {"with_genres": "878"})
+ledger = rec.ledger()
+```
+
 `FidelityProxy` is a documented design stub for a transparent MCP proxy that
 books ledgers on behalf of un-instrumented upstream servers — see its
 docstring in `mcp_ext.py`; it is intentionally not implemented.
 
 ## Design notes
 
-- Core (`core.py`) and the recorder (`recorder.py`) are **stdlib only** — no
-  dependency, optional or otherwise, is required to book a ledger.
+- Core (`core.py`), the extractor (`extraction.py`), the recorder
+  (`recorder.py`), and the client wrapper (`wrap.py`) are **stdlib only** —
+  no dependency, optional or otherwise, is required to book a ledger, run
+  Tier-1 extraction, or wrap an Anthropic-/OpenAI-shaped client.
 - Each extra imports its optional dependency lazily, and only inside the
   function/class that needs it, so `import promptfidelity` never requires
   `anthropic`, `langchain-core`, `mcp`, or `fastmcp` to be installed.
@@ -156,6 +236,13 @@ docstring in `mcp_ext.py`; it is intentionally not implemented.
   constraints into one, crediting each constraint its *best* booking across
   calls (`verified > transmitted > substituted > dropped`) — a later,
   corrective tool call shouldn't leave an earlier miss on the books.
+- Every `Constraint` carries a `source` (`"declared"` | `"rules"` | `"llm"`),
+  which flows through to each `LedgerEntry` and into
+  `Ledger.to_dict()["summary"]["constraints_source"]` — a per-source entry
+  count disclosing how much of a given fidelity number rests on LLM
+  transcription vs. deterministic rules vs. a human declaring intent
+  directly. `source` is provenance metadata only; it never influences
+  `book()`'s account assignment (see the hard rule).
 
 See `../schema` and the `dev.promptfidelity/v1` interchange format spec for
 the wire shapes this package implements.

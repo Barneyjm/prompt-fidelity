@@ -141,11 +141,14 @@ def test_to_dict_shape_matches_dev_promptfidelity_v1():
     assert {e["id"] for e in d["entries"]} == {"c1", "c2"}
     assert d["imposed"][0]["description"] == "vote_count.gte"
     summary = d["summary"]
-    assert set(summary) == {"fidelity", "verified_bits", "total_bits", "accounts"}
+    assert set(summary) == {
+        "fidelity", "verified_bits", "total_bits", "accounts", "constraints_source"
+    }
     assert set(summary["accounts"]) == {
         "verified", "transmitted", "substituted", "inferred", "dropped"
     }
     assert summary["verified_bits"] == summary["accounts"]["verified"]
+    assert summary["constraints_source"] == {"declared": 2}
 
 
 def test_prompt_id_only_present_when_set():
@@ -194,3 +197,31 @@ def test_merge_ledgers_dedupes_imposed_across_calls():
     call_b = book([c], {"with_genres": "878", "vote_count.gte": "50"})
     merged = merge_ledgers([c], [call_a, call_b])
     assert len(merged.imposed) == 1
+
+
+def test_constraint_source_defaults_to_declared():
+    c = Constraint(id="c1", description="genre", params={"with_genres": "878"})
+    assert c.source == "declared"
+
+
+def test_source_flows_from_constraint_to_ledger_entry_and_dict():
+    c = Constraint(id="c1", description="genre", params={"with_genres": "878"},
+                    p=0.08, source="rules")
+    ledger = book([c], {"with_genres": "878"})
+    entry = ledger.entries[0]
+    assert entry.source == "rules"
+    assert entry.to_dict()["source"] == "rules"
+
+
+def test_constraints_source_counts_mixed_provenance():
+    constraints = [
+        Constraint(id="c1", description="a", params={"x": "1"}, source="declared"),
+        Constraint(id="c2", description="b", params={"y": "2"}, source="rules"),
+        Constraint(id="c3", description="c", params={"z": "3"}, source="rules"),
+        Constraint(id="c4", description="d", params={"w": "4"}, source="llm"),
+    ]
+    ledger = book(constraints, {"x": "1", "y": "2", "z": "3", "w": "4"})
+    assert ledger.constraints_source == {"declared": 1, "rules": 2, "llm": 1}
+    assert ledger.to_dict()["summary"]["constraints_source"] == {
+        "declared": 1, "rules": 2, "llm": 1
+    }

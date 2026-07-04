@@ -89,3 +89,99 @@ def test_instrument_only_records_kwargs_not_positional_args():
     assert result == ("ignored", "42")
     ledger = rec.ledger()
     assert ledger.entries[0].account == "verified"
+
+
+def test_trace_raises_value_error_when_neither_constraints_nor_prompt_given():
+    with pytest.raises(ValueError):
+        with pf.trace():
+            pass
+
+
+def test_trace_with_prompt_extracts_rules_constraints():
+    vocab = {
+        "terms": {"sci-fi": {"with_genres": "878"}},
+        "comparators": {"rating": "vote_average"},
+        "date_param": "primary_release_date",
+    }
+    with pf.trace(prompt="a sci-fi movie rated above 7", vocab=vocab) as rec:
+        discover_movies(with_genres="878", vote_average_gte="7")
+    assert rec.constraints
+    assert all(c.source == "rules" for c in rec.constraints)
+    assert any(c.params == {"with_genres": "878"} for c in rec.constraints)
+
+
+def test_trace_constraints_wins_over_prompt_when_both_given():
+    constraints = [Constraint(id="declared1", description="x", params={"a": "1"}, p=0.5)]
+    with pf.trace(constraints, prompt="a sci-fi movie") as rec:
+        pass
+    assert rec.constraints == constraints
+    assert rec.constraints[0].source == "declared"
+
+
+def test_trace_merges_extractor_output_as_llm_source():
+    def fake_extractor(prompt):
+        return [Constraint(id="llm1", description="mood: cozy", params={"query": "cozy"}, p=0.3)]
+
+    with pf.trace(prompt="something cozy to watch", extractor=fake_extractor) as rec:
+        pass
+    sources = {c.source for c in rec.constraints}
+    assert "llm" in sources
+    llm_constraints = [c for c in rec.constraints if c.source == "llm"]
+    assert llm_constraints[0].id == "llm1"
+    assert llm_constraints[0].params == {"query": "cozy"}
+
+
+def test_trace_extractor_source_is_force_set_even_if_caller_lied():
+    def fake_extractor(prompt):
+        # Caller-supplied extractor incorrectly claims source="declared" --
+        # trace() must not trust it.
+        return [Constraint(id="llm1", description="x", params={"a": "1"},
+                            p=0.5, source="declared")]
+
+    with pf.trace(prompt="anything", extractor=fake_extractor) as rec:
+        pass
+    llm_constraint = next(c for c in rec.constraints if c.id == "llm1")
+    assert llm_constraint.source == "llm"
+
+
+def test_trace_rules_wins_on_param_name_collision_with_llm():
+    vocab = {"comparators": {"rating": "vote_average"}}
+
+    def fake_extractor(prompt):
+        # Disagrees with the rules layer on the same param name.
+        return [Constraint(id="llm1", description="rating guess",
+                            params={"vote_average.gte": "9"}, p=0.4)]
+
+    with pf.trace(prompt="movies rated above 7", extractor=fake_extractor, vocab=vocab) as rec:
+        pass
+    matching = [c for c in rec.constraints if "vote_average.gte" in c.params]
+    assert len(matching) == 1
+    assert matching[0].source == "rules"
+    assert matching[0].params["vote_average.gte"] == "7"
+
+
+def test_trace_llm_residue_subsumes_rules_residue():
+    def fake_extractor(prompt):
+        return [Constraint(id="llm_residue", description="broader unmapped intent",
+                            params={}, p=None)]
+
+    with pf.trace(prompt="a movie that feels warm and nostalgic and slow",
+                   extractor=fake_extractor) as rec:
+        pass
+    assert not any(c.id == "residue" and c.source == "rules" for c in rec.constraints)
+    assert any(c.id == "llm_residue" for c in rec.constraints)
+
+
+def test_trace_llm_adds_coverage_rules_missed_without_collision():
+    def fake_extractor(prompt):
+        return [Constraint(id="llm1", description="mood: wistful",
+                            params={"mood": "wistful"}, p=0.3)]
+
+    with pf.trace(prompt="a sci-fi movie that feels wistful",
+                   extractor=fake_extractor,
+                   vocab={"terms": {"sci-fi": {"with_genres": "878"}}}) as rec:
+        pass
+    assert any(c.params == {"with_genres": "878"} and c.source == "rules"
+               for c in rec.constraints)
+    assert any(c.params == {"mood": "wistful"} and c.source == "llm"
+               for c in rec.constraints)

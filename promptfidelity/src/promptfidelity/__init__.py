@@ -13,6 +13,9 @@ account from model output; book() is the only place an account is ever set.
 
 Core (stdlib only): Constraint, Ledger, LedgerEntry, bits, book.
 Recording (stdlib only): Recorder, trace, instrument.
+Extraction (stdlib only, Tier 1 -- deterministic regex/vocab rules, never
+an LLM): extract_constraints.
+Wrapping (stdlib only, SDK-shape duck-typed): wrap.
 Extras (each needs its own optional dependency, imported lazily on first
 use so importing `promptfidelity` itself never requires any of them):
     record                    -- promptfidelity.anthropic_ext  [anthropic]
@@ -23,7 +26,9 @@ use so importing `promptfidelity` itself never requires any of them):
 """
 
 from .core import Constraint, Ledger, LedgerEntry, bits, book
+from .extraction import extract_constraints
 from .recorder import Recorder, instrument, trace
+from .wrap import wrap
 
 __version__ = "0.1.0"
 
@@ -36,6 +41,8 @@ __all__ = [
     "Recorder",
     "trace",
     "instrument",
+    "extract_constraints",
+    "wrap",
     "record",
     "FidelityCallbackHandler",
     "FidelityMiddleware",

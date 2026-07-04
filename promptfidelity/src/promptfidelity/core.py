@@ -76,6 +76,16 @@ class Constraint:
         handled elsewhere (e.g. by a reranker).
     p: estimated survival probability in (0, 1]. None means "no estimate";
         bits book as None and only constraint counts are reliable.
+    source: provenance of this constraint -- "declared" (a human/caller
+        wrote it directly), "rules" (promptfidelity.extraction's
+        deterministic Tier-1 regex/vocab extractor), or "llm" (a
+        pluggable model-backed extractor). Every constraint that flows
+        through book() carries this tag through to the Ledger's receipt
+        (Ledger.to_dict()["summary"]["constraints_source"]), so a reader
+        can see how much of a measurement rests on LLM transcription vs.
+        deterministic rules vs. a human declaring intent directly. Source
+        is metadata about *where the entry came from*, never a judgment
+        about its correctness -- it plays no role in book()'s diff.
 
     A Constraint never carries an account -- see the HARD RULE in this
     module's docstring. Only book() decides where a constraint lands.
@@ -85,6 +95,7 @@ class Constraint:
     description: str
     params: dict[str, Any] = field(default_factory=dict)
     p: float | None = None
+    source: str = "declared"
 
     @property
     def bits(self) -> float | None:
@@ -95,13 +106,19 @@ class Constraint:
 @dataclass
 class LedgerEntry:
     """One booked constraint: exactly one of the five user-side accounts,
-    mechanically assigned by book(), plus the evidence for the assignment."""
+    mechanically assigned by book(), plus the evidence for the assignment.
+
+    source carries forward the Constraint's provenance tag ("declared" |
+    "rules" | "llm") -- see Constraint.source. book() only reads it through
+    to the entry; it never affects account assignment.
+    """
 
     id: str
     description: str
     account: str  # verified | transmitted | substituted | inferred | dropped
     bits: float | None
     evidence: str
+    source: str = "declared"
 
     def to_dict(self) -> dict:
         return {
@@ -110,6 +127,7 @@ class LedgerEntry:
             "account": self.account,
             "bits": round(self.bits, 2) if self.bits is not None else None,
             "evidence": self.evidence,
+            "source": self.source,
         }
 
 
@@ -193,6 +211,17 @@ class Ledger:
         total = self.total_bits
         return self.transmitted_bits / total if total else 0.0
 
+    @property
+    def constraints_source(self) -> dict[str, int]:
+        """Count of booked entries per provenance tag ("declared" | "rules"
+        | "llm") -- the receipt discloses how much of this measurement
+        rests on LLM transcription vs. deterministic rules vs. a human
+        declaring intent directly. E.g. {"declared": 2, "rules": 3, "llm": 1}."""
+        counts: dict[str, int] = {}
+        for e in self.entries:
+            counts[e.source] = counts.get(e.source, 0) + 1
+        return counts
+
     def to_dict(self) -> dict:
         """Emit the dev.promptfidelity/v1 ledger shape."""
         accounts = {a: round(self._sum(a), 2) for a in ACCOUNTS}
@@ -205,6 +234,7 @@ class Ledger:
                 "verified_bits": accounts["verified"],
                 "total_bits": round(self.total_bits, 2),
                 "accounts": accounts,
+                "constraints_source": self.constraints_source,
             },
         }
         if self.prompt_id:
@@ -245,7 +275,7 @@ def book(
         if not params:
             entries.append(LedgerEntry(
                 c.id, c.description, "inferred", b,
-                "no params expressible against this tool"))
+                "no params expressible against this tool", source=c.source))
             continue
 
         claimed_names |= params.keys()
@@ -257,26 +287,26 @@ def book(
                     c.id, c.description, "transmitted", b,
                     f"faithfully passed via advisory param(s) "
                     f"{sorted(k for k in params if k in advisory)}; "
-                    f"backend does not enforce compliance"))
+                    f"backend does not enforce compliance", source=c.source))
             else:
                 entries.append(LedgerEntry(
                     c.id, c.description, "verified", b,
-                    f"arguments match declared params {sorted(params)}"))
+                    f"arguments match declared params {sorted(params)}", source=c.source))
         elif present and any(args[k] != v for k, v in present.items()):
             diffs = {k: {"declared": v, "actual": args[k]}
                      for k, v in present.items() if args[k] != v}
             entries.append(LedgerEntry(
                 c.id, c.description, "substituted", b,
-                f"param value(s) altered: {diffs}"))
+                f"param value(s) altered: {diffs}", source=c.source))
         elif present:
             missing = sorted(set(params) - set(present))
             entries.append(LedgerEntry(
                 c.id, c.description, "substituted", b,
-                f"partial application; missing {missing}"))
+                f"partial application; missing {missing}", source=c.source))
         else:
             entries.append(LedgerEntry(
                 c.id, c.description, "dropped", b,
-                f"declared params {sorted(params)} absent from call"))
+                f"declared params {sorted(params)} absent from call", source=c.source))
 
     imposed = [
         ImposedEntry(k, v, None, "argument present in call but matches no declared constraint")
