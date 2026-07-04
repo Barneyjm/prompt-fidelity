@@ -13,6 +13,8 @@ from typing import Literal
 from anthropic import Anthropic
 from openai import OpenAI
 
+from .claude_cli import run_claude_cli
+
 
 DECOMPOSITION_SYSTEM_PROMPT = """You are a movie recommendation assistant that decomposes user requests into structured constraints.
 
@@ -114,19 +116,33 @@ def decompose_with_claude(
 
     response_text = message.content[0].text
 
-    # Parse JSON response
+    return _parse_json_response(response_text)
+
+
+def _parse_json_response(response_text: str) -> dict:
+    """Parse a JSON response, tolerating surrounding prose."""
     try:
-        result = json.loads(response_text)
+        return json.loads(response_text)
     except json.JSONDecodeError:
-        # Try to extract JSON from the response
         start = response_text.find('{')
         end = response_text.rfind('}') + 1
         if start >= 0 and end > start:
-            result = json.loads(response_text[start:end])
-        else:
-            raise ValueError(f"Could not parse LLM response as JSON: {response_text}")
+            return json.loads(response_text[start:end])
+        raise ValueError(f"Could not parse LLM response as JSON: {response_text}")
 
-    return result
+
+def decompose_with_claude_cli(
+    prompt: str,
+    model: str = "haiku"
+) -> dict:
+    """
+    Decompose a movie request using the local `claude -p` CLI.
+
+    Uses Claude Code's own authentication -- no ANTHROPIC_API_KEY needed.
+    Defaults to Haiku: decomposition is a cheap classification task.
+    """
+    response_text = run_claude_cli(DECOMPOSITION_SYSTEM_PROMPT, prompt, model=model)
+    return _parse_json_response(response_text)
 
 
 def decompose_with_openai(
@@ -164,7 +180,7 @@ def decompose_with_openai(
 
 def decompose_prompt(
     prompt: str,
-    provider: Literal["anthropic", "openai"] = "anthropic",
+    provider: Literal["anthropic", "claude-cli", "openai"] = "anthropic",
     api_key: str | None = None,
     model: str | None = None
 ) -> dict:
@@ -173,7 +189,7 @@ def decompose_prompt(
 
     Args:
         prompt: The user's natural language movie request
-        provider: LLM provider to use ("anthropic" or "openai")
+        provider: LLM provider to use ("anthropic", "claude-cli", or "openai")
         api_key: API key (or uses env var for the provider)
         model: Model to use (defaults to provider's default)
 
@@ -189,6 +205,8 @@ def decompose_prompt(
             api_key=api_key,
             model=model or "claude-sonnet-4-5"
         )
+    elif provider == "claude-cli":
+        return decompose_with_claude_cli(prompt, model=model or "haiku")
     elif provider == "openai":
         return decompose_with_openai(
             prompt,

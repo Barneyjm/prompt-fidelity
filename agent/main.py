@@ -25,6 +25,7 @@ from .decompose import (
     get_inferred_constraints,
     constraints_requiring_lookup,
 )
+from .claude_cli import claude_cli_available
 from .ledger import book_ledger, bits
 from .tmdb import TMDbClient, build_discover_params, MovieDetails
 from .rerank import rerank_movies, merge_rerank_results
@@ -347,14 +348,16 @@ class MovieRecommendationAgent:
 
     def __init__(
         self,
-        provider: Literal["anthropic", "openai"] = "anthropic",
+        provider: Literal["anthropic", "claude-cli", "openai"] = "anthropic",
         model: str | None = None
     ):
         """
         Initialize the agent.
 
         Args:
-            provider: LLM provider ("anthropic" or "openai")
+            provider: LLM provider ("anthropic", "claude-cli", or "openai").
+                "claude-cli" runs LLM calls through the local `claude -p`
+                binary (Claude Code auth, no API key; defaults to Haiku)
             model: Specific model to use (defaults to provider's default)
         """
         self.provider = provider
@@ -419,9 +422,10 @@ def main():
     )
     parser.add_argument(
         "--provider",
-        choices=["anthropic", "openai"],
+        choices=["anthropic", "claude-cli", "openai"],
         default="anthropic",
-        help="LLM provider to use (default: anthropic)"
+        help="LLM provider to use (default: anthropic; claude-cli runs "
+             "through the local `claude -p` binary, no API key needed)"
     )
     parser.add_argument(
         "--model",
@@ -445,6 +449,15 @@ def main():
     )
 
     args = parser.parse_args()
+
+    # No Anthropic key but a local Claude Code install: fall back to
+    # `claude -p` (Haiku) instead of failing.
+    if (args.provider == "anthropic"
+            and not os.getenv("ANTHROPIC_API_KEY")
+            and claude_cli_available()):
+        print("No ANTHROPIC_API_KEY found; using local `claude -p` (haiku) instead.",
+              file=sys.stderr)
+        args.provider = "claude-cli"
 
     # Initialize agent
     agent = MovieRecommendationAgent(

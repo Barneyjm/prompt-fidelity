@@ -118,7 +118,9 @@ pip install -r requirements.txt
 cp .env.example .env
 # Edit .env and add your API keys:
 # - TMDB_API_KEY (required): https://www.themoviedb.org/settings/api
-# - ANTHROPIC_API_KEY (required if using Claude, the default provider): https://console.anthropic.com/
+# - ANTHROPIC_API_KEY (optional): https://console.anthropic.com/
+#   If you have Claude Code installed, no Anthropic key is needed -- the agent
+#   falls back to the local `claude -p` CLI (using Haiku to keep costs low).
 ```
 
 ### 3. Run the agent
@@ -135,6 +137,9 @@ python -m agent.main --json "Sci-fi movies with a melancholy tone"
 
 # Use OpenAI instead of Claude
 python -m agent.main --provider openai "Horror movies from Japan"
+
+# Explicitly use the local Claude Code CLI (no API key; Haiku by default)
+python -m agent.main --provider claude-cli "Horror movies from Japan"
 ```
 
 ## Sample Output
