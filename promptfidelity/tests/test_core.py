@@ -356,3 +356,32 @@ def test_merge_ledgers_copies_entries_not_mutates_input_ledgers():
     merge_ledgers([c], [call_0])
     # The original ledger's own entry must be untouched by the merge.
     assert call_0.entries[0].call is None
+
+
+def test_complete_repair_call_yields_conjunction_honored():
+    """The recommended repair pattern -- re-issue ONE complete call
+    including the already-honored params -- must read as a coherent
+    conjunction. Regression: with first-wins tie-breaking, the earlier
+    verified booking kept its old call index and conjunction_honored
+    stayed False on a perfect repair."""
+    a = Constraint(id="a", description="genre", params={"g": "878"}, p=0.25)
+    b = Constraint(id="b", description="rating", params={"r": "8"}, p=0.25)
+    first = book([a, b], {"g": "878"})              # a verified, b dropped
+    repair = book([a, b], {"g": "878", "r": "8"})   # complete corrective call
+    merged = merge_ledgers([a, b], [first, repair])
+    assert {e.id: e.account for e in merged.entries} == {"a": "verified", "b": "verified"}
+    assert {e.call for e in merged.entries} == {1}
+    assert merged.conjunction_honored
+
+
+def test_partial_patch_repair_stays_piecewise():
+    """A repair that only patches the missing param leaves the earlier
+    booking on its own call index -- no single call satisfied everything,
+    and conjunction_honored must say so."""
+    a = Constraint(id="a", description="genre", params={"g": "878"}, p=0.25)
+    b = Constraint(id="b", description="rating", params={"r": "8"}, p=0.25)
+    first = book([a, b], {"g": "878"})   # a verified, b dropped
+    patch = book([a, b], {"r": "8"})     # b verified, a dropped
+    merged = merge_ledgers([a, b], [first, patch])
+    assert {e.id: e.account for e in merged.entries} == {"a": "verified", "b": "verified"}
+    assert not merged.conjunction_honored

@@ -460,6 +460,14 @@ def merge_ledgers(constraints: list[Constraint], ledgers: list[Ledger]) -> Ledge
     is what Ledger.conjunction_honored reads to tell "honored, but only
     piecewise across separate calls" apart from "one call honored these
     together" -- see that property's docstring.
+
+    Ties go to the LATER call: when two calls book a constraint at equal
+    rank, the later call's entry (and call index) wins. This is what makes
+    the recommended repair pattern read correctly -- a complete corrective
+    call that re-sends the already-honored params alongside the fixes
+    collects every booking onto its own call index, so conjunction_honored
+    turns True; a partial patch that omits them leaves the earlier indices
+    in place and conjunction_honored stays False, as it should.
     """
     if not ledgers:
         return book(constraints, {})
@@ -468,7 +476,7 @@ def merge_ledgers(constraints: list[Constraint], ledgers: list[Ledger]) -> Ledge
     for i, ledger in enumerate(ledgers):
         for e in ledger.entries:
             cur = best.get(e.id)
-            if cur is None or _ACCOUNT_RANK[e.account] > _ACCOUNT_RANK[cur.account]:
+            if cur is None or _ACCOUNT_RANK[e.account] >= _ACCOUNT_RANK[cur.account]:
                 best[e.id] = replace(e, call=i)
 
     order = [c.id for c in constraints]
