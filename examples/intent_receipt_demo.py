@@ -182,12 +182,22 @@ def main():
     for c in constraints:
         print(f"  {c.id}: {c.description}  params={c.params}  p={c.p}")
 
+    before = {}  # snapshot of the pre-repair state, for PF_RECEIPT_JSON
     with pf.trace(constraints, advisory_params={"query"},
                   ignore_params={"page", "sort_by"}) as rec:
         movies = run_agent(constraints)
 
         # --- self-inspection: check the books BEFORE speaking -----------
         interim = rec.check()
+        def snap(m):
+            if isinstance(m, dict):
+                return {"title": m.get("title"),
+                        "year": m.get("year") or (m.get("release_date") or "????")[:4]}
+            return {"title": m.title, "year": m.year}
+
+        before = {"ledger": interim.to_dict(),
+                  "injection": interim.render("model"),
+                  "results": [snap(m) for m in movies[:6]]}
         if interim.unhonored:
             print("\nMid-run check: the books don't balance. Injected into"
                   " the agent's context:\n")
@@ -205,6 +215,7 @@ def main():
                     if name != "query":  # search tool's param, not discover's
                         repair_params[name] = value
             print(f"\nRepair call:\n   discover_movies(**{repair_params})")
+            before["repair_params"] = repair_params
             repaired = discover_movies(**repair_params)
             if repaired:
                 movies = [m.to_dict() for m in repaired] + movies
@@ -233,9 +244,13 @@ def main():
         payload = ledger.to_dict()
         payload["prompt"] = prompt
         payload["calls"] = rec.calls
+        payload["conjunction_honored"] = ledger.conjunction_honored
+        payload["before"] = before
+        payload["renderings"] = {a: ledger.render(a)
+                                 for a in ("engineer", "product", "executive")}
         payload["results"] = [
             {"title": (m.get("title") if isinstance(m, dict) else m.title),
-             "year": ((m.get("release_date") or "????")[:4] if isinstance(m, dict) else m.year)}
+             "year": (m.get("year") or (m.get("release_date") or "????")[:4]) if isinstance(m, dict) else m.year}
             for m in movies[:8]
         ]
         with open(out, "w") as f:
