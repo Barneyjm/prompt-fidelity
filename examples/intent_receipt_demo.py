@@ -182,17 +182,50 @@ def main():
     for c in constraints:
         print(f"  {c.id}: {c.description}  params={c.params}  p={c.p}")
 
-    with pf.trace(constraints, advisory_params={"query"}) as rec:
+    with pf.trace(constraints, advisory_params={"query"},
+                  ignore_params={"page", "sort_by"}) as rec:
         movies = run_agent(constraints)
+
+        # --- self-inspection: check the books BEFORE speaking -----------
+        interim = rec.check()
+        if interim.unhonored:
+            print("\nMid-run check: the books don't balance. Injected into"
+                  " the agent's context:\n")
+            for line in interim.render("model").splitlines():
+                print(f"   | {line}")
+
+            # The repair the injection asks for: ONE complete discover
+            # call built from the constraints' own params -- overriding
+            # the agent's bad habits (rating cap, whitelist, imposed
+            # popularity floor). Mechanical: params come straight off the
+            # ledger entries, no model judgment needed here.
+            repair_params = {}
+            for e in interim.entries:
+                for name, value in e.params.items():
+                    if name != "query":  # search tool's param, not discover's
+                        repair_params[name] = value
+            print(f"\nRepair call:\n   discover_movies(**{repair_params})")
+            repaired = discover_movies(**repair_params)
+            if repaired:
+                movies = [m.to_dict() for m in repaired] + movies
 
     ledger = rec.ledger()
     print()
     print_receipt(ledger, rec.calls)
+    if not ledger.conjunction_honored:
+        print("\n  note: conjunction_honored=False -- intent was honored across")
+        print("  separate tool calls (discover + search); no single result set")
+        print("  satisfied every constraint together.")
+
+    print("\n--- the same ledger, four altitudes ---")
+    for audience in ("product", "executive"):
+        print(f"\n[{audience}]")
+        print(ledger.render(audience))
 
     print("\nWhat the agent returned:")
     for m in movies[:5]:
         title = m.get("title") if isinstance(m, dict) else m.title
-        year = (m.get("release_date") or "????")[:4] if isinstance(m, dict) else m.year
+        year = (m.get("year") or (m.get("release_date") or "????")[:4]) if isinstance(m, dict) else m.year
         print(f"  - {title} ({year})")
 
     out = os.environ.get("PF_RECEIPT_JSON")
