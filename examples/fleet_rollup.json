@@ -1,0 +1,270 @@
+{
+ "meta": {
+  "runs": 10000,
+  "days": 30,
+  "shards": 10,
+  "generated": "2026-07-04",
+  "engine": "promptfidelity 0.1.0 (real book(), scripted agents, no LLM)"
+ },
+ "fleet": {
+  "fidelity": 0.6373,
+  "accounts": {
+   "dropped": 1284.5,
+   "inferred": 15183.2,
+   "substituted": 6932.7,
+   "transmitted": 9758.2,
+   "verified": 58259.7
+  },
+  "total_bits": 91418.3,
+  "below_half_runs": 3118,
+  "books_balance": true,
+  "shard_totals": [
+   9249.8,
+   9046.8,
+   9171.2,
+   9287.1,
+   9012.3,
+   9100.9,
+   9196.9,
+   9034.8,
+   9113.1,
+   9205.2
+  ]
+ },
+ "histogram": [
+  0,
+  0,
+  0,
+  2639,
+  479,
+  424,
+  0,
+  4616,
+  1207,
+  635
+ ],
+ "daily": [
+  {
+   "day": 1,
+   "deploy": "v1.0",
+   "runs": 332,
+   "fidelity": 0.5682
+  },
+  {
+   "day": 2,
+   "deploy": "v1.0",
+   "runs": 324,
+   "fidelity": 0.5667
+  },
+  {
+   "day": 3,
+   "deploy": "v1.0",
+   "runs": 338,
+   "fidelity": 0.566
+  },
+  {
+   "day": 4,
+   "deploy": "v1.0",
+   "runs": 317,
+   "fidelity": 0.5701
+  },
+  {
+   "day": 5,
+   "deploy": "v1.0",
+   "runs": 347,
+   "fidelity": 0.5595
+  },
+  {
+   "day": 6,
+   "deploy": "v1.0",
+   "runs": 322,
+   "fidelity": 0.5629
+  },
+  {
+   "day": 7,
+   "deploy": "v1.0",
+   "runs": 306,
+   "fidelity": 0.5724
+  },
+  {
+   "day": 8,
+   "deploy": "v1.0",
+   "runs": 329,
+   "fidelity": 0.5546
+  },
+  {
+   "day": 9,
+   "deploy": "v1.0",
+   "runs": 347,
+   "fidelity": 0.5655
+  },
+  {
+   "day": 10,
+   "deploy": "v1.0",
+   "runs": 330,
+   "fidelity": 0.5733
+  },
+  {
+   "day": 11,
+   "deploy": "v1.1",
+   "runs": 295,
+   "fidelity": 0.6747
+  },
+  {
+   "day": 12,
+   "deploy": "v1.1",
+   "runs": 352,
+   "fidelity": 0.668
+  },
+  {
+   "day": 13,
+   "deploy": "v1.1",
+   "runs": 349,
+   "fidelity": 0.6604
+  },
+  {
+   "day": 14,
+   "deploy": "v1.1",
+   "runs": 283,
+   "fidelity": 0.6823
+  },
+  {
+   "day": 15,
+   "deploy": "v1.1",
+   "runs": 368,
+   "fidelity": 0.6676
+  },
+  {
+   "day": 16,
+   "deploy": "v1.1",
+   "runs": 318,
+   "fidelity": 0.6857
+  },
+  {
+   "day": 17,
+   "deploy": "v1.1",
+   "runs": 337,
+   "fidelity": 0.6895
+  },
+  {
+   "day": 18,
+   "deploy": "v1.1",
+   "runs": 381,
+   "fidelity": 0.6883
+  },
+  {
+   "day": 19,
+   "deploy": "v1.1",
+   "runs": 328,
+   "fidelity": 0.6729
+  },
+  {
+   "day": 20,
+   "deploy": "v1.1",
+   "runs": 364,
+   "fidelity": 0.6617
+  },
+  {
+   "day": 21,
+   "deploy": "v1.2",
+   "runs": 362,
+   "fidelity": 0.6743
+  },
+  {
+   "day": 22,
+   "deploy": "v1.2",
+   "runs": 331,
+   "fidelity": 0.6644
+  },
+  {
+   "day": 23,
+   "deploy": "v1.2",
+   "runs": 342,
+   "fidelity": 0.6711
+  },
+  {
+   "day": 24,
+   "deploy": "v1.2",
+   "runs": 338,
+   "fidelity": 0.6587
+  },
+  {
+   "day": 25,
+   "deploy": "v1.2",
+   "runs": 328,
+   "fidelity": 0.6537
+  },
+  {
+   "day": 26,
+   "deploy": "v1.2",
+   "runs": 361,
+   "fidelity": 0.6493
+  },
+  {
+   "day": 27,
+   "deploy": "v1.2",
+   "runs": 292,
+   "fidelity": 0.6854
+  },
+  {
+   "day": 28,
+   "deploy": "v1.2",
+   "runs": 321,
+   "fidelity": 0.6878
+  },
+  {
+   "day": 29,
+   "deploy": "v1.2",
+   "runs": 333,
+   "fidelity": 0.6959
+  },
+  {
+   "day": 30,
+   "deploy": "v1.2",
+   "runs": 325,
+   "fidelity": 0.6605
+  }
+ ],
+ "backlog": [
+  {
+   "param": "vote_average.gte",
+   "desc": "Rated 8.0 or higher",
+   "bits": 6932.7,
+   "runs": 1813
+  },
+  {
+   "param": "vote_count.lte",
+   "desc": "Obscure (under 500 votes)",
+   "bits": 1284.5,
+   "runs": 1115
+  }
+ ],
+ "substitution_hotspots": [
+  {
+   "param": "vote_average.gte",
+   "substituted": 1813,
+   "eligible": 3275,
+   "rate": 0.554
+  }
+ ],
+ "imposed_census": [
+  {
+   "filter": "vote_count.gte=100",
+   "count": 10000,
+   "first_day": 1,
+   "deploys": [
+    "v1.0",
+    "v1.1",
+    "v1.2"
+   ]
+  },
+  {
+   "filter": "with_original_language=en",
+   "count": 2784,
+   "first_day": 21,
+   "deploys": [
+    "v1.2"
+   ]
+  }
+ ]
+}
