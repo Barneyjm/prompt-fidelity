@@ -123,6 +123,24 @@ _RELATIVE_YEAR_RE = re.compile(
 _BARE_YEAR_RE = re.compile(r"\b(?:19|20)\d{2}\b")
 
 
+def _content_words(text: str, min_len: int = 4) -> set[str]:
+    """Lowercase alphanumeric tokens of at least `min_len` characters, with
+    _STOPWORDS removed.
+
+    Factored here (rather than duplicated) so this module's own vocabulary
+    is the single source of truth for "what counts as a meaningful word" --
+    hop2.py imports this directly for its word-overlap matching (see that
+    module's docstring), at the default min_len=4. Not reused by _residue
+    below: that tokenizer excludes digits and uses its own min_len=2
+    threshold (kept as its original hand-rolled form to avoid changing
+    residue-detection behavior pinned by existing tests), so the two
+    tokenizers deliberately differ in what they consider "a word" while
+    sharing the same _STOPWORDS list either way.
+    """
+    tokens = re.findall(r"[A-Za-z0-9]+", text.lower())
+    return {t for t in tokens if len(t) >= min_len and t not in _STOPWORDS}
+
+
 class _Span:
     """One accepted (start, end) extraction, plus what to build a
     Constraint from. Kept internal -- callers only see the final list of

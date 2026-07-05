@@ -22,6 +22,13 @@ Recorder.check() are the pieces that turn this into a mid-run repair loop:
 book the calls made so far, render "model" for whatever's unhonored, feed
 it back to the agent as an instruction to repair. See recorder.py's module
 docstring and report.py for the details.
+Hop-2 attribution (stdlib only, no LLM): attribute -- given an already-
+booked Ledger, the assistant's response text, and the tool-result blobs it
+actually received, attribute each entry as unaddressed / addressed_grounded
+/ addressed_ungrounded. This distinguishes a constraint hop 1 booked
+`dropped` because it was ignored from one answered correctly from the
+model's own knowledge with no tool call at all -- both book identically at
+hop 1. Measures PROVENANCE, never truth: see hop2.py's module docstring.
 Wrapping (stdlib only, SDK-shape duck-typed): wrap.
 Extras (each needs its own optional dependency, imported lazily on first
 use so importing `promptfidelity` itself never requires any of them):
@@ -34,6 +41,7 @@ use so importing `promptfidelity` itself never requires any of them):
 
 from .core import Constraint, Ledger, LedgerEntry, bits, book
 from .extraction import extract_constraints
+from .hop2 import Hop2Report, attribute
 from .recorder import Recorder, instrument, trace
 from .report import render
 from .wrap import wrap
@@ -52,6 +60,8 @@ __all__ = [
     "extract_constraints",
     "render",
     "wrap",
+    "attribute",
+    "Hop2Report",
     "record",
     "FidelityCallbackHandler",
     "FidelityMiddleware",
