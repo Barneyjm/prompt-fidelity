@@ -19,7 +19,16 @@ Narrative:
 
 Run directly:
     python -m promptfidelity.examples.repair_loop
+or as a plain file from anywhere:
+    python promptfidelity/src/promptfidelity/examples/repair_loop.py
 """
+
+import os
+import sys
+
+if __package__ in (None, ""):
+    # Run as a plain file: put the package's src/ dir on the path.
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 
 import promptfidelity as pf
 
