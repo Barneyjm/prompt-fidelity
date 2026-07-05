@@ -110,6 +110,78 @@ normalizing a param, injecting a key), the ledger diverges from what really
 ran downstream. Combine with `@pf.instrument` on your *executed* tool
 functions for ground truth on what actually happened.
 
+## Close the loop: self-inspection and repair
+
+`book()`/`merge_ledgers()` are pure and cheap, so an agent loop doesn't have
+to wait until the run is over to check the books -- it can check them
+**before it speaks**, after every tool call, and let the model repair
+itself while the trace is still open:
+
+```python
+MAX_REPAIRS = 3
+
+with pf.trace(constraints) as rec:
+    discover_movies(with_genres="878")           # the model's first attempt
+
+    for _ in range(MAX_REPAIRS):
+        ledger = rec.check()
+        if not ledger.unhonored:
+            break
+        injection = ledger.render("model")       # inject this into the model's context
+        # ... let the model issue ONE corrective tool call here ...
+    else:
+        pass  # exhausted MAX_REPAIRS with entries still unhonored -- disclose, don't spin
+
+ledger = rec.ledger()
+```
+
+`rec.check()` is a semantic alias for `rec.ledger()` -- an interim booking
+taken mid-trace instead of only at the end. `Ledger.unhonored` is the
+subset of entries (`substituted` and `dropped`) a corrective tool call can
+actually fix; `dropped`/`substituted` params are named on the entry itself
+(`LedgerEntry.params`), so `render("model")` can say exactly what to send.
+**Always bound your repair iterations** -- some constraints are
+structurally unhonorable against a given tool (the backend just has no
+such param), and an unbounded loop that only exits on an empty
+`unhonored` list will spin forever against one of those.
+
+**The conjunction caveat.** `Ledger.conjunction_honored` answers a
+different question than `unhonored` does. `merge_ledgers()` (what
+`rec.ledger()`/`rec.check()` run under the hood) credits each constraint
+its *best ever* booking across every call in the trace -- so "everything
+verified" can mean everything was verified, just never all by the *same*
+call. A repair loop that patches only the missing param in a small
+follow-up call can turn a `dropped` entry into `verified` while leaving
+`conjunction_honored` `False`: nothing ever received one request carrying
+every honored argument together, so no single result set reflects the
+whole intent. The honest repair isn't "add the missing param to a minimal
+follow-up call" -- it's "re-issue ONE complete call carrying every
+previously-honored param plus the missing one," which is exactly what
+`render("model")`'s fixed instruction line tells the model to do.
+
+**`report.render(ledger, audience)`** (also `ledger.render(audience)`) is
+one instrument at four altitudes -- deterministic string templates over
+ledger data, no LLM involved:
+
+| Audience | What it's for |
+|---|---|
+| `model` | Short and actionable -- meant to be injected into an agent's own context mid-run. Empty string when there's nothing to repair. |
+| `engineer` | Full detail: every entry's account, bits, source, call index, and evidence; imposed args; fidelity + basis; the conjunction flag. |
+| `product` | Plain language, no jargon, no bits -- what got delivered as asked, delivered approximately, handled by model judgment, or not delivered at all. |
+| `executive` | At most ~5 lines: the fidelity headline (with its basis caveat spelled out when it matters), how much was altered/dropped without disclosure, how many filters the agent added unasked, one closing risk line. |
+
+`ignore_params` (on `Recorder`, `trace()`, and `wrap()`) keeps plumbing
+arguments -- pagination, auth, sort defaults -- out of the `imposed`
+account entirely, so they don't turn the repair signal into noise:
+
+```python
+with pf.trace(constraints, ignore_params={"page", "api_key", "sort_by"}) as rec:
+    ...
+```
+
+See `promptfidelity/examples/repair_loop.py` for a runnable, self-contained
+walkthrough (no network, no keys) of the whole loop end to end.
+
 ## Quickstart: core
 
 ```python
@@ -225,9 +297,12 @@ docstring in `mcp_ext.py`; it is intentionally not implemented.
 ## Design notes
 
 - Core (`core.py`), the extractor (`extraction.py`), the recorder
-  (`recorder.py`), and the client wrapper (`wrap.py`) are **stdlib only** —
-  no dependency, optional or otherwise, is required to book a ledger, run
-  Tier-1 extraction, or wrap an Anthropic-/OpenAI-shaped client.
+  (`recorder.py`), the reporting layer (`report.py`), and the client
+  wrapper (`wrap.py`) are **stdlib only** — no dependency, optional or
+  otherwise, is required to book a ledger, run Tier-1 extraction, render a
+  report, or wrap an Anthropic-/OpenAI-shaped client. Reporting has no LLM
+  anywhere in it: `render()` is a deterministic string template over
+  already-booked `Ledger` data.
 - Each extra imports its optional dependency lazily, and only inside the
   function/class that needs it, so `import promptfidelity` never requires
   `anthropic`, `langchain-core`, `mcp`, or `fastmcp` to be installed.

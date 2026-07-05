@@ -159,12 +159,15 @@ class WrappedClient:
 
     def __init__(self, client: Any, constraints: list[Constraint] | None,
                  prompt: str | None, extractor: Callable | None,
-                 vocab: dict | None, advisory_params: set | None):
+                 vocab: dict | None, advisory_params: set | None,
+                 ignore_params: set[str] | None = None):
         self._client = client
         self._prompt = prompt
         self._extractor = extractor
         self._vocab = vocab
-        self.fidelity = Recorder(constraints or [], advisory_params=advisory_params)
+        self.fidelity = Recorder(
+            constraints or [], advisory_params=advisory_params, ignore_params=ignore_params
+        )
         self._constraints_ready = constraints is not None
 
         messages_ns = getattr(client, "messages", None)
@@ -220,6 +223,7 @@ def wrap(
     extractor: Callable[[str], list[Constraint]] | None = None,
     vocab: dict | None = None,
     advisory_params: set | None = None,
+    ignore_params: set[str] | None = None,
 ) -> WrappedClient:
     """Wrap an Anthropic- or OpenAI-shaped client for drop-in fidelity
     instrumentation.
@@ -254,5 +258,12 @@ def wrap(
     Every other attribute -- everything not `.messages.create` or
     `.chat.completions.create` -- passes straight through to the real
     client untouched.
+
+    `ignore_params` is passed straight through to the internal Recorder
+    (`client.fidelity`) -- see Recorder.record_call for what it does and
+    why (keeping plumbing args like pagination/auth/sort defaults out of
+    the `imposed` account).
     """
-    return WrappedClient(client, constraints, prompt, extractor, vocab, advisory_params)
+    return WrappedClient(
+        client, constraints, prompt, extractor, vocab, advisory_params, ignore_params
+    )

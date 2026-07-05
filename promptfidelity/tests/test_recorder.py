@@ -185,3 +185,64 @@ def test_trace_llm_adds_coverage_rules_missed_without_collision():
                for c in rec.constraints)
     assert any(c.params == {"mood": "wistful"} and c.source == "llm"
                for c in rec.constraints)
+
+
+# ---------------------------------------------------------------------------
+# check() -- mid-trace repair loop surface
+# ---------------------------------------------------------------------------
+
+
+def test_check_mid_trace_equals_ledger():
+    constraints = [Constraint(id="c1", description="genre", params={"with_genres": "878"}, p=0.08)]
+    with pf.trace(constraints) as rec:
+        discover_movies(with_genres="878")
+        mid = rec.check()
+        assert mid.entries[0].account == "verified"
+    assert mid.to_dict() == rec.ledger().to_dict()
+
+
+def test_check_reflects_repair_across_calls():
+    constraints = [
+        Constraint(id="genre", description="genre", params={"with_genres": "878"}, p=0.08),
+        Constraint(id="rating", description="rating", params={"vote_average.gte": "7.0"}, p=0.1),
+    ]
+    with pf.trace(constraints) as rec:
+        discover_movies(with_genres="878")  # drops rating
+        first = rec.check()
+        assert first.unhonored
+        assert any(e.id == "rating" for e in first.unhonored)
+
+        # Scripted repair: re-issue ONE complete corrective call.
+        discover_movies(**{"with_genres": "878", "vote_average.gte": "7.0"})
+        second = rec.check()
+    assert not second.unhonored
+
+
+# ---------------------------------------------------------------------------
+# ignore_params
+# ---------------------------------------------------------------------------
+
+
+def test_ignore_params_filters_imposed_on_recorder():
+    constraints = [Constraint(id="c1", description="genre", params={"with_genres": "878"}, p=0.08)]
+    rec = pf.Recorder(constraints, ignore_params={"page", "api_key"})
+    rec.record_call("discover", {"with_genres": "878", "page": "2", "api_key": "secret"})
+    ledger = rec.ledger()
+    assert ledger.imposed == []
+
+
+def test_ignore_params_only_filters_exact_names():
+    constraints = [Constraint(id="c1", description="genre", params={"with_genres": "878"}, p=0.08)]
+    rec = pf.Recorder(constraints, ignore_params={"page"})
+    rec.record_call("discover", {"with_genres": "878", "page_size": "20"})
+    ledger = rec.ledger()
+    # "page_size" is not an exact match for "page" -- it must still book imposed.
+    assert any(e.description == "page_size" for e in ledger.imposed)
+
+
+def test_ignore_params_on_trace():
+    constraints = [Constraint(id="c1", description="genre", params={"with_genres": "878"}, p=0.08)]
+    with pf.trace(constraints, ignore_params={"page"}) as rec:
+        discover_movies(with_genres="878", page="3")
+    ledger = rec.ledger()
+    assert ledger.imposed == []

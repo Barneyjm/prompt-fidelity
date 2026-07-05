@@ -315,3 +315,18 @@ def test_wrap_openai_no_tool_calls_records_nothing():
     client = wrap(FakeOpenAIClient(response), vocab=VOCAB)
     client.chat.completions.create(messages=[{"role": "user", "content": "hello"}])
     assert client.fidelity.calls == []
+
+
+def test_wrap_ignore_params_passthrough():
+    constraints = [Constraint(id="c1", description="genre", params={"with_genres": "878"}, p=0.5)]
+    response = FakeMessage(content=[
+        FakeToolUseBlock(id="t1", name="discover_movies",
+                         input={"with_genres": "878", "page": "2"}),
+    ])
+    client = wrap(FakeAnthropicClient(response), constraints=constraints,
+                  ignore_params={"page"})
+
+    client.messages.create(messages=[{"role": "user", "content": "anything"}])
+
+    ledger = client.fidelity.ledger()
+    assert ledger.imposed == []

@@ -38,6 +38,19 @@ exact merge rule). Passing both `constraints` and `prompt` is redundant, not
 additive: `constraints` wins and `prompt`/`extractor`/`vocab` are ignored.
 Passing neither is an error -- trace() needs to know what intent to book
 against.
+
+## Mid-run self-inspection and repair
+
+Booking (book()/merge_ledgers()) is a pure, cheap diff -- nothing stops an
+agent loop from checking the books BEFORE it speaks, not just after the run
+ends. Recorder.check() is that mid-trace hook: call it after any tool call,
+and if the returned Ledger has unhonored entries, render them (via
+`ledger.render("model")`, see promptfidelity.report) into a short
+deterministic text block and feed it back to the model as an instruction to
+repair. The repair is just another tool call, which gets booked exactly
+like any other on the next check() -- no new code path, no LLM anywhere in
+the inspection signal itself. See Recorder.check()'s docstring for the loop
+shape and the bounded-iteration caveat.
 """
 
 import contextvars
@@ -119,15 +132,36 @@ class Recorder:
     that doesn't have access to the `with`-bound variable).
     """
 
-    def __init__(self, constraints: list[Constraint], advisory_params: set | None = None):
+    def __init__(
+        self,
+        constraints: list[Constraint],
+        advisory_params: set | None = None,
+        ignore_params: set[str] | None = None,
+    ):
         self.constraints = list(constraints)
         self.advisory_params = advisory_params
+        self.ignore_params = ignore_params
         self.calls: list[dict[str, Any]] = []
 
     def record_call(self, name: str, arguments: dict[str, Any]) -> None:
         """Record one tool call's keyword arguments. Called by @instrument;
         may also be called directly for tool calls that can't be wrapped
-        (e.g. calls made through a third-party client object)."""
+        (e.g. calls made through a third-party client object).
+
+        Arguments named in self.ignore_params are dropped before storage --
+        filtering happens here, at recording time, so book() itself stays
+        pure and unchanged: it never sees the ignored names at all, not
+        even to book them imposed. Matching is by exact name only (no
+        prefix/suffix/wildcard matching).
+
+        This keeps plumbing args -- pagination (`page`), auth (`api_key`),
+        sort defaults (`sort_by`), and the like -- from flooding the
+        `imposed` account with entries no one cares about, which would
+        otherwise turn report.render()'s repair signal into noise: a
+        repair loop doesn't need to be told the call also carried
+        `page=1`."""
+        if self.ignore_params:
+            arguments = {k: v for k, v in arguments.items() if k not in self.ignore_params}
         self.calls.append({"name": name, "arguments": dict(arguments)})
 
     def ledger(self) -> Ledger:
@@ -142,6 +176,36 @@ class Recorder:
         ]
         return merge_ledgers(self.constraints, per_call)
 
+    def check(self) -> Ledger:
+        """Semantic alias for ledger() -- an interim booking taken mid-trace,
+        before the run has finished, so an agent loop can inspect the books
+        BEFORE it speaks rather than only after.
+
+        book()/merge_ledgers() are pure and cheap: call check() as often as
+        you like, after every tool call if you want to. The typical repair
+        loop looks like:
+
+            for _ in range(MAX_REPAIRS):
+                ledger = rec.check()
+                if not ledger.unhonored:
+                    break
+                injection = ledger.render("model")   # see promptfidelity.report
+                # ... feed `injection` to the model as context, let it
+                # issue one corrective tool call (executed normally, which
+                # records into `rec` exactly like any other call) ...
+            else:
+                # MAX_REPAIRS exhausted with entries still unhonored --
+                # stop trying and disclose, don't spin forever.
+                ...
+
+        ALWAYS bound your repair iterations. Some constraints are
+        structurally unhonorable against a given tool -- the backend has no
+        such param at all -- and a loop that only exits when `unhonored` is
+        empty will spin until MAX_REPAIRS forces it to stop. Nothing in
+        this package enforces a bound for you; that while/for loop's exit
+        condition is the caller's to set."""
+        return self.ledger()
+
 
 @contextmanager
 def trace(
@@ -151,6 +215,7 @@ def trace(
     extractor: Callable[[str], list[Constraint]] | None = None,
     vocab: dict | None = None,
     advisory_params: set | None = None,
+    ignore_params: set[str] | None = None,
 ):
     """Open a recording context for one prompt/run.
 
@@ -181,13 +246,17 @@ def trace(
     Nested trace() contexts each get their own Recorder (contextvars are
     scoped, not global mutable state), and the outer context's Recorder is
     restored on exit.
+
+    ignore_params: argument names stripped from every recorded call before
+    booking (e.g. {"page", "api_key", "sort_by"}) -- see
+    Recorder.record_call for exactly where and how the filtering happens.
     """
     if constraints is None and prompt is None:
         raise ValueError("pf.trace() needs either constraints= or prompt=")
     if constraints is None:
         constraints = _merge_constraints(prompt, extractor, vocab)
 
-    rec = Recorder(constraints, advisory_params=advisory_params)
+    rec = Recorder(constraints, advisory_params=advisory_params, ignore_params=ignore_params)
     token = _active_recorder.set(rec)
     try:
         yield rec
