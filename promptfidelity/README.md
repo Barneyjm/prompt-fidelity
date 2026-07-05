@@ -182,6 +182,79 @@ with pf.trace(constraints, ignore_params={"page", "api_key", "sort_by"}) as rec:
 See `promptfidelity/examples/repair_loop.py` for a runnable, self-contained
 walkthrough (no network, no keys) of the whole loop end to end.
 
+## Hop 2: attribution
+
+Hop 1 (`book()`) has a blind spot it can't see past on its own: a
+constraint that was **ignored** and a constraint that was **answered
+correctly from the model's own knowledge, with no tool call at all**, book
+identically -- both land in `dropped`. "Rated above 7" with no
+`vote_average.gte` in the call could mean the model dropped the filter, or
+it could mean the model just knew the movie's rating and said so, no tool
+call required. Hop 1 alone cannot tell these apart, and a user reading only
+`dropped` bits has no way to either.
+
+`promptfidelity.hop2.attribute(ledger, response_text, tool_results)` closes
+that gap by asking, per already-booked entry, two more mechanical
+questions against the assistant's own response text and the tool-result
+blobs the agent actually received:
+
+```python
+from promptfidelity.hop2 import attribute
+
+report = attribute(ledger, response_text, tool_results)
+report.render("executive")
+```
+
+1. **Addressed** -- did the response text talk about this constraint at all
+   (its param values, or enough of its descriptive words)?
+2. **Grounded** (only asked if addressed) -- was supporting material for
+   that claim present in at least one tool result the agent actually saw,
+   or was it addressed with nothing behind it?
+
+Every entry lands in one of three statuses: `unaddressed`,
+`addressed_grounded`, `addressed_ungrounded`. Matching is deterministic
+string containment plus token-overlap arithmetic against disclosed
+thresholds (`ADDRESSED_WORD_FRACTION`, `GROUNDED_WORD_FRACTION` in
+`hop2.py`) -- no LLM anywhere in `attribute()`.
+
+**Ignored vs. answered from knowledge.** This is the distinction hop 2
+exists to draw out of a `dropped` account that used to hide it:
+
+| | `dropped` + `unaddressed` | `dropped` + `addressed_ungrounded` |
+|---|---|---|
+| What happened | Never sent, never mentioned -- silently ignored. | Never sent, but the response asserts it anyway, with no tool result backing it. |
+| `Hop2Report` property | `.ignored` | `.knowledge_answered` |
+
+**The fate matrix.** `Hop2Report.fate_matrix` is a `(hop1_account,
+hop2_status) -> count` dict -- the complete two-dimensional life of every
+constraint in a run: not just where hop 1 left it, and not just whether hop
+2 saw it addressed, but both together. `Hop2Report.narration_risk` is the
+subset addressed (grounded or not) whose hop1 account is `dropped` or
+`substituted` -- talked about without verified execution, the
+per-constraint form of the honesty gap this whole package measures.
+
+**Provenance, not truth.** This is the caveat to internalize before reading
+anything out of a `Hop2Report`: "grounded" means matching material was
+*present* in a tool result the agent received -- it is not a verification
+that the response's claim is correct, and a coincidental string match
+scores identically to a load-bearing one. "Ungrounded" does **not** mean
+wrong or fabricated -- it may be accurate, well-known information the model
+already knew. The point of hop 2 is that a user reading the response text
+alone cannot tell an ungrounded-but-correct answer from a fabrication; hop
+2 doesn't resolve that (nothing mechanical can, without a truth oracle) --
+it makes the ambiguity visible and countable per constraint instead of
+burying it inside a `dropped` account that looked the same either way.
+
+**The two-hop product.** End-to-end fidelity for one constraint is the
+product of what each hop measures: whether it reached the tool call
+honestly (hop 1) times whether the response then talked about it honestly
+and with visible support (hop 2). `report.render(audience)` renders a
+`Hop2Report` at two altitudes -- `"engineer"` (every entry's hop1 account,
+hop2 status, and evidence, plus the fate matrix) and `"executive"` (at most
+5 lines: how many claims were addressed with no visible support, how many
+were narration risk, how many were ignored, one closing line) -- mirroring
+`report.py`'s multi-altitude convention for hop 1.
+
 ## Quickstart: core
 
 ```python
@@ -297,12 +370,14 @@ docstring in `mcp_ext.py`; it is intentionally not implemented.
 ## Design notes
 
 - Core (`core.py`), the extractor (`extraction.py`), the recorder
-  (`recorder.py`), the reporting layer (`report.py`), and the client
-  wrapper (`wrap.py`) are **stdlib only** — no dependency, optional or
-  otherwise, is required to book a ledger, run Tier-1 extraction, render a
-  report, or wrap an Anthropic-/OpenAI-shaped client. Reporting has no LLM
-  anywhere in it: `render()` is a deterministic string template over
-  already-booked `Ledger` data.
+  (`recorder.py`), the reporting layer (`report.py`), the client wrapper
+  (`wrap.py`), and hop-2 attribution (`hop2.py`) are **stdlib only** — no
+  dependency, optional or otherwise, is required to book a ledger, run
+  Tier-1 extraction, render a report, wrap an Anthropic-/OpenAI-shaped
+  client, or attribute a booked ledger's entries against response text and
+  tool results. Neither `report.render()` nor `hop2.attribute()` has an LLM
+  anywhere in it: both are deterministic string/token matching over
+  already-computed data.
 - Each extra imports its optional dependency lazily, and only inside the
   function/class that needs it, so `import promptfidelity` never requires
   `anthropic`, `langchain-core`, `mcp`, or `fastmcp` to be installed.
