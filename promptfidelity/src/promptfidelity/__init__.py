@@ -13,6 +13,16 @@ account from model output; book() is the only place an account is ever set.
 
 Core (stdlib only): Constraint, Ledger, LedgerEntry, bits, book.
 Recording (stdlib only): Recorder, trace, instrument.
+Extraction (stdlib only, Tier 1 -- deterministic regex/vocab rules, never
+an LLM): extract_constraints.
+Reporting (stdlib only, no LLM): render -- deterministic text at four
+altitudes ("model" / "engineer" / "product" / "executive") from an
+already-booked Ledger. Ledger.unhonored + Ledger.conjunction_honored +
+Recorder.check() are the pieces that turn this into a mid-run repair loop:
+book the calls made so far, render "model" for whatever's unhonored, feed
+it back to the agent as an instruction to repair. See recorder.py's module
+docstring and report.py for the details.
+Wrapping (stdlib only, SDK-shape duck-typed): wrap.
 Extras (each needs its own optional dependency, imported lazily on first
 use so importing `promptfidelity` itself never requires any of them):
     record                    -- promptfidelity.anthropic_ext  [anthropic]
@@ -23,7 +33,10 @@ use so importing `promptfidelity` itself never requires any of them):
 """
 
 from .core import Constraint, Ledger, LedgerEntry, bits, book
+from .extraction import extract_constraints
 from .recorder import Recorder, instrument, trace
+from .report import render
+from .wrap import wrap
 
 __version__ = "0.1.0"
 
@@ -36,6 +49,9 @@ __all__ = [
     "Recorder",
     "trace",
     "instrument",
+    "extract_constraints",
+    "render",
+    "wrap",
     "record",
     "FidelityCallbackHandler",
     "FidelityMiddleware",

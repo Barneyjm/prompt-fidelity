@@ -21,18 +21,105 @@ trace() context, with zero recording overhead beyond one contextvar lookup.
 
 Stdlib only: uses contextvars so recording is correct across concurrent
 asyncio tasks/threads, each with (or without) its own active trace.
+
+## Auto-extracting trace()
+
+trace() can also derive its constraints from a raw prompt string instead of
+requiring the caller to hand-build a list of Constraint objects:
+
+    with pf.trace(prompt="a slow sci-fi movie from the 90s, rated above 7") as rec:
+        ...
+
+This runs promptfidelity.extraction.extract_constraints() (Tier 1:
+deterministic regex/vocab rules, source="rules") and, if an `extractor`
+callable is also supplied, merges in its output (Tier 2: pluggable,
+typically LLM-backed, source="llm" -- see _merge_constraints below for the
+exact merge rule). Passing both `constraints` and `prompt` is redundant, not
+additive: `constraints` wins and `prompt`/`extractor`/`vocab` are ignored.
+Passing neither is an error -- trace() needs to know what intent to book
+against.
+
+## Mid-run self-inspection and repair
+
+Booking (book()/merge_ledgers()) is a pure, cheap diff -- nothing stops an
+agent loop from checking the books BEFORE it speaks, not just after the run
+ends. Recorder.check() is that mid-trace hook: call it after any tool call,
+and if the returned Ledger has unhonored entries, render them (via
+`ledger.render("model")`, see promptfidelity.report) into a short
+deterministic text block and feed it back to the model as an instruction to
+repair. The repair is just another tool call, which gets booked exactly
+like any other on the next check() -- no new code path, no LLM anywhere in
+the inspection signal itself. See Recorder.check()'s docstring for the loop
+shape and the bounded-iteration caveat.
 """
 
 import contextvars
 import functools
 from contextlib import contextmanager
-from typing import Any
+from typing import Any, Callable
 
 from .core import Constraint, Ledger, book, merge_ledgers
+from .extraction import extract_constraints
 
 _active_recorder: contextvars.ContextVar["Recorder | None"] = contextvars.ContextVar(
     "promptfidelity_active_recorder", default=None
 )
+
+
+def _merge_constraints(
+    prompt: str,
+    extractor: Callable[[str], list[Constraint]] | None,
+    vocab: dict | None,
+) -> list[Constraint]:
+    """Build the constraint list for trace(prompt=...): rules (Tier 1)
+    extraction, optionally merged with one pluggable extractor's output
+    (Tier 2, typically LLM-backed).
+
+    Merge rule (documented here since it's the one subtle piece of this
+    module):
+      - Rules-extracted constraints (source="rules") are always kept.
+      - Every constraint the extractor callable returns is force-tagged
+        source="llm" here -- callers don't have to trust the extractor to
+        set it correctly, and can't accidentally launder an LLM guess as
+        source="declared".
+      - On a param-name collision between a rules constraint and an llm
+        constraint, the rules constraint wins and the llm one is dropped:
+        deterministic transcription beats probabilistic transcription: if
+        the regex/vocab layer already produced a falsifiable param for
+        that name, the LLM's opinion adds nothing but a second, less
+        certain claim on the same param.
+      - llm constraints whose params don't collide with any rules
+        constraint are kept -- they add coverage the rules layer missed.
+      - If the extractor produced any constraint with empty params (its
+        own "residue"/unmapped-intent marker), the rules layer's own
+        "residue" entry is dropped: the llm's broader-than-regex read of
+        the leftover intent subsumes the narrower structural one, and
+        keeping both would double-count un-mapped intent in I_total.
+    """
+    rules_constraints = extract_constraints(prompt, vocab)
+    if extractor is None:
+        return rules_constraints
+
+    llm_constraints = list(extractor(prompt))
+    for c in llm_constraints:
+        c.source = "llm"
+
+    rules_param_names: set[str] = set()
+    for c in rules_constraints:
+        rules_param_names |= set(c.params)
+
+    llm_has_residue = any(not c.params for c in llm_constraints)
+
+    kept_rules = [
+        c for c in rules_constraints
+        if not (llm_has_residue and c.id == "residue")
+    ]
+    kept_llm = [
+        c for c in llm_constraints
+        if not (set(c.params) & rules_param_names)
+    ]
+
+    return kept_rules + kept_llm
 
 
 class Recorder:
@@ -45,15 +132,36 @@ class Recorder:
     that doesn't have access to the `with`-bound variable).
     """
 
-    def __init__(self, constraints: list[Constraint], advisory_params: set | None = None):
+    def __init__(
+        self,
+        constraints: list[Constraint],
+        advisory_params: set | None = None,
+        ignore_params: set[str] | None = None,
+    ):
         self.constraints = list(constraints)
         self.advisory_params = advisory_params
+        self.ignore_params = ignore_params
         self.calls: list[dict[str, Any]] = []
 
     def record_call(self, name: str, arguments: dict[str, Any]) -> None:
         """Record one tool call's keyword arguments. Called by @instrument;
         may also be called directly for tool calls that can't be wrapped
-        (e.g. calls made through a third-party client object)."""
+        (e.g. calls made through a third-party client object).
+
+        Arguments named in self.ignore_params are dropped before storage --
+        filtering happens here, at recording time, so book() itself stays
+        pure and unchanged: it never sees the ignored names at all, not
+        even to book them imposed. Matching is by exact name only (no
+        prefix/suffix/wildcard matching).
+
+        This keeps plumbing args -- pagination (`page`), auth (`api_key`),
+        sort defaults (`sort_by`), and the like -- from flooding the
+        `imposed` account with entries no one cares about, which would
+        otherwise turn report.render()'s repair signal into noise: a
+        repair loop doesn't need to be told the call also carried
+        `page=1`."""
+        if self.ignore_params:
+            arguments = {k: v for k, v in arguments.items() if k not in self.ignore_params}
         self.calls.append({"name": name, "arguments": dict(arguments)})
 
     def ledger(self) -> Ledger:
@@ -68,26 +176,87 @@ class Recorder:
         ]
         return merge_ledgers(self.constraints, per_call)
 
+    def check(self) -> Ledger:
+        """Semantic alias for ledger() -- an interim booking taken mid-trace,
+        before the run has finished, so an agent loop can inspect the books
+        BEFORE it speaks rather than only after.
+
+        book()/merge_ledgers() are pure and cheap: call check() as often as
+        you like, after every tool call if you want to. The typical repair
+        loop looks like:
+
+            for _ in range(MAX_REPAIRS):
+                ledger = rec.check()
+                if not ledger.unhonored:
+                    break
+                injection = ledger.render("model")   # see promptfidelity.report
+                # ... feed `injection` to the model as context, let it
+                # issue one corrective tool call (executed normally, which
+                # records into `rec` exactly like any other call) ...
+            else:
+                # MAX_REPAIRS exhausted with entries still unhonored --
+                # stop trying and disclose, don't spin forever.
+                ...
+
+        ALWAYS bound your repair iterations. Some constraints are
+        structurally unhonorable against a given tool -- the backend has no
+        such param at all -- and a loop that only exits when `unhonored` is
+        empty will spin until MAX_REPAIRS forces it to stop. Nothing in
+        this package enforces a bound for you; that while/for loop's exit
+        condition is the caller's to set."""
+        return self.ledger()
+
 
 @contextmanager
-def trace(constraints: list[Constraint], advisory_params: set | None = None):
+def trace(
+    constraints: list[Constraint] | None = None,
+    *,
+    prompt: str | None = None,
+    extractor: Callable[[str], list[Constraint]] | None = None,
+    vocab: dict | None = None,
+    advisory_params: set | None = None,
+    ignore_params: set[str] | None = None,
+):
     """Open a recording context for one prompt/run.
 
     Tool calls made by @instrument-decorated functions anywhere in the
     dynamic extent of this `with` block (including across `await` points
-    and nested function calls) are recorded against `constraints`. Yields
-    the active Recorder; call `.ledger()` on it, typically after the `with`
-    block closes, to book everything recorded.
+    and nested function calls) are recorded against the constraints for
+    this context. Yields the active Recorder; call `.ledger()` on it,
+    typically after the `with` block closes, to book everything recorded.
 
         with pf.trace(constraints) as rec:
             run_agent(...)
         ledger = rec.ledger()
 
+    Constraints can be supplied two ways:
+      - `constraints`: a pre-built list of Constraint -- exactly the
+        original behavior. Every constraint keeps whatever `.source` it
+        already carries (default "declared").
+      - `prompt`: a raw prompt string. Constraints are derived via
+        promptfidelity.extraction.extract_constraints(prompt, vocab)
+        (Tier 1, source="rules"). If `extractor` is also given, its output
+        is merged in as Tier 2 (source="llm", force-set) -- see
+        _merge_constraints for the exact merge rule.
+
+    Passing both wins with `constraints` (prompt/extractor/vocab are then
+    ignored); passing neither raises ValueError -- trace() must be told
+    what intent to book against, one way or another.
+
     Nested trace() contexts each get their own Recorder (contextvars are
     scoped, not global mutable state), and the outer context's Recorder is
     restored on exit.
+
+    ignore_params: argument names stripped from every recorded call before
+    booking (e.g. {"page", "api_key", "sort_by"}) -- see
+    Recorder.record_call for exactly where and how the filtering happens.
     """
-    rec = Recorder(constraints, advisory_params=advisory_params)
+    if constraints is None and prompt is None:
+        raise ValueError("pf.trace() needs either constraints= or prompt=")
+    if constraints is None:
+        constraints = _merge_constraints(prompt, extractor, vocab)
+
+    rec = Recorder(constraints, advisory_params=advisory_params, ignore_params=ignore_params)
     token = _active_recorder.set(rec)
     try:
         yield rec

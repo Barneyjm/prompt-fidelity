@@ -141,11 +141,15 @@ def test_to_dict_shape_matches_dev_promptfidelity_v1():
     assert {e["id"] for e in d["entries"]} == {"c1", "c2"}
     assert d["imposed"][0]["description"] == "vote_count.gte"
     summary = d["summary"]
-    assert set(summary) == {"fidelity", "verified_bits", "total_bits", "accounts"}
+    assert set(summary) == {
+        "fidelity", "fidelity_basis", "verified_bits", "total_bits", "accounts",
+        "constraints_source"
+    }
     assert set(summary["accounts"]) == {
         "verified", "transmitted", "substituted", "inferred", "dropped"
     }
     assert summary["verified_bits"] == summary["accounts"]["verified"]
+    assert summary["constraints_source"] == {"declared": 2}
 
 
 def test_prompt_id_only_present_when_set():
@@ -194,3 +198,190 @@ def test_merge_ledgers_dedupes_imposed_across_calls():
     call_b = book([c], {"with_genres": "878", "vote_count.gte": "50"})
     merged = merge_ledgers([c], [call_a, call_b])
     assert len(merged.imposed) == 1
+
+
+def test_constraint_source_defaults_to_declared():
+    c = Constraint(id="c1", description="genre", params={"with_genres": "878"})
+    assert c.source == "declared"
+
+
+def test_source_flows_from_constraint_to_ledger_entry_and_dict():
+    c = Constraint(id="c1", description="genre", params={"with_genres": "878"},
+                    p=0.08, source="rules")
+    ledger = book([c], {"with_genres": "878"})
+    entry = ledger.entries[0]
+    assert entry.source == "rules"
+    assert entry.to_dict()["source"] == "rules"
+
+
+def test_constraints_source_counts_mixed_provenance():
+    constraints = [
+        Constraint(id="c1", description="a", params={"x": "1"}, source="declared"),
+        Constraint(id="c2", description="b", params={"y": "2"}, source="rules"),
+        Constraint(id="c3", description="c", params={"z": "3"}, source="rules"),
+        Constraint(id="c4", description="d", params={"w": "4"}, source="llm"),
+    ]
+    ledger = book(constraints, {"x": "1", "y": "2", "z": "3", "w": "4"})
+    assert ledger.constraints_source == {"declared": 1, "rules": 2, "llm": 1}
+    assert ledger.to_dict()["summary"]["constraints_source"] == {
+        "declared": 1, "rules": 2, "llm": 1
+    }
+
+
+def test_counts_basis_fidelity_when_no_entry_carries_bits():
+    """All-p=None ledgers (e.g. pure rules extraction) must not report
+    fidelity 1.0 off an empty bits denominator: a substituted entry has to
+    show up in the headline number, on a counts basis."""
+    constraints = [
+        Constraint(id="c1", description="genre", params={"g": "878"}),
+        Constraint(id="c2", description="rating 8+", params={"r": "8"}),
+    ]
+    ledger = book(constraints, {"g": "878", "r": "7"})
+    accounts = {e.id: e.account for e in ledger.entries}
+    assert accounts == {"c1": "verified", "c2": "substituted"}
+    assert ledger.total_bits == 0
+    assert ledger.fidelity_basis == "counts"
+    assert ledger.fidelity == 0.5
+    assert ledger.to_dict()["summary"]["fidelity_basis"] == "counts"
+
+
+def test_bits_basis_used_whenever_any_entry_carries_bits():
+    constraints = [
+        Constraint(id="c1", description="genre", params={"g": "878"}, p=0.25),
+        Constraint(id="c2", description="rating 8+", params={"r": "8"}),
+    ]
+    ledger = book(constraints, {"g": "878", "r": "7"})
+    assert ledger.fidelity_basis == "bits"
+    assert ledger.fidelity == 1.0  # the only weighted entry is verified
+
+
+# ---------------------------------------------------------------------------
+# unhonored / conjunction_honored / params+call on LedgerEntry
+# ---------------------------------------------------------------------------
+
+
+def test_unhonored_contains_only_substituted_and_dropped():
+    constraints = [
+        Constraint(id="verified_c", description="genre", params={"g": "878"}, p=0.5),
+        Constraint(id="substituted_c", description="rating",
+                   params={"r.gte": "8.0"}, p=0.5),
+        Constraint(id="dropped_c", description="votes", params={"v.gte": "50"}, p=0.5),
+        Constraint(id="inferred_c", description="pacing", p=0.5),
+    ]
+    ledger = book(constraints, {"g": "878", "r.gte": "7.0"})
+    accounts = {e.id: e.account for e in ledger.entries}
+    assert accounts == {
+        "verified_c": "verified", "substituted_c": "substituted",
+        "dropped_c": "dropped", "inferred_c": "inferred",
+    }
+    assert {e.id for e in ledger.unhonored} == {"substituted_c", "dropped_c"}
+
+
+def test_book_leaves_call_none():
+    c = Constraint(id="c1", description="genre", params={"g": "878"}, p=0.5)
+    ledger = book([c], {"g": "878"})
+    assert ledger.entries[0].call is None
+
+
+def test_entry_params_copied_through_book():
+    c = Constraint(id="c1", description="genre", params={"g": "878"}, p=0.5)
+    ledger = book([c], {"g": "878"})
+    assert ledger.entries[0].params == {"g": "878"}
+
+
+def test_entry_params_empty_for_inferred():
+    c = Constraint(id="c1", description="pacing", p=0.5)
+    ledger = book([c], {})
+    assert ledger.entries[0].params == {}
+
+
+def test_to_dict_omits_params_when_empty_and_includes_when_present():
+    constraints = [
+        Constraint(id="c1", description="genre", params={"g": "878"}, p=0.5),
+        Constraint(id="c2", description="pacing", p=0.5),
+    ]
+    ledger = book(constraints, {"g": "878"})
+    by_id = {e["id"]: e for e in ledger.to_dict()["entries"]}
+    assert by_id["c1"]["params"] == {"g": "878"}
+    assert "params" not in by_id["c2"]
+
+
+def test_to_dict_omits_call_when_none_and_includes_when_set():
+    c = Constraint(id="c1", description="genre", params={"g": "878"}, p=0.5)
+    plain = book([c], {"g": "878"})
+    assert "call" not in plain.to_dict()["entries"][0]
+
+    merged = merge_ledgers([c], [plain])
+    assert merged.to_dict()["entries"][0]["call"] == 0
+
+
+def test_conjunction_honored_true_for_bare_single_call_book():
+    constraints = [
+        Constraint(id="c1", description="genre", params={"g": "878"}, p=0.5),
+        Constraint(id="c2", description="rating", params={"r": "8"}, p=0.5),
+    ]
+    ledger = book(constraints, {"g": "878", "r": "8"})
+    assert ledger.conjunction_honored is True
+
+
+def test_conjunction_honored_false_when_repair_is_piecewise():
+    # Two separate calls, each verifying a DIFFERENT constraint -- the
+    # intent as a whole was honored, but never by any one call together.
+    c1 = Constraint(id="genre", description="genre", params={"g": "878"}, p=0.5)
+    c2 = Constraint(id="rating", description="rating", params={"r": "8"}, p=0.5)
+    call_0 = book([c1, c2], {"g": "878"})       # verifies genre, drops rating
+    call_1 = book([c1, c2], {"r": "8"})         # verifies rating, drops genre
+    merged = merge_ledgers([c1, c2], [call_0, call_1])
+    assert not merged.unhonored
+    assert merged.conjunction_honored is False
+
+
+def test_conjunction_honored_true_after_one_complete_repair_call():
+    # First call honors NEITHER constraint (both dropped); the second,
+    # complete call verifies both together in one shot.
+    c1 = Constraint(id="genre", description="genre", params={"g": "878"}, p=0.5)
+    c2 = Constraint(id="rating", description="rating", params={"r": "8"}, p=0.5)
+    call_0 = book([c1, c2], {})                        # drops both
+    call_1 = book([c1, c2], {"g": "878", "r": "8"})     # verifies both, together
+    merged = merge_ledgers([c1, c2], [call_0, call_1])
+    assert not merged.unhonored
+    assert merged.conjunction_honored is True
+    assert {e.call for e in merged.entries if e.account == "verified"} == {1}
+
+
+def test_merge_ledgers_copies_entries_not_mutates_input_ledgers():
+    c = Constraint(id="c1", description="genre", params={"g": "878"}, p=0.5)
+    call_0 = book([c], {"g": "878"})
+    assert call_0.entries[0].call is None
+    merge_ledgers([c], [call_0])
+    # The original ledger's own entry must be untouched by the merge.
+    assert call_0.entries[0].call is None
+
+
+def test_complete_repair_call_yields_conjunction_honored():
+    """The recommended repair pattern -- re-issue ONE complete call
+    including the already-honored params -- must read as a coherent
+    conjunction. Regression: with first-wins tie-breaking, the earlier
+    verified booking kept its old call index and conjunction_honored
+    stayed False on a perfect repair."""
+    a = Constraint(id="a", description="genre", params={"g": "878"}, p=0.25)
+    b = Constraint(id="b", description="rating", params={"r": "8"}, p=0.25)
+    first = book([a, b], {"g": "878"})              # a verified, b dropped
+    repair = book([a, b], {"g": "878", "r": "8"})   # complete corrective call
+    merged = merge_ledgers([a, b], [first, repair])
+    assert {e.id: e.account for e in merged.entries} == {"a": "verified", "b": "verified"}
+    assert {e.call for e in merged.entries} == {1}
+    assert merged.conjunction_honored
+
+
+def test_partial_patch_repair_stays_piecewise():
+    """A repair that only patches the missing param leaves the earlier
+    booking on its own call index -- no single call satisfied everything,
+    and conjunction_honored must say so."""
+    a = Constraint(id="a", description="genre", params={"g": "878"}, p=0.25)
+    b = Constraint(id="b", description="rating", params={"r": "8"}, p=0.25)
+    first = book([a, b], {"g": "878"})   # a verified, b dropped
+    patch = book([a, b], {"r": "8"})     # b verified, a dropped
+    merged = merge_ledgers([a, b], [first, patch])
+    assert {e.id: e.account for e in merged.entries} == {"a": "verified", "b": "verified"}
+    assert not merged.conjunction_honored
