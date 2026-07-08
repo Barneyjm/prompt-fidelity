@@ -101,6 +101,37 @@ Both queries have **identical total information content** (8.38 bits). The diffe
 
 This is the fidelity frontier in action. The first prompt sits at the maximum—every bit of specificity maps to a queryable field. The second prompt sits at the minimum—the entire request requires LLM inference.
 
+## Use It as a Claude Skill
+
+The framework is also packaged as an installable [Agent Skill](https://code.claude.com/docs/en/skills) in [`skills/prompt-fidelity/`](skills/prompt-fidelity/). Once installed, Claude self-checks its own answers: before responding to a search, filtering, or recommendation request, it decomposes the request into verified vs. inferred constraints, computes the fidelity score with a bundled dependency-free script, and reports which parts of its answer are auditable and which are judgment calls. It generalizes beyond movies — "verified" means checkable with whatever deterministic tools are available in the session (APIs, databases, files, code).
+
+### Install in Claude Code (plugin marketplace)
+
+```
+/plugin marketplace add barneyjm/prompt-fidelity
+/plugin install prompt-fidelity@prompt-fidelity
+```
+
+### Install manually (Claude Code)
+
+```bash
+# Personal (all projects)
+cp -r skills/prompt-fidelity ~/.claude/skills/
+
+# Or per-project
+cp -r skills/prompt-fidelity your-project/.claude/skills/
+```
+
+### Install on claude.ai
+
+Zip the skill folder and upload it under **Settings → Capabilities → Skills**:
+
+```bash
+cd skills && zip -r prompt-fidelity.zip prompt-fidelity
+```
+
+Claude invokes the skill automatically when a request mixes objective and subjective criteria, or you can invoke it explicitly with `/prompt-fidelity` in Claude Code.
+
 ## Quick Start
 
 ### 1. Install dependencies
@@ -209,6 +240,14 @@ User prompt
 
 ```
 prompt-fidelity/
+├── .claude-plugin/
+│   ├── plugin.json       # Claude Code plugin manifest
+│   └── marketplace.json  # Plugin marketplace manifest
+├── skills/
+│   └── prompt-fidelity/
+│       ├── SKILL.md      # Installable self-check skill for Claude
+│       └── scripts/
+│           └── compute_fidelity.py  # Stdlib-only fidelity calculator
 ├── agent/
 │   ├── __init__.py       # Package exports
 │   ├── main.py           # LangGraph workflow and CLI
