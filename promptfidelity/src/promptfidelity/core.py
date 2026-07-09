@@ -10,13 +10,29 @@ Accounts (user-side):
     VERIFIED    -- every declared (name, value) pair is present in the
                    actual call arguments with a matching value, via
                    ENFORCED params only
+    DERIVED     -- the constraint itself never reached the call as declared
+                   (it would book inferred or dropped), but a call argument's
+                   value is present verbatim in a PRIOR tool result the agent
+                   received, adjacent to the constraint's own words -- the
+                   agent demonstrably translated the user's vocabulary into
+                   the tool's (e.g. a zone NAME the user said into the zone
+                   UUID the tool takes) and the evidence chain is on the
+                   books. Verification-via-mediation: weaker than verified
+                   (the mapping is documented, not enforced), stronger than
+                   transmitted (an enforced argument carried it).
     TRANSMITTED -- params present and matching, but via an advisory param
                    the backend does not enforce (e.g. a search engine's
                    free-text query string): faithfully delivered,
-                   compliance not guaranteed
+                   compliance not guaranteed. Also booked (with paraphrase
+                   evidence) when an advisory param's actual value is not
+                   an exact match but contains the declared value's content
+                   words at >= PARAPHRASE_WORD_FRACTION -- agents rewrite
+                   intent into their own query vocabulary, and exact
+                   matching alone systematically undercounts transmission.
     SUBSTITUTED -- a declared param name is present but with an altered
-                   value, or only some names of a multi-param constraint
-                   made it into the call (partial application)
+                   value (beyond a qualifying paraphrase), or only some
+                   names of a multi-param constraint made it into the call
+                   (partial application)
     INFERRED    -- the constraint declared no params (not expressible
                    against this tool)
     DROPPED     -- params were declared but none of their names appear in
@@ -27,9 +43,10 @@ Accounts (agent-side):
                    constraint (agent-added filtering: popularity floors,
                    truncation, score cutoffs, ...)
 
-Conservation: every constraint is booked exactly once, into one of the five
+Conservation: every constraint is booked exactly once, into one of the six
 user-side accounts.
-    I_total = I_verified + I_transmitted + I_substituted + I_inferred + I_dropped
+    I_total = I_verified + I_derived + I_transmitted + I_substituted
+              + I_inferred + I_dropped
 
 HARD RULE: LLMs may propose ledger ENTRIES (Constraints -- a description, a
 params dict, a survival probability), never ACCOUNTS. Account assignment is
@@ -40,13 +57,64 @@ is ever set.
 """
 
 import math
+import re
 from dataclasses import dataclass, field, replace
 from typing import Any
 
 MAX_BITS = 20.0
 
-ACCOUNTS = ("verified", "transmitted", "substituted", "inferred", "dropped")
-_ACCOUNT_RANK = {"verified": 4, "transmitted": 3, "substituted": 2, "dropped": 1, "inferred": 0}
+ACCOUNTS = ("verified", "derived", "transmitted", "substituted", "inferred", "dropped")
+_ACCOUNT_RANK = {"verified": 5, "derived": 4, "transmitted": 3, "substituted": 2,
+                 "dropped": 1, "inferred": 0}
+
+# Disclosed calibration constants for the two vocabulary-crossing rules
+# (paraphrase transmission and derivation chaining), in the same spirit as
+# hop2.py's thresholds: these are the whole of the judgment calls, spelled
+# out so a reader can see exactly what qualifies instead of trusting an
+# opaque score. Changing them changes what qualifies; it never changes what
+# the arguments and blobs actually contained.
+
+PARAPHRASE_WORD_FRACTION = 0.75
+"""Fraction of a declared advisory-param value's content words that must
+survive in the actual argument's value for the mismatch to book as
+`transmitted` (paraphrased) instead of `substituted`. High on purpose:
+paraphrase credit is for intent that demonstrably survived rewording, not
+for topical resemblance."""
+
+PARAPHRASE_MIN_WORDS = 2
+"""A declared value with fewer content words than this has no reliable
+fraction to compute (one word matching is 100% by construction) -- such
+values only ever match exactly, never via paraphrase."""
+
+_PARAPHRASE_TOKEN_MIN_LEN = 3
+"""Token length floor for paraphrase matching -- lower than hop2's default
+of 4 because numbers ("500", "90s") are load-bearing in param values."""
+
+DERIVED_MIN_VALUE_LEN = 8
+"""An argument value shorter than this (as a string) is too generic to
+trust as a derivation anchor ("0", "true", "10" would chain everywhere).
+Identifiers -- UUIDs, entity ids, emails -- comfortably clear it."""
+
+DERIVATION_WINDOW = 300
+"""Half-width, in characters, of the window around a matched argument
+value inside a prior tool-result blob within which the constraint's own
+words must appear. Adjacency is what makes the chain evidence of a MAPPING
+(the blob names the user's words and the tool's value together, e.g. one
+JSON object) rather than two unrelated mentions in the same result."""
+
+DERIVED_WORD_FRACTION = 0.5
+"""Fraction of the constraint's content words that must appear inside the
+window for the chain to qualify. The window's adjacency requirement does
+the specificity work; this fraction only guards topical relevance, hence
+the lower bar than PARAPHRASE_WORD_FRACTION.
+
+A chain also qualifies -- regardless of this fraction -- when a contiguous
+pair of the constraint's content words appears as a phrase inside the
+window (e.g. "Front Garden" printed next to the zone UUID it maps to).
+LLM-proposed descriptions carry boilerplate lead-ins ("User specified
+to...") that dilute unigram overlap; a verbatim multi-word phrase from the
+constraint sitting next to the argument's value is a stronger mapping
+signal than any scattered-unigram fraction, so it stands on its own."""
 
 
 def bits(p: float | None) -> float | None:
@@ -190,6 +258,10 @@ class Ledger:
         return self._sum("verified")
 
     @property
+    def derived_bits(self) -> float:
+        return self._sum("derived")
+
+    @property
     def transmitted_bits(self) -> float:
         return self._sum("transmitted")
 
@@ -245,6 +317,30 @@ class Ledger:
         """Which denominator fidelity used: "bits" (some entry carried a
         survival estimate) or "counts" (no entry did)."""
         return "bits" if self.total_bits else "counts"
+
+    @property
+    def auditability(self) -> float:
+        """Fraction of user intent whose handling left a mechanical evidence
+        trail: verified (enforced), derived (documented translation), or
+        transmitted (delivered verbatim or by qualifying paraphrase).
+
+        This is the usable headline for real workloads. Strict fidelity
+        reads ~0 on relevance and actuation tools no matter how well the
+        agent did, because intent structurally cannot appear verbatim in
+        those tools' arguments -- fidelity measures the species ceiling,
+        not agent quality. Auditability asks the species-fair question:
+        of what the user asked, how much can an auditor CHECK without
+        trusting the model's narration? Same basis fallback as fidelity
+        (bits when any entry carries them, else counts)."""
+        auditable = self.verified_bits + self.derived_bits + self.transmitted_bits
+        total = self.total_bits
+        if total:
+            return auditable / total
+        if not self.entries:
+            return 1.0
+        n = sum(1 for e in self.entries
+                if e.account in ("verified", "derived", "transmitted"))
+        return n / len(self.entries)
 
     @property
     def transmission_rate(self) -> float:
@@ -345,6 +441,7 @@ class Ledger:
             "summary": {
                 "fidelity": round(self.fidelity, 3),
                 "fidelity_basis": self.fidelity_basis,
+                "auditability": round(self.auditability, 3),
                 "verified_bits": accounts["verified"],
                 "total_bits": round(self.total_bits, 2),
                 "accounts": accounts,
@@ -356,10 +453,93 @@ class Ledger:
         return d
 
 
+def _content_tokens(text: str, min_len: int = 4) -> set:
+    """extraction._content_words, imported at call time -- extraction.py
+    imports Constraint from this module, so a top-level import here would
+    be circular (same pattern as Ledger.render's local report import)."""
+    from .extraction import _content_words
+    return _content_words(text, min_len=min_len)
+
+
+def _paraphrase_evidence(declared: str, actual: str) -> str | None:
+    """Evidence string if `actual` qualifies as a paraphrase of `declared`
+    (>= PARAPHRASE_WORD_FRACTION of the declared value's content words
+    survive in the actual value), else None. Deterministic token-set
+    arithmetic against the disclosed constants only."""
+    declared_words = _content_tokens(declared, _PARAPHRASE_TOKEN_MIN_LEN)
+    if len(declared_words) < PARAPHRASE_MIN_WORDS:
+        return None
+    actual_words = _content_tokens(actual, _PARAPHRASE_TOKEN_MIN_LEN)
+    overlap = declared_words & actual_words
+    if len(overlap) / len(declared_words) >= PARAPHRASE_WORD_FRACTION:
+        return (f"{len(overlap)}/{len(declared_words)} declared content words "
+                f"{sorted(overlap)} survived in the actual value")
+    return None
+
+
+def _content_pairs(text: str) -> list:
+    """Contiguous pairs of content words from `text`, in original order --
+    the phrase-level signal for derivation chaining. A pair only counts
+    when the two words are ADJACENT in the source text's token stream
+    ("Front Garden" yes; "Front ... Garden" across a clause, no)."""
+    from .extraction import _STOPWORDS
+    tokens = re.findall(r"[A-Za-z0-9]+", text.lower())
+    pairs = []
+    for a, b in zip(tokens, tokens[1:]):
+        if (len(a) >= 4 and a not in _STOPWORDS
+                and len(b) >= 4 and b not in _STOPWORDS):
+            pairs.append((a, b))
+    return pairs
+
+
+def _derivation_evidence(entry_words: set, entry_texts: list,
+                         args: dict, prior_results: list) -> tuple[str, str] | None:
+    """(anchor_arg_name, evidence) if some argument value is present in a
+    prior tool-result blob with the constraint's words adjacent, else None.
+
+    Two qualifying signals inside the window (see the constants' docstrings):
+      - unigram: >= DERIVED_WORD_FRACTION of the entry's content words, or
+      - phrase: a contiguous content-word pair from the entry, verbatim.
+
+    A one-word entry has no reliable fraction (1/1 is 100% by construction),
+    so at least 2 content words are required -- same reasoning as hop2's
+    MIN_WORDS_FOR_OVERLAP."""
+    if len(entry_words) < 2:
+        return None
+    pairs = [p for text in entry_texts for p in _content_pairs(text)]
+    for name, value in args.items():
+        if len(value) < DERIVED_MIN_VALUE_LEN:
+            continue
+        lowered_value = value.lower()
+        for i, blob in enumerate(prior_results):
+            idx = blob.lower().find(lowered_value)
+            if idx < 0:
+                continue
+            window = blob[max(0, idx - DERIVATION_WINDOW):
+                          idx + len(value) + DERIVATION_WINDOW]
+            overlap = entry_words & _content_tokens(window)
+            if len(overlap) / len(entry_words) >= DERIVED_WORD_FRACTION:
+                return name, (
+                    f"arg {name}={value[:32]!r} found in prior_results[{i}] with "
+                    f"{len(overlap)}/{len(entry_words)} constraint words "
+                    f"{sorted(overlap)} within ±{DERIVATION_WINDOW} chars"
+                )
+            lowered_window = window.lower()
+            for a, b in pairs:
+                if re.search(rf"\b{re.escape(a)}\W+{re.escape(b)}\b", lowered_window):
+                    return name, (
+                        f"arg {name}={value[:32]!r} found in prior_results[{i}] with "
+                        f"constraint phrase {a + ' ' + b!r} within "
+                        f"±{DERIVATION_WINDOW} chars"
+                    )
+    return None
+
+
 def book(
     constraints: list[Constraint],
     arguments: dict[str, Any],
     advisory_params: set | None = None,
+    prior_results: list[str] | None = None,
 ) -> Ledger:
     """Book every constraint against actual tool-call arguments. Pure function.
 
@@ -367,17 +547,32 @@ def book(
         - no params declared                              -> inferred
         - all declared params present & matching           -> verified
           (or transmitted, if any matched param is advisory)
+        - all names present, mismatches only on advisory
+          params that qualify as paraphrases               -> transmitted
         - some params present but a value differs, or only
           some of a multi-param constraint's names present -> substituted
         - params declared, none of the names present       -> dropped
-        - any call argument matching no declared constraint -> imposed
+        - an inferred/dropped constraint whose words sit
+          next to a call argument's value inside a prior
+          tool-result blob                                 -> derived
+        - any call argument matching no declared constraint
+          (and anchoring no derivation chain)              -> imposed
 
     advisory_params: argument names transmitted to the backend but not
     enforced by it (e.g. a search engine's free-text query). A constraint
     matched only via advisory params books as `transmitted`, never
     `verified`.
+
+    prior_results: serialized tool-result blobs the agent received BEFORE
+    this call (earlier calls in the run/conversation), one string per
+    result. This is the evidence surface for the `derived` account: an
+    agent that looked an identifier up gets credit for the documented
+    translation; one that produced the same identifier from nowhere does
+    not. Omit (None/[]) to disable derivation entirely -- bookings then
+    match the pre-derivation behavior exactly.
     """
     advisory = advisory_params or set()
+    prior = prior_results or []
     args = {k: str(v) for k, v in (arguments or {}).items()}
     claimed_names: set = set()
     entries: list[LedgerEntry] = []
@@ -415,10 +610,24 @@ def book(
         elif present and any(args[k] != v for k, v in present.items()):
             diffs = {k: {"declared": v, "actual": args[k]}
                      for k, v in present.items() if args[k] != v}
-            entries.append(LedgerEntry(
-                c.id, c.description, "substituted", b,
-                f"param value(s) altered: {diffs}", source=c.source,
-                params=orig_params))
+            paraphrases = (
+                {k: _paraphrase_evidence(v["declared"], v["actual"])
+                 for k, v in diffs.items()}
+                if len(present) == len(params) and all(k in advisory for k in diffs)
+                else {}
+            )
+            if paraphrases and all(paraphrases.values()):
+                notes = "; ".join(f"{k}: {ev}" for k, ev in paraphrases.items())
+                entries.append(LedgerEntry(
+                    c.id, c.description, "transmitted", b,
+                    f"paraphrased via advisory param(s) {sorted(diffs)} -- {notes}; "
+                    f"backend does not enforce compliance", source=c.source,
+                    params=orig_params))
+            else:
+                entries.append(LedgerEntry(
+                    c.id, c.description, "substituted", b,
+                    f"param value(s) altered: {diffs}", source=c.source,
+                    params=orig_params))
         elif present:
             missing = sorted(set(params) - set(present))
             entries.append(LedgerEntry(
@@ -430,6 +639,29 @@ def book(
                 c.id, c.description, "dropped", b,
                 f"declared params {sorted(params)} absent from call", source=c.source,
                 params=orig_params))
+
+    # Derivation pass: constraints the argument diff could not credit
+    # (inferred/dropped) get one more, still-mechanical chance -- an
+    # evidence chain through the results the agent had already received.
+    # Runs after the main loop so it can only ever upgrade, never shadow,
+    # an argument-level booking; anchor args stop counting as imposed.
+    if prior:
+        for j, e in enumerate(entries):
+            if e.account not in ("inferred", "dropped"):
+                continue
+            entry_words = _content_tokens(e.description)
+            entry_texts = [e.description]
+            for v in e.params.values():
+                entry_words |= _content_tokens(str(v))
+                entry_texts.append(str(v))
+            chain = _derivation_evidence(entry_words, entry_texts, args, prior)
+            if chain is None:
+                continue
+            anchor_name, evidence = chain
+            claimed_names.add(anchor_name)
+            entries[j] = LedgerEntry(
+                e.id, e.description, "derived", e.bits, evidence,
+                source=e.source, params=e.params)
 
     imposed = [
         ImposedEntry(k, v, None, "argument present in call but matches no declared constraint")

@@ -122,17 +122,22 @@ def run_agent(constraints: list[pf.Constraint]):
 
 # ----------------------------------------------------------------- receipt
 
-STAMP = {"verified": "✓ VERIFIED", "transmitted": "→ TRANSMITTED",
+STAMP = {"verified": "✓ VERIFIED", "derived": "⛓ DERIVED",
+         "transmitted": "→ TRANSMITTED",
          "substituted": "⇄ SUBSTITUTED", "inferred": "? INFERRED",
          "dropped": "✗ DROPPED"}
 
 FOOTNOTE = {
     "verified": "enforced by the backend; results provably satisfy this",
+    "derived": "translated via a documented lookup in a prior tool result",
     "transmitted": "faithfully delivered to a ranker; compliance not guaranteed",
     "substituted": "altered en route -- you did not get what you asked for",
     "inferred": "no tool could express this; it rode on model judgment alone",
     "dropped": "never reached any tool in any form",
 }
+
+ABBREV = {"verified": "v", "derived": "dv", "transmitted": "t",
+          "substituted": "s", "inferred": "i", "dropped": "d"}
 
 
 def print_receipt(ledger: pf.Ledger, calls: list[dict]):
@@ -155,7 +160,7 @@ def print_receipt(ledger: pf.Ledger, calls: list[dict]):
             print(("│   ! " + f"{i.description} = {i.value}").ljust(W + 1) + "│")
     print("├" + "─" * W + "┤")
     a = {k: ledger._sum(k) for k in pf.core.ACCOUNTS}
-    books = " + ".join(f"{a[k]:.1f}{k[0]}" for k in pf.core.ACCOUNTS)
+    books = " + ".join(f"{a[k]:.1f}{ABBREV[k]}" for k in pf.core.ACCOUNTS)
     print(f"│ BOOKS BALANCE   {books} = {ledger.total_bits:.1f} bits".ljust(W + 1) + "│")
     print(f"│ FIDELITY        {ledger.fidelity:.1%} of your intent was VERIFIED".ljust(W + 1) + "│")
     print(f"│ TRANSMISSION    {ledger.transmission_rate:.1%} was delivered but not enforced".ljust(W + 1) + "│")

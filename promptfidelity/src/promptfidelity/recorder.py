@@ -55,11 +55,27 @@ shape and the bounded-iteration caveat.
 
 import contextvars
 import functools
+import json
 from contextlib import contextmanager
 from typing import Any, Callable
 
 from .core import Constraint, Ledger, book, merge_ledgers
+from .effects import EffectReport, verify_effects
 from .extraction import extract_constraints
+
+
+def _serialize_result(result: Any) -> str:
+    """One tool result -> the string surface derivation chaining and effect
+    verification match against. Strings pass through; everything else is
+    JSON when possible (default=str for datetimes and the like), repr() as
+    the last resort -- the goal is a faithful, searchable rendering, not a
+    round-trippable one."""
+    if isinstance(result, str):
+        return result
+    try:
+        return json.dumps(result, default=str)
+    except (TypeError, ValueError):
+        return repr(result)
 
 _active_recorder: contextvars.ContextVar["Recorder | None"] = contextvars.ContextVar(
     "promptfidelity_active_recorder", default=None
@@ -143,10 +159,11 @@ class Recorder:
         self.ignore_params = ignore_params
         self.calls: list[dict[str, Any]] = []
 
-    def record_call(self, name: str, arguments: dict[str, Any]) -> None:
-        """Record one tool call's keyword arguments. Called by @instrument;
-        may also be called directly for tool calls that can't be wrapped
-        (e.g. calls made through a third-party client object).
+    def record_call(self, name: str, arguments: dict[str, Any]) -> int:
+        """Record one tool call's keyword arguments; returns the call's
+        index, for a later record_result(). Called by @instrument; may also
+        be called directly for tool calls that can't be wrapped (e.g. calls
+        made through a third-party client object).
 
         Arguments named in self.ignore_params are dropped before storage --
         filtering happens here, at recording time, so book() itself stays
@@ -162,19 +179,53 @@ class Recorder:
         `page=1`."""
         if self.ignore_params:
             arguments = {k: v for k, v in arguments.items() if k not in self.ignore_params}
-        self.calls.append({"name": name, "arguments": dict(arguments)})
+        self.calls.append({"name": name, "arguments": dict(arguments), "result": None})
+        return len(self.calls) - 1
+
+    def record_result(self, index: int, result: Any) -> None:
+        """Attach a tool call's result (serialized via _serialize_result)
+        to the call recorded at `index`. Called by @instrument after the
+        wrapped function returns -- or with the raised exception's repr when
+        it doesn't, so a crashing tool shows up as an error-shaped result
+        for effects() instead of silently having none.
+
+        Results feed two downstream instruments; booking itself never reads
+        them: derivation chaining (ledger() passes each call's PRIOR
+        results to book() as the evidence surface for the `derived`
+        account) and effect verification (effects())."""
+        self.calls[index]["result"] = _serialize_result(result)
+
+    @property
+    def results(self) -> list:
+        """Serialized result per recorded call, aligned with self.calls
+        (None for calls whose result was never recorded)."""
+        return [call.get("result") for call in self.calls]
 
     def ledger(self) -> Ledger:
         """Book every recorded call against self.constraints and merge into
         one Ledger: the best booking per constraint across all calls (see
-        core.merge_ledgers)."""
+        core.merge_ledgers).
+
+        Each call is booked with the results of the calls BEFORE it as
+        prior_results, so a constraint the agent honored by looking an
+        identifier up (zone name -> zone UUID via an earlier listing call)
+        books `derived` automatically -- see core.book()'s derivation
+        rules. A call's own result is never its own evidence surface."""
         if not self.calls:
             return book(self.constraints, {}, self.advisory_params)
+        results = self.results
         per_call = [
-            book(self.constraints, call["arguments"], self.advisory_params)
-            for call in self.calls
+            book(self.constraints, call["arguments"], self.advisory_params,
+                 prior_results=[r for r in results[:i] if r is not None])
+            for i, call in enumerate(self.calls)
         ]
         return merge_ledgers(self.constraints, per_call)
+
+    def effects(self, response_text: str = "") -> EffectReport:
+        """Effect verification (hop 1.5) over every recorded call -- see
+        promptfidelity.effects. response_text is only used to flag whether
+        FAILED calls were disclosed to the user."""
+        return verify_effects(self.calls, self.results, response_text)
 
     def check(self) -> Ledger:
         """Semantic alias for ledger() -- an interim booking taken mid-trace,
@@ -281,8 +332,18 @@ def instrument(fn):
     @functools.wraps(fn)
     def wrapper(*args, **kwargs):
         rec = _active_recorder.get()
-        if rec is not None:
-            rec.record_call(fn.__name__, kwargs)
-        return fn(*args, **kwargs)
+        if rec is None:
+            return fn(*args, **kwargs)
+        index = rec.record_call(fn.__name__, kwargs)
+        try:
+            result = fn(*args, **kwargs)
+        except Exception as exc:
+            # A crashing tool is an error-shaped result, not a missing one:
+            # record it so effects() books the call FAILED instead of
+            # UNAUDITED, then let the exception propagate untouched.
+            rec.record_result(index, f"exception: {exc!r}")
+            raise
+        rec.record_result(index, result)
+        return result
 
     return wrapper

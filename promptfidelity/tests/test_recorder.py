@@ -246,3 +246,83 @@ def test_ignore_params_on_trace():
         discover_movies(with_genres="878", page="3")
     ledger = rec.ledger()
     assert ledger.imposed == []
+
+
+# ---------------------------------------------------------------------------
+# result capture: @instrument records what tools RETURN, which feeds
+# derivation chaining (ledger) and effect verification (effects()).
+
+
+def test_instrument_records_results():
+    import promptfidelity as pf
+
+    @pf.instrument
+    def list_zones():
+        return {"zones": [{"name": "Front Garden",
+                           "id": "78b0113a-ea50-4f1e-97a8-8c596b31f16a"}]}
+
+    c = pf.Constraint(id="c1", description="anything", params={}, p=0.5)
+    with pf.trace([c]) as rec:
+        list_zones()
+    assert rec.results[0] is not None
+    assert "Front Garden" in rec.results[0]
+
+
+def test_instrument_records_exception_as_error_shaped_result():
+    import promptfidelity as pf
+
+    @pf.instrument
+    def boom():
+        raise RuntimeError("backend exploded")
+
+    c = pf.Constraint(id="c1", description="anything", params={}, p=0.5)
+    with pf.trace([c]) as rec:
+        try:
+            boom()
+        except RuntimeError:
+            pass
+    assert "exception" in rec.results[0]
+    report = rec.effects()
+    assert report.entries[0].status == "failed"
+
+
+def test_ledger_wires_prior_results_into_derivation():
+    # call 1 looks the zone list up; call 2 sends the UUID. The constraint
+    # naming "Front Garden" must book `derived` off call 2, with call 1's
+    # result as the evidence surface -- no manual prior_results plumbing.
+    import promptfidelity as pf
+
+    @pf.instrument
+    def list_zones():
+        return {"zones": [{"name": "Front Garden",
+                           "id": "78b0113a-ea50-4f1e-97a8-8c596b31f16a"}]}
+
+    @pf.instrument
+    def start_zone(**kwargs):
+        return ""
+
+    c = pf.Constraint(id="c1", description="run the Front Garden zone",
+                      params={}, p=0.5)
+    with pf.trace([c]) as rec:
+        list_zones()
+        start_zone(**{"zones[0].id": "78b0113a-ea50-4f1e-97a8-8c596b31f16a"})
+    ledger = rec.ledger()
+    assert ledger.entries[0].account == "derived"
+
+
+def test_a_calls_own_result_is_not_its_own_derivation_surface():
+    # only ONE call, whose own result contains the mapping: prior_results
+    # for call 0 is empty, so no derivation -- the agent never looked it up
+    # before acting.
+    import promptfidelity as pf
+
+    @pf.instrument
+    def start_zone(**kwargs):
+        return {"started": {"name": "Front Garden",
+                            "id": "78b0113a-ea50-4f1e-97a8-8c596b31f16a"}}
+
+    c = pf.Constraint(id="c1", description="run the Front Garden zone",
+                      params={}, p=0.5)
+    with pf.trace([c]) as rec:
+        start_zone(**{"zones[0].id": "78b0113a-ea50-4f1e-97a8-8c596b31f16a"})
+    assert rec.ledger().entries[0].account == "inferred"

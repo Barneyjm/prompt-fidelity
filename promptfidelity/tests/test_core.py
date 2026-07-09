@@ -142,11 +142,11 @@ def test_to_dict_shape_matches_dev_promptfidelity_v1():
     assert d["imposed"][0]["description"] == "vote_count.gte"
     summary = d["summary"]
     assert set(summary) == {
-        "fidelity", "fidelity_basis", "verified_bits", "total_bits", "accounts",
-        "constraints_source"
+        "fidelity", "fidelity_basis", "auditability", "verified_bits",
+        "total_bits", "accounts", "constraints_source"
     }
     assert set(summary["accounts"]) == {
-        "verified", "transmitted", "substituted", "inferred", "dropped"
+        "verified", "derived", "transmitted", "substituted", "inferred", "dropped"
     }
     assert summary["verified_bits"] == summary["accounts"]["verified"]
     assert summary["constraints_source"] == {"declared": 2}
@@ -385,3 +385,179 @@ def test_partial_patch_repair_stays_piecewise():
     merged = merge_ledgers([a, b], [first, patch])
     assert {e.id: e.account for e in merged.entries} == {"a": "verified", "b": "verified"}
     assert not merged.conjunction_honored
+
+
+# ---------------------------------------------------------------------------
+# paraphrase-aware transmission: agents rewrite intent into their own query
+# vocabulary; exact matching alone systematically undercounts transmitted.
+
+
+def test_paraphrased_advisory_value_books_transmitted():
+    constraints = [Constraint(id="c1", description="budget under $500",
+                              params={"query": "used bike under $500"}, p=0.5)]
+    ledger = book(
+        constraints,
+        {"query": "used Trek FX hybrid commuter bike Charlotte NC for sale under $500"},
+        advisory_params={"query"},
+    )
+    assert ledger.entries[0].account == "transmitted"
+    assert "paraphrased" in ledger.entries[0].evidence
+
+
+def test_paraphrase_below_fraction_stays_substituted():
+    # only 2/4 declared content words survive -- below PARAPHRASE_WORD_FRACTION
+    constraints = [Constraint(id="c1", description="lightweight bike",
+                              params={"query": "lightweight city commuter bike"}, p=0.5)]
+    ledger = book(
+        constraints,
+        {"query": "used Trek FX hybrid commuter bike Charlotte NC"},
+        advisory_params={"query"},
+    )
+    assert ledger.entries[0].account == "substituted"
+
+
+def test_paraphrase_never_applies_to_enforced_params():
+    # identical containment, but the param is enforced: a different value is
+    # a different filter, not a paraphrase.
+    constraints = [Constraint(id="c1", description="summary",
+                              params={"summary": "dentist appointment friday"}, p=0.5)]
+    ledger = book(constraints, {"summary": "Dentist appointment on Friday at 2pm"})
+    assert ledger.entries[0].account == "substituted"
+
+
+def test_paraphrase_needs_min_declared_words():
+    # one content word has no reliable fraction; exact match only.
+    constraints = [Constraint(id="c1", description="zoo",
+                              params={"query": "zoo"}, p=0.5)]
+    ledger = book(constraints, {"query": "zoos in Washington DC"},
+                  advisory_params={"query"})
+    assert ledger.entries[0].account == "substituted"
+
+
+# ---------------------------------------------------------------------------
+# derivation chaining: an argument value looked up in a prior tool result,
+# adjacent to the constraint's own words, is a documented translation of the
+# user's vocabulary into the tool's.
+
+_ZONES_BLOB = (
+    '{"zones": [{"zoneNumber": 3, "name": "Mailbox Yard", '
+    '"id": "aaaa1111-0000-0000-0000-000000000000", "enabled": true}, '
+    '{"zoneNumber": 4, "name": "Front Garden", '
+    '"id": "78b0113a-ea50-4f1e-97a8-8c596b31f16a", "enabled": true}]}'
+)
+
+
+def test_inferred_constraint_with_prior_result_chain_books_derived():
+    constraints = [Constraint(id="c1", description="run the Front Garden zone",
+                              params={}, p=0.5)]
+    ledger = book(
+        constraints,
+        {"zones[0].id": "78b0113a-ea50-4f1e-97a8-8c596b31f16a"},
+        prior_results=[_ZONES_BLOB],
+    )
+    assert ledger.entries[0].account == "derived"
+    assert "prior_results[0]" in ledger.entries[0].evidence
+    # the anchoring argument is claimed, not imposed
+    assert ledger.imposed == []
+
+
+def test_no_prior_results_means_no_derivation():
+    constraints = [Constraint(id="c1", description="run the Front Garden zone",
+                              params={}, p=0.5)]
+    ledger = book(constraints,
+                  {"zones[0].id": "78b0113a-ea50-4f1e-97a8-8c596b31f16a"})
+    assert ledger.entries[0].account == "inferred"
+    assert [i.description for i in ledger.imposed] == ["zones[0].id"]
+
+
+def test_derivation_requires_adjacency_not_mere_cooccurrence():
+    # value present in a prior blob, but the constraint's words are nowhere
+    # near it (outside DERIVATION_WINDOW) -- no chain.
+    far_blob = ('{"id": "78b0113a-ea50-4f1e-97a8-8c596b31f16a"}' + " " * 400
+                + '{"name": "Front Garden zone"}')
+    constraints = [Constraint(id="c1", description="run the Front Garden zone",
+                              params={}, p=0.5)]
+    ledger = book(constraints,
+                  {"zones[0].id": "78b0113a-ea50-4f1e-97a8-8c596b31f16a"},
+                  prior_results=[far_blob])
+    assert ledger.entries[0].account == "inferred"
+
+
+def test_short_argument_values_never_anchor_derivation():
+    # "1200" is under DERIVED_MIN_VALUE_LEN -- generic values chain everywhere.
+    constraints = [Constraint(id="c1", description="run the Front Garden zone",
+                              params={}, p=0.5)]
+    ledger = book(constraints, {"duration_seconds": "1200"},
+                  prior_results=['{"name": "Front Garden", "duration": 1200}'])
+    assert ledger.entries[0].account == "inferred"
+
+
+def test_derivation_never_shadows_argument_level_bookings():
+    # a verified constraint stays verified even when a chain would also match
+    constraints = [Constraint(id="c1", description="Front Garden zone id",
+                              params={"zones[0].id": "78b0113a-ea50-4f1e-97a8-8c596b31f16a"},
+                              p=0.5)]
+    ledger = book(constraints,
+                  {"zones[0].id": "78b0113a-ea50-4f1e-97a8-8c596b31f16a"},
+                  prior_results=[_ZONES_BLOB])
+    assert ledger.entries[0].account == "verified"
+
+
+def test_auditability_counts_verified_derived_transmitted():
+    constraints = [
+        Constraint(id="c1", description="genre filter", params={"with_genres": "878"}, p=0.5),
+        Constraint(id="c2", description="run the Front Garden zone", params={}, p=0.5),
+        Constraint(id="c3", description="melancholy tone", params={}, p=0.5),
+    ]
+    ledger = book(
+        constraints,
+        {"with_genres": "878", "zones[0].id": "78b0113a-ea50-4f1e-97a8-8c596b31f16a"},
+        prior_results=[_ZONES_BLOB],
+    )
+    accounts = {e.id: e.account for e in ledger.entries}
+    assert accounts == {"c1": "verified", "c2": "derived", "c3": "inferred"}
+    assert ledger.fidelity == pytest.approx(1.0 / 3.0)
+    assert ledger.auditability == pytest.approx(2.0 / 3.0)
+
+
+def test_merge_ranks_derived_above_transmitted_below_verified():
+    constraints = [Constraint(id="c1", description="run the Front Garden zone",
+                              params={}, p=0.5)]
+    inferred = book(constraints, {})
+    derived = book(constraints,
+                   {"zones[0].id": "78b0113a-ea50-4f1e-97a8-8c596b31f16a"},
+                   prior_results=[_ZONES_BLOB])
+    merged = merge_ledgers(constraints, [inferred, derived])
+    assert merged.entries[0].account == "derived"
+    assert merged.entries[0].call == 1
+
+
+def test_derivation_phrase_match_survives_boilerplate_dilution():
+    # LLM-proposed descriptions carry lead-ins ("User specified to...") that
+    # push unigram overlap below DERIVED_WORD_FRACTION; the contiguous
+    # phrase "Front Garden" next to the UUID qualifies on its own.
+    constraints = [Constraint(
+        id="c1", description="User specified to run only the 'Front Garden' zone",
+        params={}, p=0.5)]
+    ledger = book(
+        constraints,
+        {"zones[0].id": "78b0113a-ea50-4f1e-97a8-8c596b31f16a"},
+        prior_results=[_ZONES_BLOB],
+    )
+    assert ledger.entries[0].account == "derived"
+    assert "phrase" in ledger.entries[0].evidence
+
+
+def test_derivation_phrase_must_be_contiguous():
+    # same words present but never adjacent in the constraint text -- the
+    # phrase signal must not fire (and unigrams stay under the fraction).
+    constraints = [Constraint(
+        id="c1",
+        description="User specified the front area with a garden watered nightly maybe",
+        params={}, p=0.5)]
+    blob = ('{"zoneNumber": 4, "name": "Front Garden", '
+            '"id": "78b0113a-ea50-4f1e-97a8-8c596b31f16a"}')
+    ledger = book(constraints,
+                  {"zones[0].id": "78b0113a-ea50-4f1e-97a8-8c596b31f16a"},
+                  prior_results=[blob])
+    assert ledger.entries[0].account == "inferred"

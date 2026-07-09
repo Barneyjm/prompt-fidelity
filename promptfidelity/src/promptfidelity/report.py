@@ -124,6 +124,7 @@ def _render_product(ledger: Ledger) -> str:
     evidence string.
     """
     verified = [e for e in ledger.entries if e.account == "verified"]
+    derived = [e for e in ledger.entries if e.account == "derived"]
     substituted = [e for e in ledger.entries if e.account == "substituted"]
     judgment = [e for e in ledger.entries if e.account in ("inferred", "transmitted")]
     dropped = [e for e in ledger.entries if e.account == "dropped"]
@@ -138,6 +139,10 @@ def _render_product(ledger: Ledger) -> str:
 
     lines = [f"What the user asked for: {len(ledger.entries)} request(s)."]
     lines += _group("Delivered as asked:", verified, lambda e: e.description)
+    lines += _group(
+        "Delivered via the agent's documented translation:", derived,
+        lambda e: e.description,
+    )
     lines += _group(
         "Delivered approximately (something changed):", substituted,
         lambda e: f"{e.description} -- {e.evidence}",
@@ -163,7 +168,8 @@ def _render_executive(ledger: Ledger) -> str:
     altered_or_dropped = sum(1 for e in ledger.entries if e.account in ("substituted", "dropped"))
     imposed_count = len(ledger.imposed)
 
-    fidelity_line = f"Fidelity: {ledger.fidelity * 100:.1f}%"
+    fidelity_line = (f"Fidelity: {ledger.fidelity * 100:.1f}% verified; "
+                     f"{ledger.auditability * 100:.1f}% auditable")
     if ledger.fidelity_basis == "counts":
         fidelity_line += " (unweighted -- treat as a count ratio)"
 

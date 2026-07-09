@@ -40,6 +40,7 @@ use so importing `promptfidelity` itself never requires any of them):
 """
 
 from .core import Constraint, Ledger, LedgerEntry, bits, book
+from .effects import EffectReport, verify_effects
 from .extraction import extract_constraints
 from .hop2 import Hop2Report, attribute
 from .recorder import Recorder, instrument, trace
@@ -62,6 +63,8 @@ __all__ = [
     "wrap",
     "attribute",
     "Hop2Report",
+    "verify_effects",
+    "EffectReport",
     "record",
     "FidelityCallbackHandler",
     "FidelityMiddleware",
