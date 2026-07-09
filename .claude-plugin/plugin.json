@@ -1,0 +1,11 @@
+{
+  "name": "prompt-fidelity",
+  "description": "Self-check skill: classify each constraint of a request by pointing at the actual tool-call evidence (verified / transmitted / unhonored / inferred), compute an auditability score, and answer with calibrated framing. Behavioral tier of the promptfidelity ledger.",
+  "version": "0.2.0",
+  "author": {
+    "name": "James Barney"
+  },
+  "homepage": "https://github.com/barneyjm/prompt-fidelity",
+  "license": "MIT",
+  "keywords": ["fidelity", "auditability", "self-check", "calibration", "verification"]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "prompt-fidelity",
+  "owner": {
+    "name": "James Barney"
+  },
+  "plugins": [
+    {
+      "name": "prompt-fidelity",
+      "source": "./",
+      "description": "Self-check skill: classify each constraint of a request by pointing at the actual tool-call evidence (verified / transmitted / unhonored / inferred), compute an auditability score, and answer with calibrated framing."
+    }
+  ]
+}

@@ -338,6 +338,26 @@ print(ledger.to_dict()["accounts"])
 Run `python tests_ledger_offline.py` for a zero-dependency demonstration,
 including the honesty gap (narrated-verified bits vs actually-verified bits).
 
+## The Self-Check Skill (behavioral tier)
+
+`skills/prompt-fidelity/` packages this measurement as an installable Claude
+skill for environments where the package can't be instrumented in. It is a
+disciplined SELF-REPORT — the model classifies each constraint by quoting
+the actual tool-call argument that carried it (verified / transmitted /
+unhonored / inferred), checks effects before narrating actions, and frames
+the answer by an auditability score computed with a bundled stdlib-only
+script. The report block always carries `classification: self-reported`, and
+the skill instructs the model to use this package's mechanical booking
+(`pf.trace()` / `pf.book()`) instead whenever it is importable.
+
+Install as a plugin:
+
+```
+/plugin marketplace add barneyjm/prompt-fidelity
+```
+
+or copy `skills/prompt-fidelity/` into your project's `.claude/skills/`.
+
 ## Why This Matters
 
 1. **Transparency**: Users understand which parts of their request are reliably satisfied vs. LLM guesses
