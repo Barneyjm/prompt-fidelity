@@ -96,13 +96,16 @@ def render(report: dict) -> str:
         for c in inferred:
             lines.append(f"  ? {c['description']} ({c['bits']:.2f} bits)")
 
+    def plural(n: int) -> str:
+        return "constraint" if n == 1 else "constraints"
+
+    n_v = report["num_verified_constraints"]
+    n_i = report["num_inferred_constraints"]
     lines += [
         "",
         f"  {thin}",
-        f"  Verified:  {report['verified_bits']:>7.2f} bits "
-        f"({report['num_verified_constraints']} constraints)",
-        f"  Inferred:  {report['inferred_bits']:>7.2f} bits "
-        f"({report['num_inferred_constraints']} constraints)",
+        f"  Verified:  {report['verified_bits']:>7.2f} bits ({n_v} {plural(n_v)})",
+        f"  Inferred:  {report['inferred_bits']:>7.2f} bits ({n_i} {plural(n_i)})",
         f"  Total:     {report['total_bits']:>7.2f} bits",
         rule,
     ]
