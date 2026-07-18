@@ -217,13 +217,43 @@ def rerank_node(state: AgentState) -> AgentState:
         return {**state, "error": f"Re-ranking failed: {str(e)}"}
 
 
+def pipeline_injected_constraints(state: AgentState) -> list[dict]:
+    """
+    Filters this pipeline applies that the user never requested.
+
+    Declared so they appear in the fidelity report instead of silently
+    narrowing the pool. Excluded from the fidelity score.
+    """
+    injected = [
+        {
+            "description": "Minimum 50 votes (quality floor applied to every query)",
+            "type": "injected",
+            "estimated_survival_rate": 0.10,
+        },
+        {
+            "description": "Candidates sorted by rating and capped at top 30 before ranking",
+            "type": "injected",
+        },
+    ]
+    if state["inferred_constraints"]:
+        injected.append({
+            "description": "Re-ranked results limited to 10 with match score above 30",
+            "type": "injected",
+        })
+    return injected
+
+
 def compute_fidelity_node(state: AgentState) -> AgentState:
     """Compute fidelity score from constraints."""
     if state.get("error"):
         return state
 
     try:
-        all_constraints = state["verified_constraints"] + state["inferred_constraints"]
+        all_constraints = (
+            state["verified_constraints"]
+            + state["inferred_constraints"]
+            + pipeline_injected_constraints(state)
+        )
         fidelity_report = compute_fidelity(all_constraints)
 
         return {

@@ -1,6 +1,6 @@
 ---
 name: prompt-fidelity
-description: Self-check how much of a request is verifiable vs guesswork before answering it. Use when handling search, filtering, recommendation, or data-retrieval requests that mix objective criteria (checkable via an API, database, file, or calculation) with subjective judgment (mood, style, quality, "feels like", "best"), or when the user asks how confident, reliable, or verifiable an answer is. Decomposes the request into constraints, computes a fidelity score, and reports which parts of the answer are verified vs inferred.
+description: Self-check how much of a request is verifiable vs guesswork before answering it. Use when handling search, filtering, recommendation, or data-retrieval requests over any dataset (API, database, files, spreadsheet) that mix objective criteria (checkable via a query, count, or calculation) with subjective judgment (mood, style, quality, "feels like", "best"), or when the user asks how confident, reliable, or verifiable an answer is. Decomposes the request into constraints, computes a fidelity score, and reports which parts of the answer are verified vs inferred.
 ---
 
 # Prompt Fidelity Self-Check
@@ -18,6 +18,10 @@ means the answer is entirely a judgment call. Reporting this score alongside
 an answer tells the user exactly which claims they can trust mechanically and
 which they should evaluate themselves.
 
+This works on any dataset — a movie API, a billion-row reviews table, a
+directory of files, a spreadsheet. The candidate pool is whatever set of
+rows/items the request selects from.
+
 ## When to run this check
 
 - The request filters or ranks items by a mix of objective and subjective
@@ -32,10 +36,17 @@ which they should evaluate themselves.
 
 Break the request into individual constraints. Rules:
 
-- Each constraint is one independent requirement.
+- Each constraint is one independent requirement. Bits are summed across
+  constraints, which assumes they filter independently — if two constraints
+  heavily overlap ("reviews of Heat" and "reviews mentioning De Niro"),
+  merge them into one constraint instead of double-counting.
 - A range counts as ONE constraint, not two. "From the 90s" is a single
   constraint ("Released 1990–1999"), not separate "after 1990" and
   "before 1999" constraints.
+- A constraint on an aggregate or join ("movies whose reviews average 4+
+  stars") is a single constraint on the entities being returned; it is
+  verified if the engine computes the aggregate, inferred if you would have
+  to judge it.
 - Ignore filler that carries no selectivity ("some good", "please find me").
 
 ### Step 2 — Classify each constraint
@@ -53,29 +64,63 @@ above 7.0" is verified if you can query a ratings API, inferred if you
 cannot. When in doubt, classify as inferred — overclaiming verification is
 worse than underclaiming it.
 
-### Step 3 — Estimate survival rates
+**Noisy proxies get split in two.** "Verified" means the *query* is
+mechanically checkable — not that the query faithfully captures the user's
+intent. If the queryable field is a rough proxy (crowd-sourced tags,
+full-text `LIKE '%sincere%'`, a keyword search for a concept), record the
+query itself as a verified constraint AND the remaining semantic gap as an
+inferred one. Example: "melancholy movies" via a `melancholy` tag becomes
+verified "has the 'melancholy' keyword tag" plus inferred "tag actually
+reflects a melancholy tone".
 
-For each constraint, estimate the fraction of the relevant candidate pool
-that satisfies it (a decimal in (0, 1)). Information content is
-`-log2(survival_rate)`. Calibration guide:
+### Step 3 — Measure survival rates; estimate only as a fallback
+
+Each constraint needs a survival rate: the fraction of the candidate pool
+that satisfies it, in (0, 1). Information content is `-log2(survival_rate)`.
+
+**Measure whenever the pool is queryable.** A survival rate is one cheap
+count away on most real datasets — `SELECT COUNT(*)` with and without the
+filter, an API's `total_results` field, `grep -c`/`ls | wc -l` over files,
+a filtered row count in a spreadsheet. Measured rates make the constraint
+*weights* verified too, removing the score's largest source of noise. Mark
+these with `"rate_source": "measured"`.
+
+**Estimate only when you can't measure**, and mark those
+`"rate_source": "estimated"`. Rough calibration (anchors, not data — real
+distributions skew; e.g. most catalogs are heavily weighted toward recent
+years, so "last two years" may be far more common than a uniform spread
+would suggest):
 
 | Selectivity | Survival rate | Bits |
 |---|---|---|
-| Extremely selective (specific person, exact ID) | 0.001–0.01 | 7–10 |
+| Near-unique (exact ID, specific person's items) | 1/pool_size–0.01 | up to log2(pool) |
 | Very selective (exact year, rare property) | ~0.01 | ~6.6 |
-| Moderately selective (a genre, a decade, a language) | 0.05–0.15 | 2.7–4.3 |
-| Broad (rating above average, common property) | 0.3–0.5 | 1–1.7 |
+| Moderately selective (a category, a decade, a language) | 0.05–0.15 | 2.7–4.3 |
+| Broad (above-average rating, common property) | 0.3–0.5 | 1–1.7 |
 
-Estimate the **pool size** too — the number of candidate rows/items the
-request selects from (a movie catalog ≈ 10^6, a reviews table might be 10^9,
-a repo might be 10^3 files). No constraint can carry more information than
-it takes to identify a single row, so per-constraint bits are capped at
-log2(pool_size). Pass the pool size to the script when you know it (even a
-rough order of magnitude); otherwise the cap defaults to 20 bits (a
-one-in-a-million pool), which undercounts near-unique selectors like exact
-IDs on very large datasets.
+Also determine the **pool size** — the number of candidate rows/items
+(measure it too when you can: `SELECT COUNT(*)`, `total_results`, file
+count). No constraint can carry more information than it takes to identify
+a single row, so per-constraint bits are capped at log2(pool_size). Pass it
+to the script; without it the cap defaults to 20 bits (a one-in-a-million
+pool), which undercounts near-unique selectors on large datasets.
 
-### Step 4 — Compute the score
+### Step 4 — Declare every injected filter
+
+List every filter that narrows the pool but that the user never asked for —
+whether the system applied it or you did: quality floors ("min 50 votes"),
+top-N truncation before ranking, sampling, default sort order, result
+limits. Record each with `"type": "injected"` (survival rate optional).
+
+Injected filters are excluded from the fidelity score — they aren't part of
+the user's request — but they MUST appear in the report and in your answer.
+Silent pool-narrowing is the main way a "100% fidelity, provably correct"
+claim becomes dishonest: the results may all satisfy the stated constraints
+while being drawn from a pool the user never asked about. This matters most
+at scale — if a verified filter leaves 10 million survivors and you rank a
+sample of 30, say so.
+
+### Step 5 — Compute the score
 
 Write the constraints as a JSON array and run the bundled script (stdlib
 only, no installs). The script lives at `scripts/compute_fidelity.py`
@@ -85,14 +130,15 @@ relative to this SKILL.md:
 python3 <skill-dir>/scripts/compute_fidelity.py --pool-size 1000000000 constraints.json
 ```
 
-Each constraint object needs `description`, `type` ("verified" or
-"inferred"), and `estimated_survival_rate`. Pass `--pool-size` when you know
-the candidate pool's rough size (or a top-level `"pool_size"` key in the
-JSON); omit it to use the default 20-bit cap. Add `--json` for
-machine-readable output. The script prints the fidelity report block —
-include it verbatim in your response.
+Each constraint object needs `description`, `type` ("verified", "inferred",
+or "injected"), and `estimated_survival_rate` (optional for injected), plus
+`rate_source` ("measured" or "estimated"). Pass `--pool-size` when you know
+the pool's rough size (or a top-level `"pool_size"` key in the JSON); omit
+it to use the default 20-bit cap. Add `--json` for machine-readable output.
+The script prints the fidelity report block — include it verbatim in your
+response.
 
-### Step 5 — Answer with calibrated framing
+### Step 6 — Answer with calibrated framing
 
 Actually verify the verified constraints — run the queries/checks, don't just
 claim them. Then frame the answer by score:
@@ -106,19 +152,32 @@ claim them. Then frame the answer by score:
   objective proxies for the subjective criteria ("'feels like a slow burn'
   → runtime > 120 min, drama genre, pre-2010").
 
+Whatever the score, state any injected filters and any coverage limits
+("ranked the top 30 of 2.1M matching rows") in plain language.
+
 ## Example
 
-Request: *"Dark psychological thrillers from the 90s"* with a movie API
-available.
+Request: *"Find well-regarded reviews of Heat that read as sincere"* against
+a 1-billion-row reviews table with SQL access.
 
 ```json
-[
-  {"description": "Thriller genre", "type": "verified", "estimated_survival_rate": 0.10},
-  {"description": "Released 1990-1999", "type": "verified", "estimated_survival_rate": 0.10},
-  {"description": "Dark/psychological tone", "type": "inferred", "estimated_survival_rate": 0.15}
-]
+{
+  "pool_size": 1000000000,
+  "constraints": [
+    {"description": "Review is of Heat (1995)", "type": "verified",
+     "estimated_survival_rate": 1.2e-05, "rate_source": "measured"},
+    {"description": "Review has 10+ helpful votes", "type": "verified",
+     "estimated_survival_rate": 0.08, "rate_source": "measured"},
+    {"description": "Reads as sincere rather than ironic", "type": "inferred",
+     "estimated_survival_rate": 0.3, "rate_source": "estimated"},
+    {"description": "Judged only the 50 longest matching reviews",
+     "type": "injected"}
+  ]
+}
 ```
 
-Script output: fidelity 70.8% — verified 6.64 bits (2 constraints), inferred
-2.74 bits (1 constraint). Framing: "Genre and decade are verified via the
-API; 'dark psychological' is my judgment — treat the ranking accordingly."
+The two verified rates came from actual `COUNT(*)` queries; the tone
+constraint is a judgment call; and the sampling step is declared instead of
+hidden. Framing: "Movie and vote threshold are verified against the table
+(rates measured, not guessed); 'sincere' is my reading; and I only judged
+the 50 longest of the ~1,000 qualifying reviews."

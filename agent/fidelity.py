@@ -30,18 +30,31 @@ def max_bits_for_pool(pool_size: float | None) -> float:
 
 @dataclass
 class Constraint:
-    """Represents a single constraint extracted from a user prompt."""
+    """Represents a single constraint extracted from a user prompt.
+
+    constraint_type:
+        - "verified": mechanically checkable against the data source
+        - "inferred": requires subjective LLM judgment
+        - "injected": a filter the system applied that the user never
+          requested (quality floors, top-N truncation, sampling, default
+          sort). Excluded from the fidelity score but always reported.
+    rate_source: "measured" if the survival rate was counted against the
+        actual data, "estimated" if it is a guess. None if unknown.
+    """
 
     description: str
-    constraint_type: Literal["verified", "inferred"]
-    estimated_survival_rate: float
+    constraint_type: Literal["verified", "inferred", "injected"]
+    estimated_survival_rate: float | None = None
     api_param: str | None = None
     api_value: str | None = None
     max_bits: float = MAX_CONSTRAINT_BITS
+    rate_source: Literal["measured", "estimated"] | None = None
 
     @property
     def bits(self) -> float:
         """Calculate information content in bits using -log2(survival_rate)."""
+        if self.estimated_survival_rate is None:
+            return 0.0
         if self.estimated_survival_rate <= 0:
             return self.max_bits  # Cap at max to avoid inf/NaN
         if self.estimated_survival_rate >= 1:
@@ -60,6 +73,8 @@ class Constraint:
             result["api_param"] = self.api_param
         if self.api_value:
             result["api_value"] = self.api_value
+        if self.rate_source:
+            result["rate_source"] = self.rate_source
         return result
 
 
@@ -80,6 +95,11 @@ class FidelityReport:
         return [c for c in self.constraints if c.constraint_type == "inferred"]
 
     @property
+    def injected_constraints(self) -> list[Constraint]:
+        """System-applied filters the user never requested (score-excluded)."""
+        return [c for c in self.constraints if c.constraint_type == "injected"]
+
+    @property
     def verified_bits(self) -> float:
         """Total bits from verified constraints."""
         return sum(c.bits for c in self.verified_constraints)
@@ -91,7 +111,7 @@ class FidelityReport:
 
     @property
     def total_bits(self) -> float:
-        """Total information content across all constraints."""
+        """Total information content across scored (non-injected) constraints."""
         return self.verified_bits + self.inferred_bits
 
     @property
@@ -115,6 +135,7 @@ class FidelityReport:
             "total_bits": round(self.total_bits, 2),
             "num_verified_constraints": len(self.verified_constraints),
             "num_inferred_constraints": len(self.inferred_constraints),
+            "num_injected_constraints": len(self.injected_constraints),
             "constraints": [c.to_dict() for c in self.constraints]
         }
 
@@ -127,8 +148,9 @@ def compute_fidelity(constraints: list[dict],
     Args:
         constraints: List of constraint dicts with keys:
             - description: str
-            - type: "verified" or "inferred"
-            - estimated_survival_rate: float (0, 1)
+            - type: "verified", "inferred", or "injected"
+            - estimated_survival_rate: float (0, 1); optional for injected
+            - rate_source: "measured" or "estimated" (optional)
             - api_param: str (optional, for verified)
             - api_value: str (optional, for verified)
         pool_size: Number of rows in the candidate pool. Caps each
@@ -137,6 +159,7 @@ def compute_fidelity(constraints: list[dict],
 
     Returns:
         FidelityReport with computed fidelity score and breakdown.
+        Injected constraints are reported but excluded from the score.
     """
     max_bits = max_bits_for_pool(pool_size)
     parsed_constraints = []
@@ -145,10 +168,11 @@ def compute_fidelity(constraints: list[dict],
         constraint = Constraint(
             description=c["description"],
             constraint_type=c["type"],
-            estimated_survival_rate=c["estimated_survival_rate"],
+            estimated_survival_rate=c.get("estimated_survival_rate"),
             api_param=c.get("api_param"),
             api_value=c.get("api_value"),
-            max_bits=max_bits
+            max_bits=max_bits,
+            rate_source=c.get("rate_source")
         )
         parsed_constraints.append(constraint)
 

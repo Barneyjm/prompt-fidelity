@@ -18,11 +18,19 @@ def format_fidelity_bar(score: float, width: int = 20) -> str:
     return f"[{bar}] {score:.1%}"
 
 
+CONSTRAINT_ICONS = {"verified": "✓", "inferred": "?", "injected": "!"}
+
+
 def format_constraint_line(constraint: Constraint, show_bits: bool = True) -> str:
     """Format a single constraint for display."""
-    icon = "✓" if constraint.constraint_type == "verified" else "?"
-    bits_str = f" ({constraint.bits:.2f} bits)" if show_bits else ""
-    return f"  {icon} {constraint.description}{bits_str}"
+    icon = CONSTRAINT_ICONS.get(constraint.constraint_type, "?")
+    annotations = []
+    if show_bits and constraint.estimated_survival_rate is not None:
+        annotations.append(f"{constraint.bits:.2f} bits")
+    if constraint.rate_source:
+        annotations.append(constraint.rate_source)
+    suffix = f" ({', '.join(annotations)})" if annotations else ""
+    return f"  {icon} {constraint.description}{suffix}"
 
 
 def format_fidelity_report(report: FidelityReport) -> str:
@@ -43,7 +51,7 @@ def format_fidelity_report(report: FidelityReport) -> str:
 
     # Verified constraints
     if report.verified_constraints:
-        lines.append(f"\n  VERIFIED (queryable via API):")
+        lines.append(f"\n  VERIFIED (checkable against the data source):")
         for c in report.verified_constraints:
             lines.append(format_constraint_line(c))
 
@@ -53,11 +61,22 @@ def format_fidelity_report(report: FidelityReport) -> str:
         for c in report.inferred_constraints:
             lines.append(format_constraint_line(c))
 
+    # Injected filters (system-applied, excluded from the score)
+    if report.injected_constraints:
+        lines.append(f"\n  INJECTED (system-applied, not requested — excluded from score):")
+        for c in report.injected_constraints:
+            lines.append(format_constraint_line(c))
+
     # Summary statistics
     lines.append(f"\n  {'─' * 40}")
     lines.append(f"  Verified:  {report.verified_bits:6.2f} bits ({len(report.verified_constraints)} constraints)")
     lines.append(f"  Inferred:  {report.inferred_bits:6.2f} bits ({len(report.inferred_constraints)} constraints)")
     lines.append(f"  Total:     {report.total_bits:6.2f} bits")
+    if report.injected_constraints:
+        n = len(report.injected_constraints)
+        lines.append(f"  Injected:  {n} system "
+                     f"{'filter narrows' if n == 1 else 'filters narrow'} "
+                     f"the pool beyond the request")
     lines.append(f"{'═' * 50}\n")
 
     return "\n".join(lines)
@@ -236,6 +255,11 @@ def format_fidelity_colored(report: FidelityReport) -> str:
     lines.append(f"\n{Colors.YELLOW}Inferred:{Colors.END}")
     for c in report.inferred_constraints:
         lines.append(f"  {Colors.YELLOW}?{Colors.END} {c.description} ({c.bits:.2f} bits)")
+
+    if report.injected_constraints:
+        lines.append(f"\n{Colors.RED}Injected (not requested):{Colors.END}")
+        for c in report.injected_constraints:
+            lines.append(f"  {Colors.RED}!{Colors.END} {c.description}")
 
     # Summary
     lines.append(f"\n{Colors.BOLD}Total:{Colors.END} {report.total_bits:.2f} bits "
