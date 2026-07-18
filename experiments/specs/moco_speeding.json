@@ -1,0 +1,29 @@
+{
+  "description": "Speeding citations for out-of-state drivers in Montgomery County that sound reckless",
+  "domain": "data.montgomerycountymd.gov",
+  "dataset_id": "4mse-ku6q",
+  "constraints": [
+    {
+      "description": "Violation description mentions speed",
+      "type": "verified",
+      "where": "description like '%SPEED%'"
+    },
+    {
+      "description": "Driver's vehicle registered out of state",
+      "type": "verified",
+      "where": "state != 'MD'"
+    },
+    {
+      "description": "Resulted in a citation (not just a warning)",
+      "type": "verified",
+      "where": "violation_type='Citation'"
+    },
+    {
+      "description": "Sounds reckless (manner of driving)",
+      "type": "inferred",
+      "estimated_survival_rate": 0.1
+    }
+  ],
+  "sample_size": 100,
+  "sample_fields": ["date_of_stop", "description", "state", "violation_type"]
+}

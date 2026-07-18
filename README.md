@@ -309,7 +309,19 @@ python3 experiments/socrata_fidelity.py experiments/specs/nyc_311_noise.json
 python3 experiments/socrata_fidelity.py --sample 5 experiments/specs/chicago_theft.json
 ```
 
-Each run measures the pool size and every verified constraint's survival rate from the system's own counts, scores the request, declares the judging sample as an injected filter, and empirically checks the independence assumption by comparing predicted survivors (rates multiplied) against the measured joint count. First results: on 21.8M NYC 311 rows, "noise complaints in Brooklyn from summer 2023 that sound genuinely furious" scores 72.1% fidelity with a correlation gap of only +0.12 bits out of 8.57 verified; on 8.6M Chicago crime rows, "street thefts in 2022 that sound brazen" scores 77.3% with a −0.22 bit gap (theft and street locations are mildly positively correlated). Write a new spec JSON to test any other Socrata dataset.
+Each run measures the pool size and every verified constraint's survival rate from the system's own counts, scores the request, declares the judging sample as an injected filter, and empirically checks the independence assumption by comparing predicted survivors (rates multiplied) against the measured joint count.
+
+Results so far, across five cities and five data shapes:
+
+| Spec | Dataset | Pool | Fidelity | Correlation gap |
+|---|---|---|---|---|
+| `nyc_311_noise` | NYC 311 requests | 21.8M | 72.1% | +0.12 bits |
+| `chicago_theft` | Chicago crimes | 8.6M | 77.3% | −0.22 bits |
+| `seattle_aid_calls` | Seattle Fire 911 | 2.2M | 68.6% | +0.10 bits |
+| `moco_speeding` | Montgomery Co. traffic stops | 2.1M | 66.8% | +0.28 bits |
+| `austin_pitbull_adoptions` | Austin animal outcomes | 174k | 82.8% | −0.23 bits |
+
+Every correlation gap lands within ±0.3 bits against 5–9 verified bits — early but consistent evidence that summing per-constraint bits is a sound approximation on real civic data. The sign is informative too: negative gaps (Chicago, Austin) mean the constraints are positively correlated and the joint pool is *larger* than independence predicts; positive gaps (Montgomery County) mean mild redundancy. Write a new spec JSON to test any other Socrata dataset.
 
 ## TMDb Verified Fields
 
