@@ -260,7 +260,9 @@ prompt-fidelity/
 │   └── tmdb_fields.json  # Verified field definitions
 ├── examples/
 │   └── sample_prompts.json  # Categorized test prompts
-├── experiments/          # Validation experiments (TODO)
+├── experiments/
+│   ├── socrata_fidelity.py  # Live validation against Socrata open datasets
+│   └── specs/               # Experiment specs (NYC 311, Chicago crimes)
 ├── requirements.txt
 ├── .env.example
 └── README.md
@@ -297,6 +299,17 @@ TMDb is just the working example. Three mechanisms keep the framework honest on 
 - **Independence caveat.** Bits are summed across constraints, which assumes they filter independently. Heavily overlapping constraints should be merged before scoring; correlated constraints inflate total bits. Quantifying this (e.g., against measured joint counts) is an open item for `experiments/`.
 
 One more subtlety: "verified" means the *query* is mechanically checkable, not that it faithfully captures intent. A crowd-sourced `melancholy` keyword tag is a verified filter but a noisy proxy for a melancholy tone — the skill's guidance is to split such constraints into a verified query plus an inferred semantic gap.
+
+### Validation on real open data
+
+`experiments/socrata_fidelity.py` runs the whole workflow against live Socrata-hosted datasets (NYC Open Data, Chicago, CDC, and most data.gov-federated portals speak the same SODA API) using only server-side counts — no scans, no downloads:
+
+```bash
+python3 experiments/socrata_fidelity.py experiments/specs/nyc_311_noise.json
+python3 experiments/socrata_fidelity.py --sample 5 experiments/specs/chicago_theft.json
+```
+
+Each run measures the pool size and every verified constraint's survival rate from the system's own counts, scores the request, declares the judging sample as an injected filter, and empirically checks the independence assumption by comparing predicted survivors (rates multiplied) against the measured joint count. First results: on 21.8M NYC 311 rows, "noise complaints in Brooklyn from summer 2023 that sound genuinely furious" scores 72.1% fidelity with a correlation gap of only +0.12 bits out of 8.57 verified; on 8.6M Chicago crime rows, "street thefts in 2022 that sound brazen" scores 77.3% with a −0.22 bit gap (theft and street locations are mildly positively correlated). Write a new spec JSON to test any other Socrata dataset.
 
 ## TMDb Verified Fields
 

@@ -1,0 +1,29 @@
+{
+  "description": "Street thefts in Chicago during 2022 that sound brazen",
+  "domain": "data.cityofchicago.org",
+  "dataset_id": "ijzp-q8t2",
+  "constraints": [
+    {
+      "description": "Primary crime type is theft",
+      "type": "verified",
+      "where": "primary_type='THEFT'"
+    },
+    {
+      "description": "Location is a street",
+      "type": "verified",
+      "where": "location_description='STREET'"
+    },
+    {
+      "description": "Occurred in 2022",
+      "type": "verified",
+      "where": "year=2022"
+    },
+    {
+      "description": "Sounds brazen (nature of the incident)",
+      "type": "inferred",
+      "estimated_survival_rate": 0.15
+    }
+  ],
+  "sample_size": 100,
+  "sample_fields": ["date", "primary_type", "description", "location_description"]
+}
