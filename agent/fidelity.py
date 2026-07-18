@@ -38,8 +38,12 @@ class Constraint:
         - "injected": a filter the system applied that the user never
           requested (quality floors, top-N truncation, sampling, default
           sort). Excluded from the fidelity score but always reported.
-    rate_source: "measured" if the survival rate was counted against the
-        actual data, "estimated" if it is a guess. None if unknown.
+    rate_source: how the survival rate was obtained —
+        - "measured": an exact or system-returned count against the data
+        - "approximated": system-derived but inexact (planner statistics,
+          sampled counts; possibly stale)
+        - "estimated": a guess
+        None if unknown.
     """
 
     description: str
@@ -48,7 +52,7 @@ class Constraint:
     api_param: str | None = None
     api_value: str | None = None
     max_bits: float = MAX_CONSTRAINT_BITS
-    rate_source: Literal["measured", "estimated"] | None = None
+    rate_source: Literal["measured", "approximated", "estimated"] | None = None
 
     @property
     def bits(self) -> float:
@@ -150,7 +154,8 @@ def compute_fidelity(constraints: list[dict],
             - description: str
             - type: "verified", "inferred", or "injected"
             - estimated_survival_rate: float (0, 1); optional for injected
-            - rate_source: "measured" or "estimated" (optional)
+            - rate_source: "measured", "approximated", or "estimated"
+              (optional)
             - api_param: str (optional, for verified)
             - api_value: str (optional, for verified)
         pool_size: Number of rows in the candidate pool. Caps each

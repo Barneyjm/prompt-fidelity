@@ -79,9 +79,14 @@ Each constraint needs a survival rate: the fraction of the candidate pool
 that satisfies it, in (0, 1). Information content is `-log2(survival_rate)`.
 
 **Measure whenever the pool is queryable — using the cheapest mechanism the
-system offers.** Measured rates make the constraint *weights* verified too,
-removing the score's largest source of noise. Mark these with
-`"rate_source": "measured"`.
+system offers.** System-derived rates make the constraint *weights*
+verified too, removing the score's largest source of noise. Record how
+each rate was obtained in `rate_source`:
+
+- `"measured"` — an exact or system-returned count against the actual data
+- `"approximated"` — system-derived but inexact: planner statistics,
+  sampled counts, metadata that may be stale
+- `"estimated"` — your own guess
 
 Bits are logarithmic, so order-of-magnitude accuracy is enough — a 2× error
 in a rate shifts the result by only one bit. That means you should never
@@ -89,23 +94,27 @@ run an expensive exact count to get a number you only need roughly. Defer
 to the target system's best practices, preferring free or cheap sources
 first:
 
-- **Counts the system returns anyway**: an API's `total_results`, a search
-  engine's hit count, a paginated response's total field.
-- **Catalog and optimizer statistics**: planner row estimates
-  (`EXPLAIN` output, `pg_class.reltuples`, `information_schema` row
-  counts), warehouse table metadata — no scan at all.
-- **Approximate or sampled counts**: `TABLESAMPLE`, approximate-count
-  functions, a count over a bounded sample extrapolated up.
-- **Exact counts** only when they're known to be cheap: small tables,
-  index-only predicates, local files (`grep -c`, `ls | wc -l`), an
-  in-memory dataframe.
+- **Counts the system returns anyway** (→ `measured`): an API's
+  `total_results`, a search engine's hit count, a paginated response's
+  total field.
+- **Catalog and optimizer statistics** (→ `approximated`): planner row
+  estimates (`EXPLAIN` output, `pg_class.reltuples`, `information_schema`
+  row counts), warehouse table metadata — no scan at all.
+- **Approximate or sampled counts** (→ `approximated`): `TABLESAMPLE`,
+  approximate-count functions, a count over a bounded sample extrapolated
+  up.
+- **Exact counts** (→ `measured`) only when they're known to be cheap:
+  small tables, index-only predicates, local files (`grep -c`,
+  `ls | wc -l`), an in-memory dataframe.
 
 Never fire unbounded `COUNT(*)` scans (or worse, one per constraint) at a
 large shared or production system — a fidelity self-check must not become
 the most expensive query of the day. If no cheap measurement path exists,
-that's what `"estimated"` is for.
+that's what `"estimated"` is for. Label honestly: a rate from possibly
+stale statistics marked `"measured"` overclaims, which is exactly what
+this skill exists to prevent.
 
-**Estimate only when you can't measure**, and mark those
+**Estimate only when you can't measure or approximate**, and mark those
 `"rate_source": "estimated"`. Rough calibration (anchors, not data — real
 distributions skew; e.g. most catalogs are heavily weighted toward recent
 years, so "last two years" may be far more common than a uniform spread
@@ -153,7 +162,7 @@ python3 <skill-dir>/scripts/compute_fidelity.py --pool-size 1000000000 constrain
 
 Each constraint object needs `description`, `type` ("verified", "inferred",
 or "injected"), and `estimated_survival_rate` (optional for injected), plus
-`rate_source` ("measured" or "estimated"). Pass `--pool-size` when you know
+`rate_source` ("measured", "approximated", or "estimated"). Pass `--pool-size` when you know
 the pool's rough size (or a top-level `"pool_size"` key in the JSON); omit
 it to use the default 20-bit cap. Add `--json` for machine-readable output.
 The script prints the fidelity report block — include it verbatim in your
@@ -188,7 +197,7 @@ a 1-billion-row reviews table with SQL access.
     {"description": "Review is of Heat (1995)", "type": "verified",
      "estimated_survival_rate": 1.2e-05, "rate_source": "measured"},
     {"description": "Review has 10+ helpful votes", "type": "verified",
-     "estimated_survival_rate": 0.08, "rate_source": "measured"},
+     "estimated_survival_rate": 0.08, "rate_source": "approximated"},
     {"description": "Reads as sincere rather than ironic", "type": "inferred",
      "estimated_survival_rate": 0.3, "rate_source": "estimated"},
     {"description": "Judged only the 50 longest matching reviews",
@@ -198,8 +207,9 @@ a 1-billion-row reviews table with SQL access.
 ```
 
 The two verified rates came from the system's own numbers — the movie-ID
-rate from an indexed count, the vote threshold from planner statistics —
-not from full-table scans; the tone constraint is a judgment call; and the
-sampling step is declared instead of hidden. Framing: "Movie and vote threshold are verified against the table
+rate from a cheap indexed count (`measured`), the vote threshold from
+planner statistics (`approximated`) — not from full-table scans; the tone
+constraint is a judgment call; and the sampling step is declared instead
+of hidden. Framing: "Movie and vote threshold are verified against the table
 (rates measured, not guessed); 'sincere' is my reading; and I only judged
 the 50 longest of the ~1,000 qualifying reviews."

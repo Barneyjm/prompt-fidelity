@@ -17,8 +17,12 @@ Input: a JSON array of constraint objects (or an object with a
     estimated_survival_rate float fraction of the candidate pool that
                                   satisfies this constraint, in (0, 1);
                                   optional for "injected"
-    rate_source             str   optional: "measured" (counted against the
-                                  actual data) or "estimated" (a guess)
+    rate_source             str   optional: "measured" (an exact or
+                                  system-returned count against the actual
+                                  data), "approximated" (system-derived but
+                                  inexact — planner statistics, sampled
+                                  counts, possibly stale), or "estimated"
+                                  (a guess)
 
 Constraint types:
     verified  — mechanically checkable against the data source; counts
@@ -51,6 +55,7 @@ import sys
 DEFAULT_MAX_CONSTRAINT_BITS = 20.0
 BAR_WIDTH = 20
 VALID_TYPES = ("verified", "inferred", "injected")
+VALID_RATE_SOURCES = ("measured", "approximated", "estimated")
 
 
 def bits(survival_rate: float, max_bits: float) -> float:
@@ -87,6 +92,13 @@ def analyze(constraints: list[dict], pool_size: float | None = None) -> dict:
             f"estimated_survival_rate is required for verified/inferred "
             f"constraints: {names}")
 
+    bad_sources = [c for c in constraints
+                   if c.get("rate_source") not in (None, *VALID_RATE_SOURCES)]
+    if bad_sources:
+        names = ", ".join(repr(c.get("description", "?")) for c in bad_sources)
+        raise ValueError(
+            f'rate_source must be one of {VALID_RATE_SOURCES}: {names}')
+
     max_bits = max_bits_for_pool(pool_size)
     for c in constraints:
         if "estimated_survival_rate" in c:
@@ -99,6 +111,8 @@ def analyze(constraints: list[dict], pool_size: float | None = None) -> dict:
 
     measured = sum(1 for c in verified + inferred
                    if c.get("rate_source") == "measured")
+    approximated = sum(1 for c in verified + inferred
+                       if c.get("rate_source") == "approximated")
 
     return {
         "fidelity_score": round(score, 3),
@@ -111,6 +125,7 @@ def analyze(constraints: list[dict], pool_size: float | None = None) -> dict:
         "num_inferred_constraints": len(inferred),
         "num_injected_constraints": len(injected),
         "num_measured_rates": measured,
+        "num_approximated_rates": approximated,
         "constraints": constraints,
     }
 
