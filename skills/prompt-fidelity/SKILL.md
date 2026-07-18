@@ -78,12 +78,32 @@ reflects a melancholy tone".
 Each constraint needs a survival rate: the fraction of the candidate pool
 that satisfies it, in (0, 1). Information content is `-log2(survival_rate)`.
 
-**Measure whenever the pool is queryable.** A survival rate is one cheap
-count away on most real datasets — `SELECT COUNT(*)` with and without the
-filter, an API's `total_results` field, `grep -c`/`ls | wc -l` over files,
-a filtered row count in a spreadsheet. Measured rates make the constraint
-*weights* verified too, removing the score's largest source of noise. Mark
-these with `"rate_source": "measured"`.
+**Measure whenever the pool is queryable — using the cheapest mechanism the
+system offers.** Measured rates make the constraint *weights* verified too,
+removing the score's largest source of noise. Mark these with
+`"rate_source": "measured"`.
+
+Bits are logarithmic, so order-of-magnitude accuracy is enough — a 2× error
+in a rate shifts the result by only one bit. That means you should never
+run an expensive exact count to get a number you only need roughly. Defer
+to the target system's best practices, preferring free or cheap sources
+first:
+
+- **Counts the system returns anyway**: an API's `total_results`, a search
+  engine's hit count, a paginated response's total field.
+- **Catalog and optimizer statistics**: planner row estimates
+  (`EXPLAIN` output, `pg_class.reltuples`, `information_schema` row
+  counts), warehouse table metadata — no scan at all.
+- **Approximate or sampled counts**: `TABLESAMPLE`, approximate-count
+  functions, a count over a bounded sample extrapolated up.
+- **Exact counts** only when they're known to be cheap: small tables,
+  index-only predicates, local files (`grep -c`, `ls | wc -l`), an
+  in-memory dataframe.
+
+Never fire unbounded `COUNT(*)` scans (or worse, one per constraint) at a
+large shared or production system — a fidelity self-check must not become
+the most expensive query of the day. If no cheap measurement path exists,
+that's what `"estimated"` is for.
 
 **Estimate only when you can't measure**, and mark those
 `"rate_source": "estimated"`. Rough calibration (anchors, not data — real
@@ -99,8 +119,9 @@ would suggest):
 | Broad (above-average rating, common property) | 0.3–0.5 | 1–1.7 |
 
 Also determine the **pool size** — the number of candidate rows/items
-(measure it too when you can: `SELECT COUNT(*)`, `total_results`, file
-count). No constraint can carry more information than it takes to identify
+(source it the same cheap way: table statistics, an unfiltered
+`total_results`, a file count). No constraint can carry more information
+than it takes to identify
 a single row, so per-constraint bits are capped at log2(pool_size). Pass it
 to the script; without it the cap defaults to 20 bits (a one-in-a-million
 pool), which undercounts near-unique selectors on large datasets.
@@ -176,8 +197,9 @@ a 1-billion-row reviews table with SQL access.
 }
 ```
 
-The two verified rates came from actual `COUNT(*)` queries; the tone
-constraint is a judgment call; and the sampling step is declared instead of
-hidden. Framing: "Movie and vote threshold are verified against the table
+The two verified rates came from the system's own numbers — the movie-ID
+rate from an indexed count, the vote threshold from planner statistics —
+not from full-table scans; the tone constraint is a judgment call; and the
+sampling step is declared instead of hidden. Framing: "Movie and vote threshold are verified against the table
 (rates measured, not guessed); 'sincere' is my reading; and I only judged
 the 50 longest of the ~1,000 qualifying reviews."
