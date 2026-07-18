@@ -123,7 +123,9 @@ def run(spec: dict, sample_rows: int) -> dict:
             "type": "injected",
         })
 
-    report = calc.analyze(constraints, pool_size=pool)
+    joint_rate = joint / pool if joint else None
+    report = calc.analyze(constraints, pool_size=pool,
+                          verified_joint_survival_rate=joint_rate)
     print()
     print(calc.render(report))
 

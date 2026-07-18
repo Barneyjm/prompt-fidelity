@@ -84,9 +84,17 @@ class Constraint:
 
 @dataclass
 class FidelityReport:
-    """Complete fidelity analysis for a set of constraints."""
+    """Complete fidelity analysis for a set of constraints.
+
+    verified_joint_survival_rate: measured survival rate of ALL verified
+        filters ANDed together. When set, the verified side of the score
+        uses the exact joint information -log2(rate) instead of summing
+        per-constraint bits (which assumes independence). Per-constraint
+        bits remain as attribution.
+    """
 
     constraints: list[Constraint]
+    verified_joint_survival_rate: float | None = None
 
     @property
     def verified_constraints(self) -> list[Constraint]:
@@ -104,9 +112,20 @@ class FidelityReport:
         return [c for c in self.constraints if c.constraint_type == "injected"]
 
     @property
-    def verified_bits(self) -> float:
-        """Total bits from verified constraints."""
+    def verified_bits_summed(self) -> float:
+        """Verified bits summed per-constraint (assumes independence)."""
         return sum(c.bits for c in self.verified_constraints)
+
+    @property
+    def verified_bits(self) -> float:
+        """Verified bits used for the score: joint-measured when available."""
+        if self.verified_joint_survival_rate is not None:
+            rate = self.verified_joint_survival_rate
+            if rate <= 0:
+                raise ValueError(
+                    f"verified_joint_survival_rate must be positive, got {rate}")
+            return 0.0 if rate >= 1 else -math.log2(rate)
+        return self.verified_bits_summed
 
     @property
     def inferred_bits(self) -> float:
@@ -135,6 +154,10 @@ class FidelityReport:
         return {
             "fidelity_score": round(self.fidelity_score, 3),
             "verified_bits": round(self.verified_bits, 2),
+            "verified_bits_summed": round(self.verified_bits_summed, 2),
+            "verified_rate_basis": (
+                "joint-measured" if self.verified_joint_survival_rate is not None
+                else "summed"),
             "inferred_bits": round(self.inferred_bits, 2),
             "total_bits": round(self.total_bits, 2),
             "num_verified_constraints": len(self.verified_constraints),
@@ -145,7 +168,9 @@ class FidelityReport:
 
 
 def compute_fidelity(constraints: list[dict],
-                     pool_size: float | None = None) -> FidelityReport:
+                     pool_size: float | None = None,
+                     verified_joint_survival_rate: float | None = None
+                     ) -> FidelityReport:
     """
     Compute fidelity score from a list of constraint dictionaries.
 
@@ -161,6 +186,10 @@ def compute_fidelity(constraints: list[dict],
         pool_size: Number of rows in the candidate pool. Caps each
             constraint at log2(pool_size) bits. Defaults to the
             one-in-a-million cap (20 bits) when omitted.
+        verified_joint_survival_rate: measured survival rate of all
+            verified filters combined. When given, the score uses the
+            exact joint information instead of summed per-constraint
+            bits (correlation correction).
 
     Returns:
         FidelityReport with computed fidelity score and breakdown.
@@ -181,7 +210,9 @@ def compute_fidelity(constraints: list[dict],
         )
         parsed_constraints.append(constraint)
 
-    return FidelityReport(constraints=parsed_constraints)
+    return FidelityReport(
+        constraints=parsed_constraints,
+        verified_joint_survival_rate=verified_joint_survival_rate)
 
 
 def estimate_survival_rate_from_bits(bits: float) -> float:

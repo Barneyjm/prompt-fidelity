@@ -262,7 +262,8 @@ prompt-fidelity/
 │   └── sample_prompts.json  # Categorized test prompts
 ├── experiments/
 │   ├── socrata_fidelity.py  # Live validation against Socrata open datasets
-│   └── specs/               # Experiment specs (NYC 311, Chicago crimes)
+│   ├── run_suite.py         # Run all specs, emit comparison table
+│   └── specs/               # Experiment specs (NYC, Chicago, Seattle, ...)
 ├── requirements.txt
 ├── .env.example
 └── README.md
@@ -296,7 +297,7 @@ TMDb is just the working example. Three mechanisms keep the framework honest on 
 
 - **Measured vs. estimated survival rates.** On a queryable datastore, survival rates shouldn't be guessed — but they shouldn't be bought with expensive scans either. Bits are logarithmic, so order-of-magnitude accuracy suffices; prefer counts the system already returns (`total_results`, search hit counts), catalog/optimizer statistics, or sampled counts over exact `COUNT(*)`, following the target system's own best practices. Constraints carry an optional `rate_source` of `"measured"` (exact or system-returned counts), `"approximated"` (system-derived but inexact — planner statistics, sampled counts, possibly stale), or `"estimated"` (a guess), so the report shows whether the constraint *weights* are themselves verified. The calibration numbers in this repo (a decade ≈ 10%, a genre ≈ 5–15%) are movie-catalog priors; real distributions skew, so measure cheaply when you can.
 - **Injected filters.** Any filter the system applies that the user never requested — quality floors, top-N truncation, sampling, default sort order — is declared with `"type": "injected"`. Injected filters are excluded from the fidelity score (they aren't part of the request) but always listed in the report, because silently narrowing the pool is the main way a "100% fidelity, provably correct" claim becomes dishonest. This repo's own pipeline declares its filters: a 50-vote minimum, a top-30 candidate cap, and a top-10 re-rank cutoff.
-- **Independence caveat.** Bits are summed across constraints, which assumes they filter independently. Heavily overlapping constraints should be merged before scoring; correlated constraints inflate total bits. Quantifying this (e.g., against measured joint counts) is an open item for `experiments/`.
+- **Correlation correction.** Bits summed across constraints assume they filter independently, which real data violates. When the datastore can cheaply measure the joint count of all verified filters ANDed together — often the same query that sizes the survivor set — pass it (`verified_joint_count` in the skill script, `verified_joint_survival_rate` to `compute_fidelity()`), and the verified side of the score uses the exact measured joint information `-log2(joint/pool)` instead of the sum. Per-constraint bits remain as attribution and the report shows the adjustment. Inferred constraints can't be jointly counted, so they stay summed — merge overlapping inferred constraints by hand.
 
 One more subtlety: "verified" means the *query* is mechanically checkable, not that it faithfully captures intent. A crowd-sourced `melancholy` keyword tag is a verified filter but a noisy proxy for a melancholy tone — the skill's guidance is to split such constraints into a verified query plus an inferred semantic gap.
 
@@ -307,21 +308,22 @@ One more subtlety: "verified" means the *query* is mechanically checkable, not t
 ```bash
 python3 experiments/socrata_fidelity.py experiments/specs/nyc_311_noise.json
 python3 experiments/socrata_fidelity.py --sample 5 experiments/specs/chicago_theft.json
+python3 experiments/run_suite.py --quiet   # run every spec, emit the table below
 ```
 
-Each run measures the pool size and every verified constraint's survival rate from the system's own counts, scores the request, declares the judging sample as an injected filter, and empirically checks the independence assumption by comparing predicted survivors (rates multiplied) against the measured joint count.
+Each run measures the pool size and every verified constraint's survival rate from the system's own counts, scores the request with the correlation correction applied (the measured joint count replaces the independence sum on the verified side), and declares the judging sample as an injected filter. `run_suite.py` runs every spec as a regression suite and exits nonzero on failure, so it can gate CI.
 
-Results so far, across five cities and five data shapes:
+Results across five cities and five data shapes (suite output):
 
-| Spec | Dataset | Pool | Fidelity | Correlation gap |
-|---|---|---|---|---|
-| `nyc_311_noise` | NYC 311 requests | 21.8M | 72.1% | +0.12 bits |
-| `chicago_theft` | Chicago crimes | 8.6M | 77.3% | −0.22 bits |
-| `seattle_aid_calls` | Seattle Fire 911 | 2.2M | 68.6% | +0.10 bits |
-| `moco_speeding` | Montgomery Co. traffic stops | 2.1M | 66.8% | +0.28 bits |
-| `austin_pitbull_adoptions` | Austin animal outcomes | 174k | 82.8% | −0.23 bits |
+| Spec | Domain | Pool | Fidelity | Verified bits (joint) | Correlation adj. |
+|---|---|---|---|---|---|
+| `austin_pitbull_adoptions` | data.austintexas.gov | 173,775 | 82.4% | 8.17 (summed 8.40) | -0.23 bits |
+| `chicago_theft` | data.cityofchicago.org | 8,595,766 | 76.9% | 9.11 (summed 9.33) | -0.22 bits |
+| `moco_speeding` | data.montgomerycountymd.gov | 2,137,572 | 67.7% | 6.96 (summed 6.68) | +0.28 bits |
+| `nyc_311_noise` | data.cityofnewyork.us | 21,848,232 | 72.4% | 8.70 (summed 8.57) | +0.13 bits |
+| `seattle_aid_calls` | data.seattle.gov | 2,187,508 | 69.0% | 5.16 (summed 5.06) | +0.10 bits |
 
-Every correlation gap lands within ±0.3 bits against 5–9 verified bits — early but consistent evidence that summing per-constraint bits is a sound approximation on real civic data. The sign is informative too: negative gaps (Chicago, Austin) mean the constraints are positively correlated and the joint pool is *larger* than independence predicts; positive gaps (Montgomery County) mean mild redundancy. Write a new spec JSON to test any other Socrata dataset.
+Every adjustment lands within ±0.3 bits against 5–9 verified bits, so the independence sum is a good approximation on real civic data — but with the joint count measured, the verified side no longer needs the approximation at all. Reading the sign: a negative adjustment (Chicago, Austin) means the constraints are positively correlated — the joint pool is larger than independence predicts, so the sum *overstated* the verified information; a positive adjustment (NYC, Seattle, Montgomery County) means mildly negatively correlated constraints, where the sum understated it. Write a new spec JSON to test any other Socrata dataset.
 
 ## TMDb Verified Fields
 

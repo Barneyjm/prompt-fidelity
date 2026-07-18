@@ -39,7 +39,9 @@ Break the request into individual constraints. Rules:
 - Each constraint is one independent requirement. Bits are summed across
   constraints, which assumes they filter independently — if two constraints
   heavily overlap ("reviews of Heat" and "reviews mentioning De Niro"),
-  merge them into one constraint instead of double-counting.
+  merge them into one constraint instead of double-counting. For verified
+  constraints the independence assumption can be removed entirely with one
+  measured joint count (Step 3).
 - A range counts as ONE constraint, not two. "From the 90s" is a single
   constraint ("Released 1990–1999"), not separate "after 1990" and
   "before 1999" constraints.
@@ -135,6 +137,19 @@ a single row, so per-constraint bits are capped at log2(pool_size). Pass it
 to the script; without it the cap defaults to 20 bits (a one-in-a-million
 pool), which undercounts near-unique selectors on large datasets.
 
+**Correct for correlation with one more count.** Summing bits assumes the
+verified constraints filter independently, which real data violates
+(neighborhoods correlate with complaint types, locations with crime
+types). If the datastore can cheaply measure the joint count of all
+verified filters ANDed together — often the same query you run anyway to
+size the survivor set — pass it as a top-level `verified_joint_count`
+(alongside `pool_size`) or via `--joint-count`. The verified side of the
+score then uses the exact measured joint information, `-log2(joint/pool)`,
+instead of the independence approximation; per-constraint bits remain as
+attribution and the report shows the adjustment. Inferred constraints
+cannot be jointly counted, so they stay summed — which is why overlapping
+inferred constraints must still be merged by hand.
+
 ### Step 4 — Declare every injected filter
 
 List every filter that narrows the pool but that the user never asked for —
@@ -164,7 +179,9 @@ Each constraint object needs `description`, `type` ("verified", "inferred",
 or "injected"), and `estimated_survival_rate` (optional for injected), plus
 `rate_source` ("measured", "approximated", or "estimated"). Pass `--pool-size` when you know
 the pool's rough size (or a top-level `"pool_size"` key in the JSON); omit
-it to use the default 20-bit cap. Add `--json` for machine-readable output.
+it to use the default 20-bit cap. Pass the measured joint count of the
+verified filters via `--joint-count` or a top-level `"verified_joint_count"`
+key when you have it. Add `--json` for machine-readable output.
 The script prints the fidelity report block — include it verbatim in your
 response.
 
@@ -193,6 +210,7 @@ a 1-billion-row reviews table with SQL access.
 ```json
 {
   "pool_size": 1000000000,
+  "verified_joint_count": 1100,
   "constraints": [
     {"description": "Review is of Heat (1995)", "type": "verified",
      "estimated_survival_rate": 1.2e-05, "rate_source": "measured"},
@@ -210,6 +228,9 @@ The two verified rates came from the system's own numbers — the movie-ID
 rate from a cheap indexed count (`measured`), the vote threshold from
 planner statistics (`approximated`) — not from full-table scans; the tone
 constraint is a judgment call; and the sampling step is declared instead
-of hidden. Framing: "Movie and vote threshold are verified against the table
+of hidden. The `verified_joint_count` (1,100 matching rows, from the same
+query that sized the survivor set) makes the verified bits exact: the two
+filters are mildly correlated, so the report shows a small negative
+adjustment against the independence sum. Framing: "Movie and vote threshold are verified against the table
 (rates measured, not guessed); 'sincere' is my reading; and I only judged
 the 50 longest of the ~1,000 qualifying reviews."

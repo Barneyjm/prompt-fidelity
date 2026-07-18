@@ -68,10 +68,17 @@ def format_fidelity_report(report: FidelityReport) -> str:
             lines.append(format_constraint_line(c))
 
     # Summary statistics
+    joint = report.verified_joint_survival_rate is not None
     lines.append(f"\n  {'─' * 40}")
-    lines.append(f"  Verified:  {report.verified_bits:6.2f} bits ({len(report.verified_constraints)} constraints)")
+    lines.append(f"  Verified:  {report.verified_bits:6.2f} bits "
+                 f"({len(report.verified_constraints)} constraints"
+                 f"{', joint-measured' if joint else ''})")
     lines.append(f"  Inferred:  {report.inferred_bits:6.2f} bits ({len(report.inferred_constraints)} constraints)")
     lines.append(f"  Total:     {report.total_bits:6.2f} bits")
+    if joint:
+        adjustment = report.verified_bits - report.verified_bits_summed
+        lines.append(f"  Correlation: summed {report.verified_bits_summed:.2f} bits "
+                     f"→ joint {report.verified_bits:.2f} ({adjustment:+.2f} adjustment)")
     if report.injected_constraints:
         n = len(report.injected_constraints)
         lines.append(f"  Injected:  {n} system "

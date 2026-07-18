@@ -40,9 +40,17 @@ candidate pool. Set it via --pool-size or a top-level "pool_size" key
 (--pool-size wins if both are given). Without it, the cap defaults to
 20 bits (a one-in-a-million pool).
 
-Note: bits are summed across constraints, which assumes they filter
-(roughly) independently. Merge heavily overlapping constraints before
-scoring rather than listing them separately.
+Correlation correction: bits summed across constraints assume they filter
+independently. When the datastore can cheaply measure the JOINT count of
+all verified filters ANDed together (often the same query that sizes the
+survivor set), pass it via --joint-count, a top-level
+"verified_joint_count" key (requires pool_size), or a top-level
+"verified_joint_survival_rate" key. The verified side of the score then
+uses the exact measured joint information, -log2(joint/pool), instead of
+the independence approximation; per-constraint bits remain as attribution
+and the report shows the adjustment. Inferred constraints cannot be
+jointly counted and stay summed — merge heavily overlapping inferred
+constraints rather than listing them separately.
 
 Output: a formatted fidelity report (or JSON with --json).
 """
@@ -74,7 +82,8 @@ def max_bits_for_pool(pool_size: float | None) -> float:
     return math.log2(pool_size)
 
 
-def analyze(constraints: list[dict], pool_size: float | None = None) -> dict:
+def analyze(constraints: list[dict], pool_size: float | None = None,
+            verified_joint_survival_rate: float | None = None) -> dict:
     unknown = [c for c in constraints if c.get("type") not in VALID_TYPES]
     if unknown:
         names = ", ".join(repr(c.get("description", "?")) for c in unknown)
@@ -104,7 +113,21 @@ def analyze(constraints: list[dict], pool_size: float | None = None) -> dict:
         if "estimated_survival_rate" in c:
             c["bits"] = round(bits(float(c["estimated_survival_rate"]), max_bits), 2)
 
-    verified_bits = sum(c["bits"] for c in verified)
+    verified_bits_summed = sum(c["bits"] for c in verified)
+
+    joint_bits = None
+    if verified_joint_survival_rate is not None:
+        if not verified:
+            raise ValueError(
+                "verified_joint_survival_rate given but there are no "
+                "verified constraints")
+        rate = float(verified_joint_survival_rate)
+        if not 0 < rate <= 1:
+            raise ValueError(
+                f"verified_joint_survival_rate must be in (0, 1], got {rate}")
+        joint_bits = bits(rate, max_bits)
+
+    verified_bits = joint_bits if joint_bits is not None else verified_bits_summed
     inferred_bits = sum(c["bits"] for c in inferred)
     total_bits = verified_bits + inferred_bits
     score = 1.0 if total_bits == 0 else verified_bits / total_bits
@@ -119,6 +142,11 @@ def analyze(constraints: list[dict], pool_size: float | None = None) -> dict:
         "pool_size": pool_size,
         "max_constraint_bits": round(max_bits, 2),
         "verified_bits": round(verified_bits, 2),
+        "verified_bits_summed": round(verified_bits_summed, 2),
+        "verified_rate_basis": "joint-measured" if joint_bits is not None else "summed",
+        "correlation_adjustment_bits": (
+            round(verified_bits - verified_bits_summed, 2)
+            if joint_bits is not None else None),
         "inferred_bits": round(inferred_bits, 2),
         "total_bits": round(total_bits, 2),
         "num_verified_constraints": len(verified),
@@ -181,13 +209,20 @@ def render(report: dict) -> str:
     n_v = report["num_verified_constraints"]
     n_i = report["num_inferred_constraints"]
     n_j = report["num_injected_constraints"]
+    joint = report["verified_rate_basis"] == "joint-measured"
     lines += [
         "",
         f"  {thin}",
-        f"  Verified:  {report['verified_bits']:>7.2f} bits ({n_v} {plural(n_v)})",
+        f"  Verified:  {report['verified_bits']:>7.2f} bits ({n_v} {plural(n_v)}"
+        + (", joint-measured)" if joint else ")"),
         f"  Inferred:  {report['inferred_bits']:>7.2f} bits ({n_i} {plural(n_i)})",
         f"  Total:     {report['total_bits']:>7.2f} bits",
     ]
+    if joint:
+        adj = report["correlation_adjustment_bits"]
+        lines.append(
+            f"  Correlation: summed {report['verified_bits_summed']:.2f} bits "
+            f"→ joint {report['verified_bits']:.2f} ({adj:+.2f} adjustment)")
     if n_j:
         lines.append(f"  Injected:  {n_j} system "
                      f"{'filter narrows' if n_j == 1 else 'filters narrow'} "
@@ -206,27 +241,50 @@ def main() -> int:
     as_json = "--json" in args
     args = [a for a in args if a != "--json"]
 
-    pool_size = None
-    if "--pool-size" in args:
-        i = args.index("--pool-size")
+    def take_flag(name: str) -> float | None:
+        if name not in args:
+            return None
+        i = args.index(name)
         try:
-            pool_size = float(args[i + 1])
+            value = float(args[i + 1])
         except (IndexError, ValueError):
-            print("error: --pool-size requires a numeric value", file=sys.stderr)
-            return 1
+            raise ValueError(f"{name} requires a numeric value")
         del args[i:i + 2]
+        return value
+
+    try:
+        pool_size = take_flag("--pool-size")
+        joint_count = take_flag("--joint-count")
+    except ValueError as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 1
 
     raw = open(args[0]).read() if args else sys.stdin.read()
     data = json.loads(raw)
+    joint_rate = None
     if isinstance(data, dict):
         constraints = data["constraints"]
         if pool_size is None:
             pool_size = data.get("pool_size")
+        if joint_count is None:
+            joint_count = data.get("verified_joint_count")
+        joint_rate = data.get("verified_joint_survival_rate")
     else:
         constraints = data
 
     try:
-        report = analyze(constraints, pool_size=pool_size)
+        if joint_count is not None:
+            if joint_rate is not None:
+                raise ValueError(
+                    "give verified_joint_count or "
+                    "verified_joint_survival_rate, not both")
+            if pool_size is None:
+                raise ValueError(
+                    "verified_joint_count requires pool_size to derive the "
+                    "joint survival rate")
+            joint_rate = joint_count / pool_size
+        report = analyze(constraints, pool_size=pool_size,
+                         verified_joint_survival_rate=joint_rate)
     except (KeyError, ValueError, TypeError) as e:
         print(f"error: {e}", file=sys.stderr)
         return 1
