@@ -11,9 +11,21 @@ from dataclasses import dataclass
 from typing import Literal
 
 
-# Maximum bits for any single constraint (prevents inf/NaN issues)
-# 20 bits ≈ survival rate of ~0.000001 (one in a million)
+# Default maximum bits for any single constraint (prevents inf/NaN issues)
+# 20 bits ≈ survival rate of ~0.000001 (one in a million, roughly the size
+# of the TMDb catalog). For larger candidate pools, pass pool_size to
+# compute_fidelity() so the cap scales to log2(pool_size): a constraint
+# cannot carry more information than it takes to identify a single row.
 MAX_CONSTRAINT_BITS = 20.0
+
+
+def max_bits_for_pool(pool_size: float | None) -> float:
+    """Per-constraint bit cap for a candidate pool of the given size."""
+    if pool_size is None:
+        return MAX_CONSTRAINT_BITS
+    if pool_size <= 1:
+        raise ValueError(f"pool_size must be greater than 1, got {pool_size}")
+    return math.log2(pool_size)
 
 
 @dataclass
@@ -25,15 +37,16 @@ class Constraint:
     estimated_survival_rate: float
     api_param: str | None = None
     api_value: str | None = None
+    max_bits: float = MAX_CONSTRAINT_BITS
 
     @property
     def bits(self) -> float:
         """Calculate information content in bits using -log2(survival_rate)."""
         if self.estimated_survival_rate <= 0:
-            return MAX_CONSTRAINT_BITS  # Cap at max to avoid inf/NaN
+            return self.max_bits  # Cap at max to avoid inf/NaN
         if self.estimated_survival_rate >= 1:
             return 0.0
-        return min(-math.log2(self.estimated_survival_rate), MAX_CONSTRAINT_BITS)
+        return min(-math.log2(self.estimated_survival_rate), self.max_bits)
 
     def to_dict(self) -> dict:
         """Convert constraint to dictionary representation."""
@@ -106,7 +119,8 @@ class FidelityReport:
         }
 
 
-def compute_fidelity(constraints: list[dict]) -> FidelityReport:
+def compute_fidelity(constraints: list[dict],
+                     pool_size: float | None = None) -> FidelityReport:
     """
     Compute fidelity score from a list of constraint dictionaries.
 
@@ -117,10 +131,14 @@ def compute_fidelity(constraints: list[dict]) -> FidelityReport:
             - estimated_survival_rate: float (0, 1)
             - api_param: str (optional, for verified)
             - api_value: str (optional, for verified)
+        pool_size: Number of rows in the candidate pool. Caps each
+            constraint at log2(pool_size) bits. Defaults to the
+            one-in-a-million cap (20 bits) when omitted.
 
     Returns:
         FidelityReport with computed fidelity score and breakdown.
     """
+    max_bits = max_bits_for_pool(pool_size)
     parsed_constraints = []
 
     for c in constraints:
@@ -129,7 +147,8 @@ def compute_fidelity(constraints: list[dict]) -> FidelityReport:
             constraint_type=c["type"],
             estimated_survival_rate=c["estimated_survival_rate"],
             api_param=c.get("api_param"),
-            api_value=c.get("api_value")
+            api_value=c.get("api_value"),
+            max_bits=max_bits
         )
         parsed_constraints.append(constraint)
 

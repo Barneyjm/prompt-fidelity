@@ -282,6 +282,12 @@ The **information content** (in bits) is `-log2(survival_rate)`:
 
 Fidelity is the ratio of verified bits to total bits.
 
+Per-constraint bits are capped at `log2(pool_size)` — a constraint cannot carry more information than it takes to identify a single row in the candidate pool. The default cap is 20 bits (a one-in-a-million pool, roughly the TMDb catalog); for larger datasets pass `pool_size` to `compute_fidelity()` (or `--pool-size` to the skill's script) so near-unique selectors like exact IDs are counted at their true weight — ~30 bits on a billion-row table:
+
+```python
+report = compute_fidelity(constraints, pool_size=1_000_000_000)
+```
+
 ## TMDb Verified Fields
 
 | Field | TMDb Parameter | Typical Survival Rate |

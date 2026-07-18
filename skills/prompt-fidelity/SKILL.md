@@ -66,6 +66,15 @@ that satisfies it (a decimal in (0, 1)). Information content is
 | Moderately selective (a genre, a decade, a language) | 0.05–0.15 | 2.7–4.3 |
 | Broad (rating above average, common property) | 0.3–0.5 | 1–1.7 |
 
+Estimate the **pool size** too — the number of candidate rows/items the
+request selects from (a movie catalog ≈ 10^6, a reviews table might be 10^9,
+a repo might be 10^3 files). No constraint can carry more information than
+it takes to identify a single row, so per-constraint bits are capped at
+log2(pool_size). Pass the pool size to the script when you know it (even a
+rough order of magnitude); otherwise the cap defaults to 20 bits (a
+one-in-a-million pool), which undercounts near-unique selectors like exact
+IDs on very large datasets.
+
 ### Step 4 — Compute the score
 
 Write the constraints as a JSON array and run the bundled script (stdlib
@@ -73,13 +82,15 @@ only, no installs). The script lives at `scripts/compute_fidelity.py`
 relative to this SKILL.md:
 
 ```bash
-python3 <skill-dir>/scripts/compute_fidelity.py constraints.json
+python3 <skill-dir>/scripts/compute_fidelity.py --pool-size 1000000000 constraints.json
 ```
 
 Each constraint object needs `description`, `type` ("verified" or
-"inferred"), and `estimated_survival_rate`. Add `--json` for machine-readable
-output. The script prints the fidelity report block — include it verbatim in
-your response.
+"inferred"), and `estimated_survival_rate`. Pass `--pool-size` when you know
+the candidate pool's rough size (or a top-level `"pool_size"` key in the
+JSON); omit it to use the default 20-bit cap. Add `--json` for
+machine-readable output. The script prints the fidelity report block —
+include it verbatim in your response.
 
 ### Step 5 — Answer with calibrated framing
 
