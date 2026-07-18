@@ -325,6 +325,36 @@ Results across five cities and five data shapes (suite output):
 
 Every adjustment lands within ±0.3 bits against 5–9 verified bits, so the independence sum is a good approximation on real civic data — but with the joint count measured, the verified side no longer needs the approximation at all. Reading the sign: a negative adjustment (Chicago, Austin) means the constraints are positively correlated — the joint pool is larger than independence predicts, so the sum *overstated* the verified information; a positive adjustment (NYC, Seattle, Montgomery County) means mildly negatively correlated constraints, where the sum understated it. Write a new spec JSON to test any other Socrata dataset.
 
+### Case studies: answering real questions with the skill
+
+Two end-to-end runs, each answering a natural question a resident might actually ask. Total API footprint per run: a handful of server-side counts and one small fetch of the matching rows.
+
+**"Were there a lot of illegal fireworks complaints in Williamsburg around July 4th? Which sound like full shows vs stray firecrackers?"** (NYC 311, 21.8M rows)
+
+```
+PROMPT FIDELITY: 91.6%
+  ✓ Illegal Fireworks complaints     (7.48 bits, measured)
+  ✓ Williamsburg zips 11211/11249    (6.31 bits, measured)
+  ✓ June 28 – July 6, 2026           (7.63 bits, measured)
+  ? "full show vs firecrackers"      (1.74 bits, estimated)
+  Correlation: summed 21.42 bits → joint 18.89 (-2.53 adjustment)
+```
+
+The verified half answered richly: 45 complaints, peaking at 19 on July 4th, with a repeat-complaint hot spot on South 2nd Street. The inferred half hit a wall — all 45 records had descriptor "N/A" and boilerplate resolutions — so the answer said plainly that the data cannot distinguish shows from firecrackers, and offered the one verifiable proxy (repeat complaints at one address in one night) clearly labeled as inference. A high fidelity score means the *verified part dominates the request*, not that every part is answerable. The −2.53 bit adjustment reflects a real seasonal correlation: fireworks complaints barely exist outside that week, so complaint type and date range heavily overlap.
+
+**"How bad have car break-ins been in Logan Square this summer? Do they look targeted or random?"** (Chicago crimes, 8.6M rows)
+
+```
+PROMPT FIDELITY: 94.5%
+  ✓ Vehicle break-in (theft/burglary from vehicle)  (8.76 bits, measured)
+  ✓ Logan Square (community area 22)                (5.71 bits, measured)
+  ✓ Jun 1 – Jul 18, 2026                            (8.40 bits, measured)
+  ? "targeted vs random"                            (1.00 bits, estimated)
+  Correlation: summed 22.87 bits → joint 17.23 (-5.64 adjustment)
+```
+
+Verified: 56 break-ins, up 33% from 42 in the same window last year; 41 of 56 street parking; zero arrests; 17 of the 56 in a single June 2–4 burst. The inferred judgment ("systematic about the area, random about the victim") was grounded in checkable patterns — burst days and no block hit more than twice — with the line drawn explicitly between database facts and interpretation. Two mechanisms earned their keep here: a cheap group-by probe *before* decomposing revealed that "car break-ins" spans two encodings (guessing would have silently dropped 57% of the answer), and the −5.64 bit correlation adjustment absorbed a data-quality landmine — those description labels barely exist before ~2024 because Chicago changed its coding taxonomy, making the all-time per-constraint rate meaningless. Independence predicted ~1 matching row; the measured joint count of 56 kept the score correct despite 25 years of label drift.
+
 ## TMDb Verified Fields
 
 | Field | TMDb Parameter | Typical Survival Rate |
