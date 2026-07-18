@@ -150,6 +150,28 @@ attribution and the report shows the adjustment. Inferred constraints
 cannot be jointly counted, so they stay summed — which is why overlapping
 inferred constraints must still be merged by hand.
 
+**When the adjustment is large, compute actual correlations to find the
+culprit** — don't stop at the aggregate subtraction. Two ways, same idea:
+
+- *Pairwise counts (no data download)*: for each pair of verified
+  constraints, count `A AND B` and compute the shared information
+  `log2(pool × n_AB / (n_A × n_B))` — the pairwise correlation (lift)
+  expressed in bits. Positive = overlapping, negative = anti-correlated.
+  k constraints cost k(k−1)/2 extra cheap counts.
+- *Indicator correlation (data in hand)*: with rows in a dataframe or a
+  judged sample, build one boolean column per constraint and run a
+  correlation matrix (`df[cols].corr()` in pandas, `np.corrcoef` on the
+  indicators). This is the only way to examine correlation involving
+  **inferred** constraints — judge a sample, add their indicator columns,
+  and inspect; label anything derived this way `approximated` at best,
+  since the labels themselves are judgment.
+
+Use the attribution to act: merge the entangled pair into one constraint,
+or note in your answer which criteria are largely redundant. A large
+adjustment can also flag data-quality drift (a label that only exists in
+recent years correlates with every date filter) — worth a sentence to the
+user when you spot it.
+
 ### Step 4 — Declare every injected filter
 
 List every filter that narrows the pool but that the user never asked for —

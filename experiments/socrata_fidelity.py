@@ -82,7 +82,7 @@ def soda_count(domain: str, dataset_id: str, where: str | None = None) -> int:
     return int(rows[0]["n"])
 
 
-def run(spec: dict, sample_rows: int) -> dict:
+def run(spec: dict, sample_rows: int, pairwise: bool = False) -> dict:
     calc = load_calculator()
     domain, dataset_id = spec["domain"], spec["dataset_id"]
 
@@ -95,6 +95,7 @@ def run(spec: dict, sample_rows: int) -> dict:
     # Measure each verified constraint's survival rate server-side
     constraints = []
     verified_wheres = []
+    verified_counts = []
     for c in spec["constraints"]:
         entry = {"description": c["description"], "type": c["type"]}
         if c["type"] == "verified":
@@ -102,6 +103,7 @@ def run(spec: dict, sample_rows: int) -> dict:
             entry["estimated_survival_rate"] = count / pool
             entry["rate_source"] = "measured"
             verified_wheres.append(c["where"])
+            verified_counts.append((c["description"], c["where"], count))
             print(f"  measured: {c['description']}: {count:,} rows "
                   f"({count / pool:.4%})")
         else:
@@ -146,6 +148,31 @@ def run(spec: dict, sample_rows: int) -> dict:
             "correlation_gap_bits": round(gap_bits, 2),
         }
 
+    # Pairwise attribution: which constraint pairs share information?
+    # For each pair, shared bits = log2(lift) = bits_A + bits_B - bits_AB,
+    # i.e. the pairwise phi/correlation structure expressed in the same
+    # units as the score. Positive = overlapping (positively correlated),
+    # negative = anti-correlated. The aggregate adjustment above is the
+    # total; this names the pairs responsible (residual = higher-order
+    # interactions). k constraints cost k(k-1)/2 extra counts.
+    if pairwise and len(verified_counts) > 1:
+        print("\n  Pairwise shared information (log2 lift):")
+        pairs = []
+        for i in range(len(verified_counts)):
+            for j in range(i + 1, len(verified_counts)):
+                desc_a, where_a, n_a = verified_counts[i]
+                desc_b, where_b, n_b = verified_counts[j]
+                n_ab = soda_count(domain, dataset_id,
+                                  f"({where_a}) AND ({where_b})")
+                if n_ab == 0 or n_a == 0 or n_b == 0:
+                    print(f"    {desc_a} × {desc_b}: no overlap")
+                    continue
+                shared = math.log2(pool * n_ab / (n_a * n_b))
+                pairs.append({"a": desc_a, "b": desc_b,
+                              "shared_bits": round(shared, 2)})
+                print(f"    {desc_a} × {desc_b}: {shared:+.2f} bits")
+        report["pairwise_shared_bits"] = pairs
+
     if sample_rows and verified_wheres:
         params = {
             "$where": " AND ".join(f"({w})" for w in verified_wheres),
@@ -167,6 +194,9 @@ def main() -> int:
     parser.add_argument("spec", help="Path to an experiment spec JSON file")
     parser.add_argument("--sample", type=int, default=0, metavar="N",
                         help="Also fetch N matching rows for inspection")
+    parser.add_argument("--pairwise", action="store_true",
+                        help="Measure pairwise shared bits between verified "
+                             "constraints (k*(k-1)/2 extra counts)")
     parser.add_argument("--json", action="store_true",
                         help="Print the report as JSON instead of text")
     args = parser.parse_args()
@@ -175,7 +205,7 @@ def main() -> int:
         spec = json.load(f)
 
     try:
-        report = run(spec, args.sample)
+        report = run(spec, args.sample, pairwise=args.pairwise)
     except urllib.error.URLError as e:
         print(f"error: request to {spec['domain']} failed: {e}", file=sys.stderr)
         return 1
