@@ -1,0 +1,29 @@
+{
+  "description": "Noise complaints in Brooklyn from summer 2023 that sound genuinely furious",
+  "domain": "data.cityofnewyork.us",
+  "dataset_id": "erm2-nwe9",
+  "constraints": [
+    {
+      "description": "Complaint type is a Noise category",
+      "type": "verified",
+      "where": "starts_with(complaint_type,'Noise')"
+    },
+    {
+      "description": "Borough is Brooklyn",
+      "type": "verified",
+      "where": "borough='BROOKLYN'"
+    },
+    {
+      "description": "Created June-August 2023",
+      "type": "verified",
+      "where": "created_date between '2023-06-01T00:00:00' and '2023-08-31T23:59:59'"
+    },
+    {
+      "description": "Sounds genuinely furious (tone of description)",
+      "type": "inferred",
+      "estimated_survival_rate": 0.10
+    }
+  ],
+  "sample_size": 100,
+  "sample_fields": ["created_date", "complaint_type", "borough", "descriptor"]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "prompt-fidelity",
+  "owner": {
+    "name": "James Barney"
+  },
+  "plugins": [
+    {
+      "name": "prompt-fidelity",
+      "source": "./",
+      "description": "Self-check skill: decompose a request into verified vs inferred constraints, compute a fidelity score, and report which parts of an answer are auditable vs judgment calls."
+    }
+  ]
+}

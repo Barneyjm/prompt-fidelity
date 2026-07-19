@@ -11,29 +11,59 @@ from dataclasses import dataclass
 from typing import Literal
 
 
-# Maximum bits for any single constraint (prevents inf/NaN issues)
-# 20 bits ≈ survival rate of ~0.000001 (one in a million)
+# Default maximum bits for any single constraint (prevents inf/NaN issues)
+# 20 bits ≈ survival rate of ~0.000001 (one in a million, roughly the size
+# of the TMDb catalog). For larger candidate pools, pass pool_size to
+# compute_fidelity() so the cap scales to log2(pool_size): a constraint
+# cannot carry more information than it takes to identify a single row.
 MAX_CONSTRAINT_BITS = 20.0
+
+
+def max_bits_for_pool(pool_size: float | None) -> float:
+    """Per-constraint bit cap for a candidate pool of the given size."""
+    if pool_size is None:
+        return MAX_CONSTRAINT_BITS
+    if pool_size <= 1:
+        raise ValueError(f"pool_size must be greater than 1, got {pool_size}")
+    return math.log2(pool_size)
 
 
 @dataclass
 class Constraint:
-    """Represents a single constraint extracted from a user prompt."""
+    """Represents a single constraint extracted from a user prompt.
+
+    constraint_type:
+        - "verified": mechanically checkable against the data source
+        - "inferred": requires subjective LLM judgment
+        - "injected": a filter the system applied that the user never
+          requested (quality floors, top-N truncation, sampling, default
+          sort). Excluded from the fidelity score but always reported.
+    rate_source: how the survival rate was obtained —
+        - "measured": an exact or system-returned count against the data
+        - "approximated": system-derived but inexact (planner statistics,
+          sampled counts; possibly stale)
+        - "estimated": a guess
+        None if unknown.
+    """
 
     description: str
-    constraint_type: Literal["verified", "inferred"]
-    estimated_survival_rate: float
+    constraint_type: Literal["verified", "inferred", "injected"]
+    estimated_survival_rate: float | None = None
     api_param: str | None = None
     api_value: str | None = None
+    max_bits: float = MAX_CONSTRAINT_BITS
+    rate_source: Literal["measured", "approximated", "estimated"] | None = None
 
     @property
     def bits(self) -> float:
         """Calculate information content in bits using -log2(survival_rate)."""
+        if self.estimated_survival_rate is None:
+            return 0.0
         if self.estimated_survival_rate <= 0:
-            return MAX_CONSTRAINT_BITS  # Cap at max to avoid inf/NaN
+            return self.max_bits  # Cap at max to avoid inf/NaN
         if self.estimated_survival_rate >= 1:
             return 0.0
-        return min(-math.log2(self.estimated_survival_rate), MAX_CONSTRAINT_BITS)
+        return min(-math.log2(self.estimated_survival_rate), self.max_bits)
 
     def to_dict(self) -> dict:
         """Convert constraint to dictionary representation."""
@@ -47,14 +77,30 @@ class Constraint:
             result["api_param"] = self.api_param
         if self.api_value:
             result["api_value"] = self.api_value
+        if self.rate_source:
+            result["rate_source"] = self.rate_source
         return result
 
 
 @dataclass
 class FidelityReport:
-    """Complete fidelity analysis for a set of constraints."""
+    """Complete fidelity analysis for a set of constraints.
+
+    verified_joint_survival_rate: measured survival rate of ALL verified
+        filters ANDed together. When set, the verified side of the score
+        uses the exact joint information -log2(rate), capped at the pool
+        cap, instead of summing per-constraint bits (which assumes
+        independence). A rate of 0 (jointly unsatisfiable filters) is
+        valid and scores at the cap. Per-constraint bits remain as
+        attribution.
+    pool_size: candidate pool size the report was computed against; the
+        per-constraint and joint cap is log2(pool_size), defaulting to
+        20 bits when None. Carried on the report so to_dict() round-trips.
+    """
 
     constraints: list[Constraint]
+    verified_joint_survival_rate: float | None = None
+    pool_size: float | None = None
 
     @property
     def verified_constraints(self) -> list[Constraint]:
@@ -67,9 +113,31 @@ class FidelityReport:
         return [c for c in self.constraints if c.constraint_type == "inferred"]
 
     @property
-    def verified_bits(self) -> float:
-        """Total bits from verified constraints."""
+    def injected_constraints(self) -> list[Constraint]:
+        """System-applied filters the user never requested (score-excluded)."""
+        return [c for c in self.constraints if c.constraint_type == "injected"]
+
+    @property
+    def max_bits(self) -> float:
+        """Per-constraint (and joint) bit cap for this report's pool."""
+        return max_bits_for_pool(self.pool_size)
+
+    @property
+    def verified_bits_summed(self) -> float:
+        """Verified bits summed per-constraint (assumes independence)."""
         return sum(c.bits for c in self.verified_constraints)
+
+    @property
+    def verified_bits(self) -> float:
+        """Verified bits used for the score: joint-measured when available."""
+        if self.verified_joint_survival_rate is not None:
+            rate = self.verified_joint_survival_rate
+            if rate <= 0:
+                return self.max_bits  # jointly unsatisfiable -> capped
+            if rate >= 1:
+                return 0.0
+            return min(-math.log2(rate), self.max_bits)
+        return self.verified_bits_summed
 
     @property
     def inferred_bits(self) -> float:
@@ -78,7 +146,7 @@ class FidelityReport:
 
     @property
     def total_bits(self) -> float:
-        """Total information content across all constraints."""
+        """Total information content across scored (non-injected) constraints."""
         return self.verified_bits + self.inferred_bits
 
     @property
@@ -97,43 +165,90 @@ class FidelityReport:
         """Convert report to dictionary representation."""
         return {
             "fidelity_score": round(self.fidelity_score, 3),
+            "pool_size": self.pool_size,
+            "verified_joint_survival_rate": self.verified_joint_survival_rate,
             "verified_bits": round(self.verified_bits, 2),
+            "verified_bits_summed": round(self.verified_bits_summed, 2),
+            "verified_rate_basis": (
+                "joint-measured" if self.verified_joint_survival_rate is not None
+                else "summed"),
             "inferred_bits": round(self.inferred_bits, 2),
             "total_bits": round(self.total_bits, 2),
             "num_verified_constraints": len(self.verified_constraints),
             "num_inferred_constraints": len(self.inferred_constraints),
+            "num_injected_constraints": len(self.injected_constraints),
             "constraints": [c.to_dict() for c in self.constraints]
         }
 
 
-def compute_fidelity(constraints: list[dict]) -> FidelityReport:
+def compute_fidelity(constraints: list[dict],
+                     pool_size: float | None = None,
+                     verified_joint_survival_rate: float | None = None
+                     ) -> FidelityReport:
     """
     Compute fidelity score from a list of constraint dictionaries.
 
     Args:
         constraints: List of constraint dicts with keys:
             - description: str
-            - type: "verified" or "inferred"
-            - estimated_survival_rate: float (0, 1)
+            - type: "verified", "inferred", or "injected"
+            - estimated_survival_rate: float (0, 1); optional for injected
+            - rate_source: "measured", "approximated", or "estimated"
+              (optional)
             - api_param: str (optional, for verified)
             - api_value: str (optional, for verified)
+        pool_size: Number of rows in the candidate pool. Caps each
+            constraint at log2(pool_size) bits. Defaults to the
+            one-in-a-million cap (20 bits) when omitted.
+        verified_joint_survival_rate: measured survival rate of all
+            verified filters combined. When given, the score uses the
+            exact joint information instead of summed per-constraint
+            bits (correlation correction).
 
     Returns:
         FidelityReport with computed fidelity score and breakdown.
+        Injected constraints are reported but excluded from the score.
+
+    Raises:
+        ValueError: if a verified/inferred constraint is missing its
+            estimated_survival_rate (a silent 0-bit score would distort
+            fidelity), if the joint rate is outside [0, 1], or if a joint
+            rate is given with no verified constraints.
     """
+    max_bits = max_bits_for_pool(pool_size)
     parsed_constraints = []
 
     for c in constraints:
+        rate = c.get("estimated_survival_rate")
+        if rate is None and c["type"] in ("verified", "inferred"):
+            raise ValueError(
+                f"estimated_survival_rate is required for {c['type']} "
+                f"constraint {c.get('description', '?')!r}")
         constraint = Constraint(
             description=c["description"],
             constraint_type=c["type"],
-            estimated_survival_rate=c["estimated_survival_rate"],
+            estimated_survival_rate=rate,
             api_param=c.get("api_param"),
-            api_value=c.get("api_value")
+            api_value=c.get("api_value"),
+            max_bits=max_bits,
+            rate_source=c.get("rate_source")
         )
         parsed_constraints.append(constraint)
 
-    return FidelityReport(constraints=parsed_constraints)
+    if verified_joint_survival_rate is not None:
+        if not any(c.constraint_type == "verified" for c in parsed_constraints):
+            raise ValueError(
+                "verified_joint_survival_rate given but there are no "
+                "verified constraints")
+        if not 0 <= verified_joint_survival_rate <= 1:
+            raise ValueError(
+                f"verified_joint_survival_rate must be in [0, 1], "
+                f"got {verified_joint_survival_rate}")
+
+    return FidelityReport(
+        constraints=parsed_constraints,
+        verified_joint_survival_rate=verified_joint_survival_rate,
+        pool_size=pool_size)
 
 
 def estimate_survival_rate_from_bits(bits: float) -> float:

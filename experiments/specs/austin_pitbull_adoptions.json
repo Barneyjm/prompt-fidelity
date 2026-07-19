@@ -1,0 +1,29 @@
+{
+  "description": "Pit bull mixes adopted in 2023 that sound like total sweethearts",
+  "domain": "data.austintexas.gov",
+  "dataset_id": "9t4d-g238",
+  "constraints": [
+    {
+      "description": "Breed includes Pit Bull",
+      "type": "verified",
+      "where": "breed like '%Pit Bull%'"
+    },
+    {
+      "description": "Outcome is adoption",
+      "type": "verified",
+      "where": "outcome_type='Adoption'"
+    },
+    {
+      "description": "Outcome during 2023",
+      "type": "verified",
+      "where": "datetime between '2023-01-01T00:00:00' and '2023-12-31T23:59:59'"
+    },
+    {
+      "description": "Sounds like a total sweetheart (temperament)",
+      "type": "inferred",
+      "estimated_survival_rate": 0.3
+    }
+  ],
+  "sample_size": 100,
+  "sample_fields": ["datetime", "breed", "outcome_type", "age_upon_outcome", "sex_upon_outcome"]
+}

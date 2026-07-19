@@ -17,6 +17,11 @@ import httpx
 
 TMDB_BASE_URL = "https://api.themoviedb.org/3"
 
+# Quality floor injected into every discover query. Declared in the fidelity
+# report (agent/main.py pipeline_injected_constraints) — keep in sync by
+# importing this constant, never by copying the number.
+DEFAULT_MIN_VOTES = 50
+
 
 @dataclass
 class Movie:
@@ -181,7 +186,7 @@ class TMDbClient:
         self,
         params: dict[str, Any] | None = None,
         page: int = 1,
-        min_votes: int = 50
+        min_votes: int = DEFAULT_MIN_VOTES
     ) -> list[Movie]:
         """
         Discover movies with optional filters.

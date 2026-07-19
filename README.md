@@ -101,6 +101,39 @@ Both queries have **identical total information content** (8.38 bits). The diffe
 
 This is the fidelity frontier in action. The first prompt sits at the maximum—every bit of specificity maps to a queryable field. The second prompt sits at the minimum—the entire request requires LLM inference.
 
+## Use It as a Claude Skill
+
+The framework is also packaged as an installable [Agent Skill](https://code.claude.com/docs/en/skills) in [`skills/prompt-fidelity/`](skills/prompt-fidelity/). Once installed, Claude self-checks its own answers: before responding to a search, filtering, or recommendation request, it decomposes the request into verified vs. inferred constraints, computes the fidelity score with a bundled dependency-free script, and reports which parts of its answer are auditable and which are judgment calls. It generalizes beyond movies — "verified" means checkable with whatever deterministic tools are available in the session (APIs, databases, files, code).
+
+### Install in Claude Code (plugin marketplace)
+
+```
+/plugin marketplace add barneyjm/prompt-fidelity
+/plugin install prompt-fidelity@prompt-fidelity
+```
+
+### Install manually (Claude Code)
+
+```bash
+# Personal (all projects)
+cp -r skills/prompt-fidelity ~/.claude/skills/
+
+# Or per-project
+cp -r skills/prompt-fidelity your-project/.claude/skills/
+```
+
+### Install on claude.ai
+
+Zip the skill folder and upload it under **Settings → Capabilities → Skills**:
+
+```bash
+cd skills && zip -r prompt-fidelity.zip prompt-fidelity
+```
+
+Claude invokes the skill automatically when a request mixes objective and subjective criteria, or you can invoke it explicitly with `/prompt-fidelity` in Claude Code.
+
+In normal conversation the score shapes the answer rather than appearing as a chart: Claude states in prose which parts came straight from the data and which are its judgment ("the counts and dates are from the database; which ones sound serious is my reading"), citing at most a round percentage. The full report block — the bar, per-constraint bits, correlation adjustment — appears when you ask for the score or audit, invoke the skill explicitly, or the output is going into a file or eval; the script's `--brief` flag covers the middle ground.
+
 ## Quick Start
 
 ### 1. Install dependencies
@@ -209,6 +242,14 @@ User prompt
 
 ```
 prompt-fidelity/
+├── .claude-plugin/
+│   ├── plugin.json       # Claude Code plugin manifest
+│   └── marketplace.json  # Plugin marketplace manifest
+├── skills/
+│   └── prompt-fidelity/
+│       ├── SKILL.md      # Installable self-check skill for Claude
+│       └── scripts/
+│           └── compute_fidelity.py  # Stdlib-only fidelity calculator
 ├── agent/
 │   ├── __init__.py       # Package exports
 │   ├── main.py           # LangGraph workflow and CLI
@@ -221,7 +262,10 @@ prompt-fidelity/
 │   └── tmdb_fields.json  # Verified field definitions
 ├── examples/
 │   └── sample_prompts.json  # Categorized test prompts
-├── experiments/          # Validation experiments (TODO)
+├── experiments/
+│   ├── socrata_fidelity.py  # Live validation against Socrata open datasets
+│   ├── run_suite.py         # Run all specs, emit comparison table
+│   └── specs/               # Experiment specs (NYC, Chicago, Seattle, ...)
 ├── requirements.txt
 ├── .env.example
 └── README.md
@@ -242,6 +286,78 @@ The **information content** (in bits) is `-log2(survival_rate)`:
 - 15% survival → 2.74 bits
 
 Fidelity is the ratio of verified bits to total bits.
+
+Per-constraint bits are capped at `log2(pool_size)` — a constraint cannot carry more information than it takes to identify a single row in the candidate pool. The default cap is 20 bits (a one-in-a-million pool, roughly the TMDb catalog); for larger datasets pass `pool_size` to `compute_fidelity()` (or `--pool-size` to the skill's script) so near-unique selectors like exact IDs are counted at their true weight — ~30 bits on a billion-row table:
+
+```python
+report = compute_fidelity(constraints, pool_size=1_000_000_000)
+```
+
+### Generalizing beyond TMDb
+
+TMDb is just the working example. Three mechanisms keep the framework honest on arbitrary datasets:
+
+- **Measured vs. estimated survival rates.** On a queryable datastore, survival rates shouldn't be guessed — but they shouldn't be bought with expensive scans either. Bits are logarithmic, so order-of-magnitude accuracy suffices; prefer counts the system already returns (`total_results`, search hit counts), catalog/optimizer statistics, or sampled counts over exact `COUNT(*)`, following the target system's own best practices. Constraints carry an optional `rate_source` of `"measured"` (exact or system-returned counts), `"approximated"` (system-derived but inexact — planner statistics, sampled counts, possibly stale), or `"estimated"` (a guess), so the report shows whether the constraint *weights* are themselves verified. The calibration numbers in this repo (a decade ≈ 10%, a genre ≈ 5–15%) are movie-catalog priors; real distributions skew, so measure cheaply when you can.
+- **Injected filters.** Any filter the system applies that the user never requested — quality floors, top-N truncation, sampling, default sort order — is declared with `"type": "injected"`. Injected filters are excluded from the fidelity score (they aren't part of the request) but always listed in the report, because silently narrowing the pool is the main way a "100% fidelity, provably correct" claim becomes dishonest. This repo's own pipeline declares its filters: a 50-vote minimum, a top-30 candidate cap, and a top-10 re-rank cutoff.
+- **Correlation correction.** Bits summed across constraints assume they filter independently, which real data violates. When the datastore can cheaply measure the joint count of all verified filters ANDed together — often the same query that sizes the survivor set — pass it (`verified_joint_count` in the skill script, `verified_joint_survival_rate` to `compute_fidelity()`), and the verified side of the score uses the exact measured joint information `-log2(joint/pool)` instead of the sum. Per-constraint bits remain as attribution and the report shows the adjustment. Inferred constraints can't be jointly counted, so they stay summed — merge overlapping inferred constraints by hand.
+
+  The aggregate adjustment says *how much* correlation there is, not *where*. To attribute it, compute actual correlations: pairwise `A AND B` counts give each pair's correlation adjustment as `log2((n_A × n_B) / (pool × n_AB))` — same sign convention as the aggregate, and the pairwise values sum to approximately the aggregate adjustment; the harness does this with `--pairwise` — or, with rows in hand, build boolean indicator columns per constraint and run a standard correlation matrix (`df.corr()` in pandas / `np.corrcoef`). The indicator route is also the only window into correlation among *inferred* constraints, via a judged sample.
+
+One more subtlety: "verified" means the *query* is mechanically checkable, not that it faithfully captures intent. A crowd-sourced `melancholy` keyword tag is a verified filter but a noisy proxy for a melancholy tone — the skill's guidance is to split such constraints into a verified query plus an inferred semantic gap.
+
+### Validation on real open data
+
+`experiments/socrata_fidelity.py` runs the whole workflow against live Socrata-hosted datasets (NYC Open Data, Chicago, CDC, and most data.gov-federated portals speak the same SODA API) using only server-side counts — no scans, no downloads:
+
+```bash
+python3 experiments/socrata_fidelity.py experiments/specs/nyc_311_noise.json
+python3 experiments/socrata_fidelity.py --sample 5 experiments/specs/chicago_theft.json
+python3 experiments/run_suite.py --quiet   # run every spec, emit the table below
+```
+
+Each run measures the pool size and every verified constraint's survival rate from the system's own counts, scores the request with the correlation correction applied (the measured joint count replaces the independence sum on the verified side), and declares the judging sample as an injected filter. `run_suite.py` runs every spec as a regression suite and exits nonzero on failure, so it can gate CI.
+
+Results across five cities and five data shapes (suite output):
+
+| Spec | Domain | Pool | Fidelity | Verified bits (joint) | Correlation adj. |
+|---|---|---|---|---|---|
+| `austin_pitbull_adoptions` | data.austintexas.gov | 173,775 | 82.5% | 8.17 (summed 8.40) | -0.23 bits |
+| `chicago_theft` | data.cityofchicago.org | 8,595,766 | 76.9% | 9.11 (summed 9.33) | -0.22 bits |
+| `moco_speeding` | data.montgomerycountymd.gov | 2,137,572 | 67.7% | 6.96 (summed 6.68) | +0.28 bits |
+| `nyc_311_noise` | data.cityofnewyork.us | 21,848,232 | 72.4% | 8.70 (summed 8.57) | +0.12 bits |
+| `seattle_aid_calls` | data.seattle.gov | 2,187,508 | 69.0% | 5.16 (summed 5.06) | +0.10 bits |
+
+Every adjustment lands within ±0.3 bits against 5–9 verified bits, so the independence sum is a good approximation on real civic data — but with the joint count measured, the verified side no longer needs the approximation at all. Reading the sign: a negative adjustment (Chicago, Austin) means the constraints are positively correlated — the joint pool is larger than independence predicts, so the sum *overstated* the verified information; a positive adjustment (NYC, Seattle, Montgomery County) means mildly negatively correlated constraints, where the sum understated it. Write a new spec JSON to test any other Socrata dataset.
+
+### Case studies: answering real questions with the skill
+
+Two end-to-end runs, each answering a natural question a resident might actually ask. Total API footprint per run: a handful of server-side counts and one small fetch of the matching rows.
+
+**"Were there a lot of illegal fireworks complaints in Williamsburg around July 4th? Which sound like full shows vs stray firecrackers?"** (NYC 311, 21.8M rows)
+
+```
+PROMPT FIDELITY: 91.6%
+  ✓ Illegal Fireworks complaints     (7.48 bits, measured)
+  ✓ Williamsburg zips 11211/11249    (6.31 bits, measured)
+  ✓ June 28 – July 6, 2026           (7.63 bits, measured)
+  ? "full show vs firecrackers"      (1.74 bits, estimated)
+  Correlation: summed 21.43 bits → joint 18.89 (-2.54 adjustment)
+```
+
+The verified half answered richly: 45 complaints, peaking at 19 on July 4th, with a repeat-complaint hot spot on South 2nd Street. The inferred half hit a wall — all 45 records had descriptor "N/A" and boilerplate resolutions — so the answer said plainly that the data cannot distinguish shows from firecrackers, and offered the one verifiable proxy (repeat complaints at one address in one night) clearly labeled as inference. A high fidelity score means the *verified part dominates the request*, not that every part is answerable. The −2.54 bit adjustment reflects a real seasonal correlation: fireworks complaints barely exist outside that week, so complaint type and date range heavily overlap.
+
+**"How bad have car break-ins been in Logan Square this summer? Do they look targeted or random?"** (Chicago crimes, 8.6M rows)
+
+```
+PROMPT FIDELITY: 94.5%
+  ✓ Vehicle break-in (theft/burglary from vehicle)  (8.76 bits, measured)
+  ✓ Logan Square (community area 22)                (5.71 bits, measured)
+  ✓ Jun 1 – Jul 18, 2026                            (8.40 bits, measured)
+  ? "targeted vs random"                            (1.00 bits, estimated)
+  Correlation: summed 22.86 bits → joint 17.23 (-5.63 adjustment)
+```
+
+Verified: 56 break-ins, up 33% from 42 in the same window last year; 41 of 56 street parking; zero arrests; 17 of the 56 in a single June 2–4 burst. The inferred judgment ("systematic about the area, random about the victim") was grounded in checkable patterns — burst days and no block hit more than twice — with the line drawn explicitly between database facts and interpretation. Two mechanisms earned their keep here: a cheap group-by probe *before* decomposing revealed that "car break-ins" spans two encodings (guessing would have silently dropped 57% of the answer), and the −5.63 bit correlation adjustment absorbed a data-quality landmine — those description labels barely exist before ~2024 because Chicago changed its coding taxonomy, making the all-time per-constraint rate meaningless. Independence predicted ~1 matching row; the measured joint count of 56 kept the score correct despite 25 years of label drift.
 
 ## TMDb Verified Fields
 

@@ -1,0 +1,11 @@
+{
+  "name": "prompt-fidelity",
+  "description": "Self-check skill: decompose a request into verified vs inferred constraints, compute a fidelity score, and report which parts of an answer are auditable vs judgment calls.",
+  "version": "0.1.0",
+  "author": {
+    "name": "James Barney"
+  },
+  "homepage": "https://github.com/barneyjm/prompt-fidelity",
+  "license": "MIT",
+  "keywords": ["fidelity", "self-check", "calibration", "verification"]
+}

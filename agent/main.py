@@ -25,8 +25,13 @@ from .decompose import (
     constraints_requiring_lookup,
 )
 from .fidelity import compute_fidelity, FidelityReport
-from .tmdb import TMDbClient, build_discover_params, MovieDetails
-from .rerank import rerank_movies, merge_rerank_results
+from .tmdb import TMDbClient, build_discover_params, MovieDetails, DEFAULT_MIN_VOTES
+from .rerank import (
+    rerank_movies,
+    merge_rerank_results,
+    RERANK_MAX_RESULTS,
+    RERANK_SCORE_THRESHOLD,
+)
 from .display import (
     print_recommendations,
     format_json_output,
@@ -36,6 +41,10 @@ from .display import (
 
 # Load environment variables
 load_dotenv()
+
+# Candidates passed to re-ranking after the TMDb query. Declared in the
+# fidelity report via pipeline_injected_constraints.
+CANDIDATE_CAP = 30
 
 
 class AgentState(TypedDict):
@@ -154,11 +163,11 @@ def query_tmdb_node(state: AgentState) -> AgentState:
         params = build_discover_params(state["verified_constraints"])
 
         # Query TMDb discover endpoint
-        movies = client.discover_movies(params, min_votes=50)
+        movies = client.discover_movies(params, min_votes=DEFAULT_MIN_VOTES)
 
         # Get detailed info for top candidates (for re-ranking context)
         detailed_movies = []
-        for movie in movies[:30]:  # Limit to top 30 for efficiency
+        for movie in movies[:CANDIDATE_CAP]:
             try:
                 details = client.get_movie_details(movie.id)
                 movie_dict = movie.to_dict()
@@ -200,7 +209,7 @@ def rerank_node(state: AgentState) -> AgentState:
             state["user_prompt"],
             provider=state.get("provider", "anthropic"),
             model=state.get("model"),
-            max_results=10
+            max_results=RERANK_MAX_RESULTS
         )
 
         ranked = merge_rerank_results(
@@ -217,13 +226,46 @@ def rerank_node(state: AgentState) -> AgentState:
         return {**state, "error": f"Re-ranking failed: {str(e)}"}
 
 
+def pipeline_injected_constraints(state: AgentState) -> list[dict]:
+    """
+    Filters this pipeline applies that the user never requested.
+
+    Declared so they appear in the fidelity report instead of silently
+    narrowing the pool. Excluded from the fidelity score.
+    """
+    injected = [
+        {
+            "description": f"Minimum {DEFAULT_MIN_VOTES} votes "
+                           f"(quality floor applied to every query)",
+            "type": "injected",
+            "estimated_survival_rate": 0.10,
+        },
+        {
+            "description": f"Candidates sorted by rating and capped at top "
+                           f"{CANDIDATE_CAP} before ranking",
+            "type": "injected",
+        },
+    ]
+    if state["inferred_constraints"]:
+        injected.append({
+            "description": f"Re-ranked results limited to {RERANK_MAX_RESULTS} "
+                           f"with match score above {RERANK_SCORE_THRESHOLD}",
+            "type": "injected",
+        })
+    return injected
+
+
 def compute_fidelity_node(state: AgentState) -> AgentState:
     """Compute fidelity score from constraints."""
     if state.get("error"):
         return state
 
     try:
-        all_constraints = state["verified_constraints"] + state["inferred_constraints"]
+        all_constraints = (
+            state["verified_constraints"]
+            + state["inferred_constraints"]
+            + pipeline_injected_constraints(state)
+        )
         fidelity_report = compute_fidelity(all_constraints)
 
         return {
@@ -383,6 +425,19 @@ def main():
         model=args.model
     )
 
+    def report_from_dict(fidelity_dict: dict) -> FidelityReport:
+        """Rebuild the pipeline's FidelityReport from its to_dict() output.
+
+        Passes through every report-level field (pool size, joint rate) so
+        the displayed report matches the one the pipeline computed.
+        """
+        return compute_fidelity(
+            fidelity_dict.get("constraints", []),
+            pool_size=fidelity_dict.get("pool_size"),
+            verified_joint_survival_rate=fidelity_dict.get(
+                "verified_joint_survival_rate"),
+        )
+
     def process_prompt(prompt: str):
         """Process a single prompt and display results."""
         result = agent.recommend(prompt)
@@ -398,7 +453,7 @@ def main():
                 format_json_output(
                     prompt,
                     result.get("movies", []),
-                    compute_fidelity(fidelity_dict.get("constraints", [])),
+                    report_from_dict(fidelity_dict),
                     result.get("decomposition")
                 ),
                 indent=2
@@ -406,7 +461,7 @@ def main():
         else:
             # Formatted text output
             fidelity_dict = result.get("fidelity", {})
-            fidelity_report = compute_fidelity(fidelity_dict.get("constraints", []))
+            fidelity_report = report_from_dict(fidelity_dict)
 
             if args.color:
                 print(format_fidelity_colored(fidelity_report))

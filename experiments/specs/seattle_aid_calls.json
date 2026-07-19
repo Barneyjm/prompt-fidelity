@@ -1,0 +1,24 @@
+{
+  "description": "Seattle aid response calls from 2024 that sound life-threatening",
+  "domain": "data.seattle.gov",
+  "dataset_id": "kzjm-xkqj",
+  "constraints": [
+    {
+      "description": "Call type is an aid response",
+      "type": "verified",
+      "where": "starts_with(type,'Aid Response')"
+    },
+    {
+      "description": "Received during 2024",
+      "type": "verified",
+      "where": "datetime between '2024-01-01T00:00:00' and '2024-12-31T23:59:59'"
+    },
+    {
+      "description": "Sounds life-threatening (severity of the incident)",
+      "type": "inferred",
+      "estimated_survival_rate": 0.2
+    }
+  ],
+  "sample_size": 100,
+  "sample_fields": ["datetime", "type", "address"]
+}
