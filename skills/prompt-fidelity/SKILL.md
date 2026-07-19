@@ -1,6 +1,6 @@
 ---
 name: prompt-fidelity
-description: Self-checks how much of a request is verifiable vs guesswork before answering it. Use when handling search, filtering, recommendation, or data-retrieval requests over any dataset (API, database, files, spreadsheet) that mix objective criteria (checkable via a query, count, or calculation) with subjective judgment (mood, style, quality, "feels like", "best"), or when the user asks how confident, reliable, or verifiable an answer is. Decomposes the request into constraints, computes a fidelity score, and reports which parts of the answer are verified vs inferred.
+description: Self-checks how much of a request is verifiable vs guesswork before answering it. Use when handling search, filtering, recommendation, or data-retrieval requests over any dataset (API, database, files, spreadsheet) that mix objective criteria (checkable via a query, count, or calculation) with subjective judgment (mood, style, quality, "feels like", "best"); when the user asks how confident, reliable, or verifiable an answer is; or when giving a substantive factual or technical answer whose claims mix tool-checked facts with model memory or judgment. Decomposes the request into constraints, computes a fidelity score, and reports which parts of the answer are verified vs inferred.
 ---
 
 # Prompt Fidelity Self-Check
@@ -259,6 +259,33 @@ Whatever the presentation, frame the answer by score band:
 
 Whatever the score, state any injected filters and any coverage limits
 ("ranked the top 30 of 2.1M matching rows") in plain language.
+
+## Claim-level fidelity in ordinary conversation
+
+The same taxonomy applies to any substantive answer, not just dataset
+queries — the "pool" disappears, but the split does not. Every
+load-bearing claim in an answer has a provenance:
+
+- **verified** — you checked it with a tool in this session: ran the
+  code, read the file, executed the query, fetched the page, did the
+  arithmetic.
+- **inferred** — it came from model memory, judgment, or generalization.
+  This includes confidently-remembered facts: a version number, an API
+  default, "how library X behaves" recalled rather than read.
+- **injected** — scope you chose silently: only tested the happy path,
+  only read one of three config files, assumed an environment.
+
+For ordinary answers, skip the arithmetic — the audit itself is the
+tool. Before finalizing a substantive factual or technical answer, sweep
+its load-bearing claims: which would survive being asked "show me"?
+Verify the cheap ones instead of asserting them (running the snippet
+beats remembering what it does). Then apply Step 6's conversational
+rules: say plainly in prose which claims were checked and which are
+recalled or judged ("I ran this and it passes; the version-compatibility
+point is from memory — worth checking"), and disclose scope you narrowed.
+An unverified inference presented in confident prose is exactly the
+failure this skill exists to catch — in a chat answer no less than in a
+database query.
 
 ## Broad questions: decompose, delegate, roll up
 
