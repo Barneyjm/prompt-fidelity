@@ -1,118 +1,23 @@
 # Prompt Fidelity
 
-A movie recommendation agent that demonstrates the **prompt fidelity** framework—measuring how much of a user's intent can be reliably satisfied through structured API queries versus requiring LLM inference.
-
-## The Concept
-
-When you ask an AI agent for recommendations, your request contains different types of constraints:
-
-- **Verified constraints**: Can be directly queried through an API (genre, year, rating, runtime, language, cast, director)
-- **Inferred constraints**: Require subjective LLM judgment (mood, tone, themes, "feels like...", pacing, emotional arc)
-
-**Prompt fidelity** is the fraction of your request's information content that can be verified:
+A [Claude Agent Skill](https://code.claude.com/docs/en/skills) that makes Claude self-check how much of an answer is *verified* against real data versus *inferred* through its own judgment — and say so.
 
 ```
 Fidelity = verified_bits / (verified_bits + inferred_bits)
 ```
 
-A fidelity score of 1.0 means your request can be fully satisfied through database queries. A score near 0 means almost everything depends on LLM judgment.
+Any time a request mixes objective criteria (checkable via a query, count, or calculation) with subjective judgment (mood, style, quality, "feels like", "best"), the skill decomposes the request into constraints, classifies each as verified or inferred, computes a fidelity score with a bundled dependency-free script, and lets that score shape how confidently Claude states its answer. It works on any dataset Claude has tool access to — an API, a SQL database, a directory of files, a spreadsheet — not just the movie example used throughout this README.
 
-## The Theory in Action: 100% vs 0% Fidelity
+## Install
 
-Same system. Same architecture. Same LLM. Completely different reliability guarantees.
-
-### High Fidelity (100%) — Provably Correct
-
-```
-$ python -m agent.main "Action movies from the 1980s rated above 7.0"
-
-══════════════════════════════════════════════════
-  PROMPT FIDELITY: 100.0%
-══════════════════════════════════════════════════
-
-  [████████████████████] 100.0%
-
-  Constraint Breakdown:
-  ────────────────────────────────────────
-
-  VERIFIED (queryable via API):
-  ✓ Action genre (3.06 bits)
-  ✓ Released in the 1980s (3.32 bits)
-  ✓ Rating above 7.0 (2.00 bits)
-
-  ────────────────────────────────────────
-  Verified:    8.38 bits (3 constraints)
-  Inferred:    0.00 bits (0 constraints)
-  Total:       8.38 bits
-══════════════════════════════════════════════════
-
-1. The Empire Strikes Back (1980) - 8.4/10
-2. Scarface (1983) - 8.2/10
-3. Aliens (1986) - 8.0/10
-4. Raiders of the Lost Ark (1981) - 7.9/10
-5. Indiana Jones and the Last Crusade (1989) - 7.8/10
-```
-
-**Every single result is verifiably correct.** Action film? Check. From the 80s? Check. Rated above 7.0? Check. You could audit each one against TMDb and nothing would be wrong. The LLM made zero judgment calls.
-
-### Low Fidelity (0%) — Best Guess
-
-```
-$ python -m agent.main "Movies that feel like a rainy Sunday afternoon"
-
-══════════════════════════════════════════════════
-  PROMPT FIDELITY: 0.0%
-══════════════════════════════════════════════════
-
-  [░░░░░░░░░░░░░░░░░░░░] 0.0%
-
-  Constraint Breakdown:
-  ────────────────────────────────────────
-
-  INFERRED (requires LLM judgment):
-  ? Cozy, contemplative atmosphere (2.32 bits)
-  ? Slower pacing matching Sunday mood (2.00 bits)
-  ? Intimate, character-driven storytelling (1.74 bits)
-  ? Nostalgic, melancholic, or reflective tone (2.32 bits)
-
-  ────────────────────────────────────────
-  Verified:    0.00 bits (0 constraints)
-  Inferred:    8.38 bits (4 constraints)
-  Total:       8.38 bits
-══════════════════════════════════════════════════
-
-1. The Shawshank Redemption (1994) - Match: 92/100
-2. The Godfather (1972) - Match: 80/100
-3. My First Client (2019) - Match: 72/100
-   ...
-10. La bicicleta de los Huanca (2007) - Match: 55/100
-```
-
-**The results are defensible but unverifiable.** Shawshank and The Godfather? Reasonable picks. But notice the match scores decay from 92 to 55—the LLM is running out of conviction. With no verified constraints to anchor the search, the candidate pool was the entire TMDb catalog, and the LLM had to do all the work. Some picks are great; others are the model reaching for obscure films it isn't confident about.
-
-### The Insight
-
-Both queries have **identical total information content** (8.38 bits). The difference is entirely in *where that information comes from*:
-
-| Query | Verified | Inferred | Fidelity |
-|-------|----------|----------|----------|
-| "Action movies from the 1980s rated above 7.0" | 8.38 bits | 0 bits | **100%** |
-| "Movies that feel like a rainy Sunday afternoon" | 0 bits | 8.38 bits | **0%** |
-
-This is the fidelity frontier in action. The first prompt sits at the maximum—every bit of specificity maps to a queryable field. The second prompt sits at the minimum—the entire request requires LLM inference.
-
-## Use It as a Claude Skill
-
-The framework is also packaged as an installable [Agent Skill](https://code.claude.com/docs/en/skills) in [`skills/prompt-fidelity/`](skills/prompt-fidelity/). Once installed, Claude self-checks its own answers: before responding to a search, filtering, or recommendation request, it decomposes the request into verified vs. inferred constraints, computes the fidelity score with a bundled dependency-free script, and reports which parts of its answer are auditable and which are judgment calls. It generalizes beyond movies — "verified" means checkable with whatever deterministic tools are available in the session (APIs, databases, files, code).
-
-### Install in Claude Code (plugin marketplace)
+### Claude Code (plugin marketplace)
 
 ```
 /plugin marketplace add barneyjm/prompt-fidelity
 /plugin install prompt-fidelity@prompt-fidelity
 ```
 
-### Install manually (Claude Code)
+### Claude Code (manual)
 
 ```bash
 # Personal (all projects)
@@ -122,7 +27,7 @@ cp -r skills/prompt-fidelity ~/.claude/skills/
 cp -r skills/prompt-fidelity your-project/.claude/skills/
 ```
 
-### Install on claude.ai
+### claude.ai
 
 Zip the skill folder and upload it under **Settings → Capabilities → Skills**:
 
@@ -132,180 +37,53 @@ cd skills && zip -r prompt-fidelity.zip prompt-fidelity
 
 Claude invokes the skill automatically when a request mixes objective and subjective criteria, or you can invoke it explicitly with `/prompt-fidelity` in Claude Code.
 
+## How it presents the score
+
 In normal conversation the score shapes the answer rather than appearing as a chart: Claude states in prose which parts came straight from the data and which are its judgment ("the counts and dates are from the database; which ones sound serious is my reading"), citing at most a round percentage. The full report block — the bar, per-constraint bits, correlation adjustment — appears when you ask for the score or audit, invoke the skill explicitly, or the output is going into a file or eval; the script's `--brief` flag covers the middle ground.
 
-## Quick Start
+Framing follows the score band:
 
-### 1. Install dependencies
+- **≥ 80%**: results should pass an audit of the stated criteria — "These results are verifiably correct."
+- **40–80%**: the two layers are named explicitly — "Filtered by X and Y (verified); ranked by Z (my judgment)."
+- **< 40%**: the answer is presented as a best guess, with a higher-fidelity reformulation offered.
 
-```bash
-pip install -r requirements.txt
-```
+Injected filters (quality floors, top-N truncation, sampling, default sort order) and coverage limits are always disclosed, regardless of score.
 
-### 2. Set up API keys
+## How the score is calculated
 
-```bash
-cp .env.example .env
-# Edit .env and add your API keys:
-# - TMDB_API_KEY (required): https://www.themoviedb.org/settings/api
-# - ANTHROPIC_API_KEY (required if using Claude, the default provider): https://console.anthropic.com/
-```
+Each constraint has a **survival rate** — the fraction of the candidate pool that satisfies it — measured from the system's own counts wherever possible (an API's `total_results`, planner/catalog statistics, a sampled count) and only estimated as a fallback. The **information content** in bits is `-log2(survival_rate)`. Fidelity is the ratio of verified bits to total bits.
 
-### 3. Run the agent
+Per-constraint bits are capped at `log2(pool_size)` — a constraint can't carry more information than it takes to identify a single row in the candidate pool. The default cap is 20 bits (a one-in-a-million pool); pass the real pool size via `--pool-size` for larger datasets so near-unique selectors (exact IDs) are weighted correctly.
 
-```bash
-# Single query
-python -m agent.main "Dark psychological thrillers from the 90s"
+Three mechanisms keep the framework honest beyond toy examples:
 
-# Interactive mode
-python -m agent.main --interactive
-
-# JSON output
-python -m agent.main --json "Sci-fi movies with a melancholy tone"
-
-# Use OpenAI instead of Claude
-python -m agent.main --provider openai "Horror movies from Japan"
-```
-
-## Sample Output
-
-```
-╔══════════════════════════════════════════════════════════╗
-║  MOVIE RECOMMENDATIONS                                    ║
-╚══════════════════════════════════════════════════════════╝
-
-Query: "Dark psychological thrillers from the 90s that feel like a David Fincher film"
-
-══════════════════════════════════════════════════
-  PROMPT FIDELITY: 48.2%
-══════════════════════════════════════════════════
-
-  [████████████░░░░░░░░] 48.2%
-
-  Constraint Breakdown:
-  ────────────────────────────────────────
-
-  VERIFIED (queryable via API):
-  ✓ Genre: Thriller (2.74 bits)
-  ✓ Released 1990-1999 (3.32 bits)
-
-  INFERRED (requires LLM judgment):
-  ? Dark/psychological tone (2.74 bits)
-  ? Fincher-like aesthetic (4.32 bits)
-
-  ────────────────────────────────────────
-  Verified:    6.06 bits (2 constraints)
-  Inferred:    7.06 bits (2 constraints)
-  Total:      13.12 bits
-══════════════════════════════════════════════════
-
-RECOMMENDATIONS:
-──────────────────────────────────────────────────
-1. Primal Fear (1996) - 7.7/10
-   Director: Gregory Hoblit
-   Cast: Richard Gere, Laura Linney, Edward Norton
-   Match Score: 92/100
-   → Courtroom thriller with dark psychological elements...
-```
-
-## Architecture
-
-```
-User prompt
-    ↓
-┌─────────────────────────────────────┐
-│  LLM Decomposition                  │
-│  Break prompt into constraints      │
-│  Classify as VERIFIED or INFERRED   │
-└─────────────────────────────────────┘
-    ↓
-┌─────────────────────────────────────┐
-│  TMDb API Query                     │
-│  Build query from verified          │
-│  constraints only                   │
-└─────────────────────────────────────┘
-    ↓
-┌─────────────────────────────────────┐
-│  LLM Re-ranking                     │
-│  Score candidates against           │
-│  inferred constraints               │
-└─────────────────────────────────────┘
-    ↓
-┌─────────────────────────────────────┐
-│  Fidelity Report                    │
-│  Compute and display fidelity       │
-│  breakdown to user                  │
-└─────────────────────────────────────┘
-```
-
-## Project Structure
-
-```
-prompt-fidelity/
-├── .claude-plugin/
-│   ├── plugin.json       # Claude Code plugin manifest
-│   └── marketplace.json  # Plugin marketplace manifest
-├── skills/
-│   └── prompt-fidelity/
-│       ├── SKILL.md      # Installable self-check skill for Claude
-│       └── scripts/
-│           └── compute_fidelity.py  # Stdlib-only fidelity calculator
-├── agent/
-│   ├── __init__.py       # Package exports
-│   ├── main.py           # LangGraph workflow and CLI
-│   ├── decompose.py      # Constraint decomposition (LLM)
-│   ├── fidelity.py       # Fidelity calculation
-│   ├── tmdb.py           # TMDb API wrapper
-│   ├── rerank.py         # LLM re-ranking
-│   └── display.py        # Output formatting
-├── schema/
-│   └── tmdb_fields.json  # Verified field definitions
-├── examples/
-│   └── sample_prompts.json  # Categorized test prompts
-├── experiments/
-│   ├── socrata_fidelity.py  # Live validation against Socrata open datasets
-│   ├── run_suite.py         # Run all specs, emit comparison table
-│   └── specs/               # Experiment specs (NYC, Chicago, Seattle, ...)
-├── requirements.txt
-├── .env.example
-└── README.md
-```
-
-## How Fidelity is Calculated
-
-Each constraint has an **estimated survival rate**—the fraction of all movies that satisfy it:
-
-- "Released in 1999" → ~1% of movies (survival rate: 0.01)
-- "Thriller genre" → ~10% of movies (survival rate: 0.10)
-- "Melancholy tone" → ~15% of movies (survival rate: 0.15)
-
-The **information content** (in bits) is `-log2(survival_rate)`:
-
-- 1% survival → 6.64 bits
-- 10% survival → 3.32 bits
-- 15% survival → 2.74 bits
-
-Fidelity is the ratio of verified bits to total bits.
-
-Per-constraint bits are capped at `log2(pool_size)` — a constraint cannot carry more information than it takes to identify a single row in the candidate pool. The default cap is 20 bits (a one-in-a-million pool, roughly the TMDb catalog); for larger datasets pass `pool_size` to `compute_fidelity()` (or `--pool-size` to the skill's script) so near-unique selectors like exact IDs are counted at their true weight — ~30 bits on a billion-row table:
-
-```python
-report = compute_fidelity(constraints, pool_size=1_000_000_000)
-```
-
-### Generalizing beyond TMDb
-
-TMDb is just the working example. Three mechanisms keep the framework honest on arbitrary datasets:
-
-- **Measured vs. estimated survival rates.** On a queryable datastore, survival rates shouldn't be guessed — but they shouldn't be bought with expensive scans either. Bits are logarithmic, so order-of-magnitude accuracy suffices; prefer counts the system already returns (`total_results`, search hit counts), catalog/optimizer statistics, or sampled counts over exact `COUNT(*)`, following the target system's own best practices. Constraints carry an optional `rate_source` of `"measured"` (exact or system-returned counts), `"approximated"` (system-derived but inexact — planner statistics, sampled counts, possibly stale), or `"estimated"` (a guess), so the report shows whether the constraint *weights* are themselves verified. The calibration numbers in this repo (a decade ≈ 10%, a genre ≈ 5–15%) are movie-catalog priors; real distributions skew, so measure cheaply when you can.
-- **Injected filters.** Any filter the system applies that the user never requested — quality floors, top-N truncation, sampling, default sort order — is declared with `"type": "injected"`. Injected filters are excluded from the fidelity score (they aren't part of the request) but always listed in the report, because silently narrowing the pool is the main way a "100% fidelity, provably correct" claim becomes dishonest. This repo's own pipeline declares its filters: a 50-vote minimum, a top-30 candidate cap, and a top-10 re-rank cutoff.
-- **Correlation correction.** Bits summed across constraints assume they filter independently, which real data violates. When the datastore can cheaply measure the joint count of all verified filters ANDed together — often the same query that sizes the survivor set — pass it (`verified_joint_count` in the skill script, `verified_joint_survival_rate` to `compute_fidelity()`), and the verified side of the score uses the exact measured joint information `-log2(joint/pool)` instead of the sum. Per-constraint bits remain as attribution and the report shows the adjustment. Inferred constraints can't be jointly counted, so they stay summed — merge overlapping inferred constraints by hand.
-
-  The aggregate adjustment says *how much* correlation there is, not *where*. To attribute it, compute actual correlations: pairwise `A AND B` counts give each pair's correlation adjustment as `log2((n_A × n_B) / (pool × n_AB))` — same sign convention as the aggregate, and the pairwise values sum to approximately the aggregate adjustment; the harness does this with `--pairwise` — or, with rows in hand, build boolean indicator columns per constraint and run a standard correlation matrix (`df.corr()` in pandas / `np.corrcoef`). The indicator route is also the only window into correlation among *inferred* constraints, via a judged sample.
+- **Measured vs. estimated survival rates.** Constraints carry a `rate_source` of `"measured"`, `"approximated"`, or `"estimated"` so the report shows whether the constraint *weights* are themselves verified, not just the constraints.
+- **Injected filters.** Any filter the system applies that the user never requested is declared with `"type": "injected"`. These are excluded from the score but always listed in the report — silently narrowing the pool is the main way a "100% fidelity" claim becomes dishonest.
+- **Correlation correction.** Summing bits assumes constraints filter independently, which real data violates. When the datastore can cheaply measure the joint count of all verified filters ANDed together, pass it (`verified_joint_count` / `--joint-count`) and the verified side of the score uses the exact measured joint information instead of the independence sum. For a large adjustment, pairwise counts (`--pairwise`, or by hand via `log2((n_A × n_B) / (pool × n_AB))`) or an indicator correlation matrix over a judged sample can attribute *where* the correlation comes from.
 
 One more subtlety: "verified" means the *query* is mechanically checkable, not that it faithfully captures intent. A crowd-sourced `melancholy` keyword tag is a verified filter but a noisy proxy for a melancholy tone — the skill's guidance is to split such constraints into a verified query plus an inferred semantic gap.
 
-### Validation on real open data
+Full mechanics, worked examples, and the constraint-decomposition workflow live in [`skills/prompt-fidelity/SKILL.md`](skills/prompt-fidelity/SKILL.md).
+
+### Running the script directly
+
+```bash
+python3 skills/prompt-fidelity/scripts/compute_fidelity.py constraints.json
+```
+
+```python
+from agent import compute_fidelity
+
+constraints = [
+    {"description": "Thriller genre", "type": "verified", "estimated_survival_rate": 0.10, "rate_source": "measured"},
+    {"description": "Dark tone", "type": "inferred", "estimated_survival_rate": 0.15, "rate_source": "estimated"},
+]
+
+report = compute_fidelity(constraints, pool_size=1_000_000_000)
+print(f"Fidelity: {report.fidelity_score:.1%}")
+```
+
+## Validation on real open data
 
 `experiments/socrata_fidelity.py` runs the whole workflow against live Socrata-hosted datasets (NYC Open Data, Chicago, CDC, and most data.gov-federated portals speak the same SODA API) using only server-side counts — no scans, no downloads:
 
@@ -315,7 +93,7 @@ python3 experiments/socrata_fidelity.py --sample 5 experiments/specs/chicago_the
 python3 experiments/run_suite.py --quiet   # run every spec, emit the table below
 ```
 
-Each run measures the pool size and every verified constraint's survival rate from the system's own counts, scores the request with the correlation correction applied (the measured joint count replaces the independence sum on the verified side), and declares the judging sample as an injected filter. `run_suite.py` runs every spec as a regression suite and exits nonzero on failure, so it can gate CI.
+Each run measures the pool size and every verified constraint's survival rate from the system's own counts, scores the request with the correlation correction applied, and declares the judging sample as an injected filter. `run_suite.py` runs every spec as a regression suite and exits nonzero on failure, so it can gate CI.
 
 Results across five cities and five data shapes (suite output):
 
@@ -327,7 +105,7 @@ Results across five cities and five data shapes (suite output):
 | `nyc_311_noise` | data.cityofnewyork.us | 21,848,232 | 72.4% | 8.70 (summed 8.57) | +0.12 bits |
 | `seattle_aid_calls` | data.seattle.gov | 2,187,508 | 69.0% | 5.16 (summed 5.06) | +0.10 bits |
 
-Every adjustment lands within ±0.3 bits against 5–9 verified bits, so the independence sum is a good approximation on real civic data — but with the joint count measured, the verified side no longer needs the approximation at all. Reading the sign: a negative adjustment (Chicago, Austin) means the constraints are positively correlated — the joint pool is larger than independence predicts, so the sum *overstated* the verified information; a positive adjustment (NYC, Seattle, Montgomery County) means mildly negatively correlated constraints, where the sum understated it. Write a new spec JSON to test any other Socrata dataset.
+Every adjustment lands within ±0.3 bits against 5–9 verified bits, so the independence sum is a good approximation on real civic data — but with the joint count measured, the verified side no longer needs the approximation at all. A negative adjustment (Chicago, Austin) means the constraints are positively correlated — the joint pool is larger than independence predicts, so the sum *overstated* the verified information; a positive adjustment (NYC, Seattle, Montgomery County) means mildly negatively correlated constraints, where the sum understated it. Write a new spec JSON to test any other Socrata dataset.
 
 ### Case studies: answering real questions with the skill
 
@@ -359,7 +137,88 @@ PROMPT FIDELITY: 94.5%
 
 Verified: 56 break-ins, up 33% from 42 in the same window last year; 41 of 56 street parking; zero arrests; 17 of the 56 in a single June 2–4 burst. The inferred judgment ("systematic about the area, random about the victim") was grounded in checkable patterns — burst days and no block hit more than twice — with the line drawn explicitly between database facts and interpretation. Two mechanisms earned their keep here: a cheap group-by probe *before* decomposing revealed that "car break-ins" spans two encodings (guessing would have silently dropped 57% of the answer), and the −5.63 bit correlation adjustment absorbed a data-quality landmine — those description labels barely exist before ~2024 because Chicago changed its coding taxonomy, making the all-time per-constraint rate meaningless. Independence predicted ~1 matching row; the measured joint count of 56 kept the score correct despite 25 years of label drift.
 
-## TMDb Verified Fields
+## Reference implementation: the movie agent
+
+This repo also ships a small LangGraph movie-recommendation agent (`agent/`) that queries TMDb. It's the worked example the skill's docs and calibration numbers are drawn from, and it's a convenient way to see the fidelity report end to end without wiring up your own dataset — but it's not required to use the skill, which works with whatever tools Claude already has in a session.
+
+### Run it
+
+```bash
+pip install -r requirements.txt
+cp .env.example .env
+# Edit .env: TMDB_API_KEY (required), ANTHROPIC_API_KEY (required for the Claude provider)
+
+python -m agent.main "Dark psychological thrillers from the 90s"
+python -m agent.main --interactive
+python -m agent.main --json "Sci-fi movies with a melancholy tone"
+python -m agent.main --provider openai "Horror movies from Japan"
+```
+
+### Sample output
+
+```
+$ python -m agent.main "Action movies from the 1980s rated above 7.0"
+
+══════════════════════════════════════════════════
+  PROMPT FIDELITY: 100.0%
+══════════════════════════════════════════════════
+
+  [████████████████████] 100.0%
+
+  Constraint Breakdown:
+  ────────────────────────────────────────
+
+  VERIFIED (queryable via API):
+  ✓ Action genre (3.06 bits)
+  ✓ Released in the 1980s (3.32 bits)
+  ✓ Rating above 7.0 (2.00 bits)
+
+  ────────────────────────────────────────
+  Verified:    8.38 bits (3 constraints)
+  Inferred:    0.00 bits (0 constraints)
+  Total:       8.38 bits
+══════════════════════════════════════════════════
+
+1. The Empire Strikes Back (1980) - 8.4/10
+2. Scarface (1983) - 8.2/10
+3. Aliens (1986) - 8.0/10
+4. Raiders of the Lost Ark (1981) - 7.9/10
+5. Indiana Jones and the Last Crusade (1989) - 7.8/10
+```
+
+Every result here is verifiably correct: action film, from the 80s, rated above 7.0 — all auditable against TMDb, no LLM judgment involved. Compare a fully-subjective query like `"Movies that feel like a rainy Sunday afternoon"`, which scores 0% fidelity and returns best-guess matches with decaying confidence instead. Both queries carry the same information content (8.38 bits); the difference is entirely in whether that information came from a query or from LLM inference.
+
+### Architecture
+
+```
+User prompt
+    ↓
+┌─────────────────────────────────────┐
+│  LLM Decomposition                  │
+│  Break prompt into constraints      │
+│  Classify as VERIFIED or INFERRED   │
+└─────────────────────────────────────┘
+    ↓
+┌─────────────────────────────────────┐
+│  TMDb API Query                     │
+│  Build query from verified          │
+│  constraints only                   │
+└─────────────────────────────────────┘
+    ↓
+┌─────────────────────────────────────┐
+│  LLM Re-ranking                     │
+│  Score candidates against           │
+│  inferred constraints               │
+└─────────────────────────────────────┘
+    ↓
+┌─────────────────────────────────────┐
+│  Fidelity Report                    │
+│  Compute and display fidelity       │
+│  breakdown to user                  │
+└─────────────────────────────────────┘
+```
+
+### TMDb verified fields
 
 | Field | TMDb Parameter | Typical Survival Rate |
 |-------|---------------|----------------------|
@@ -373,19 +232,7 @@ Verified: 56 break-ins, up 33% from 42 in the same window last year; 41 of 56 st
 | Director | `with_crew` (ID lookup) | 0.01-0.1% |
 | Keywords | `with_keywords` (ID lookup) | 1-10% |
 
-## Inferred Attributes (LLM Only)
-
-These cannot be queried through TMDb:
-
-- **Mood/tone**: "dark," "uplifting," "meditative"
-- **Cinematography**: "handheld," "long takes," "neon-lit"
-- **Themes**: "explores grief," "questions identity"
-- **Comparative feel**: "feels like a Coen Brothers film"
-- **Context**: "good for a first date"
-- **Pacing**: "slow burn," "tight and fast"
-- **Emotional arc**: "starts hopeful, ends devastating"
-
-## API Reference
+Inferred attributes (mood/tone, cinematography, themes, comparative feel, pacing, emotional arc) can't be queried through TMDb and are always classified as inferred by the agent.
 
 ### Python API
 
@@ -400,31 +247,45 @@ for movie in result['movies'][:5]:
     print(f"- {movie['title']} ({movie['year']})")
 ```
 
-### Fidelity Calculation
+## Repository layout
 
-```python
-from agent import compute_fidelity
-
-constraints = [
-    {"description": "Thriller genre", "type": "verified", "estimated_survival_rate": 0.10},
-    {"description": "Dark tone", "type": "inferred", "estimated_survival_rate": 0.15},
-]
-
-report = compute_fidelity(constraints)
-print(f"Fidelity: {report.fidelity_score:.1%}")
-print(f"Verified: {report.verified_bits:.2f} bits")
-print(f"Inferred: {report.inferred_bits:.2f} bits")
+```
+prompt-fidelity/
+├── .claude-plugin/
+│   ├── plugin.json       # Claude Code plugin manifest
+│   └── marketplace.json  # Plugin marketplace manifest
+├── skills/
+│   └── prompt-fidelity/
+│       ├── SKILL.md      # The installable skill
+│       └── scripts/
+│           └── compute_fidelity.py  # Stdlib-only fidelity calculator
+├── agent/                # Reference implementation: movie recommendation agent
+│   ├── main.py           # LangGraph workflow and CLI
+│   ├── decompose.py      # Constraint decomposition (LLM)
+│   ├── fidelity.py       # Fidelity calculation
+│   ├── tmdb.py           # TMDb API wrapper
+│   └── rerank.py         # LLM re-ranking
+├── schema/
+│   └── tmdb_fields.json  # Verified field definitions
+├── examples/
+│   └── sample_prompts.json  # Categorized test prompts
+├── experiments/
+│   ├── socrata_fidelity.py  # Live validation against Socrata open datasets
+│   ├── run_suite.py         # Run all specs, emit comparison table
+│   └── specs/               # Experiment specs (NYC, Chicago, Seattle, ...)
+├── requirements.txt
+└── .env.example
 ```
 
-## Why This Matters
+## Why this matters
 
-1. **Transparency**: Users understand which parts of their request are reliably satisfied vs. LLM guesses
-2. **Calibration**: Lower fidelity = more uncertainty = user should evaluate results more carefully
-3. **Design guidance**: Helps API designers understand what features to add to increase fidelity
-4. **Research**: Enables empirical study of the gap between user intent and tool capability
+1. **Transparency**: users understand which parts of a request were reliably satisfied vs. LLM guesses.
+2. **Calibration**: lower fidelity means more uncertainty, so the user knows to check the results more carefully.
+3. **Design guidance**: surfaces what queryable fields or metadata would raise fidelity for a given kind of request.
+4. **Research**: enables empirical study of the gap between user intent and tool capability.
 
 ## License
 
 MIT
 
-Use of TMDB in this repo is for non-commercial purposes only. this product is not endorsed or certified by TMDB. find out more about TMDB here https://www.themoviedb.org/
+Use of TMDB in the reference implementation is for non-commercial purposes only. This product is not endorsed or certified by TMDB. Find out more about TMDB here: https://www.themoviedb.org/
