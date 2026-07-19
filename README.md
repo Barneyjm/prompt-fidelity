@@ -132,6 +132,8 @@ cd skills && zip -r prompt-fidelity.zip prompt-fidelity
 
 Claude invokes the skill automatically when a request mixes objective and subjective criteria, or you can invoke it explicitly with `/prompt-fidelity` in Claude Code.
 
+In normal conversation the score shapes the answer rather than appearing as a chart: Claude states in prose which parts came straight from the data and which are its judgment ("the counts and dates are from the database; which ones sound serious is my reading"), citing at most a round percentage. The full report block — the bar, per-constraint bits, correlation adjustment — appears when you ask for the score or audit, invoke the skill explicitly, or the output is going into a file or eval; the script's `--brief` flag covers the middle ground.
+
 ## Quick Start
 
 ### 1. Install dependencies

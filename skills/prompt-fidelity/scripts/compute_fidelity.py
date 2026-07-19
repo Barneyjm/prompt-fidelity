@@ -58,8 +58,10 @@ cap. Inferred constraints cannot be jointly counted and stay summed —
 merge heavily overlapping inferred constraints rather than listing them
 separately.
 
-Output: a formatted fidelity report (or JSON with --json). Input is never
-mutated; sums are computed on unrounded bits and rounded only for display.
+Output: a formatted fidelity report (--json for machine-readable, --brief
+for a compact conversational summary with no box art or decimal bits).
+Input is never mutated; sums are computed on unrounded bits and rounded
+only for display.
 """
 
 import argparse
@@ -257,6 +259,38 @@ def render(report: dict) -> str:
     return "\n".join(lines)
 
 
+def render_brief(report: dict) -> str:
+    """Compact summary for conversational use: no box art, no decimal bits."""
+    score = report["fidelity_score"]
+    if score >= 0.8:
+        band = "almost all of this answer is verifiable"
+    elif score >= 0.4:
+        band = "a mix of checked facts and judgment"
+    else:
+        band = "mostly judgment"
+    lines = [f"Fidelity: {score * 100:.0f}% — {band}."]
+
+    def names(kind: str) -> str:
+        return "; ".join(c["description"] for c in report["constraints"]
+                         if c["type"] == kind)
+
+    if report["num_verified_constraints"]:
+        sources = {c.get("rate_source") for c in report["constraints"]
+                   if c["type"] == "verified"}
+        source_note = (f" (rates {next(iter(sources))})"
+                       if len(sources) == 1 and None not in sources else "")
+        lines.append(f"Checked against the data{source_note}: {names('verified')}")
+    if report["num_inferred_constraints"]:
+        lines.append(f"Judgment calls: {names('inferred')}")
+    if report["num_injected_constraints"]:
+        lines.append(f"System filters (not requested): {names('injected')}")
+    if (report["verified_rate_basis"] == "joint-measured"
+            and report["verified_joint_survival_rate"] == 0):
+        lines.append("Warning: the verified filters match zero rows — "
+                     "no result can satisfy this request.")
+    return "\n".join(lines)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Compute a prompt fidelity report from constraints JSON")
@@ -270,6 +304,9 @@ def main() -> int:
                              "filters ANDed (requires a pool size)")
     parser.add_argument("--json", action="store_true",
                         help="Print the report as JSON instead of text")
+    parser.add_argument("--brief", action="store_true",
+                        help="Print a compact summary (no box art or "
+                             "decimal bits) for conversational use")
     args = parser.parse_args()
 
     raw = open(args.input).read() if args.input else sys.stdin.read()
@@ -308,7 +345,12 @@ def main() -> int:
               f"show whether these rates were measured or guessed",
               file=sys.stderr)
 
-    print(json.dumps(report, indent=2) if args.json else render(report))
+    if args.json:
+        print(json.dumps(report, indent=2))
+    elif args.brief:
+        print(render_brief(report))
+    else:
+        print(render(report))
     return 0
 
 

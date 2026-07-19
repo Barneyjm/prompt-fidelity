@@ -215,13 +215,38 @@ falls back to the 20-bit cap. Pass the measured joint count of the
 verified filters via `--joint-count` or a top-level `"verified_joint_count"`
 key when you have it (a joint count of 0 is valid — it means the verified
 filters are jointly unsatisfiable, and the report will say so). Add
-`--json` for machine-readable output. The script prints the fidelity
-report block — include it verbatim in your response.
+`--json` for machine-readable output, or `--brief` for a compact plain-text
+summary with no box art or decimal bits.
+
+Always run the script — the score must be computed correctly either way —
+but how much of its output to show depends on the conversation (Step 6).
 
 ### Step 6 — Answer with calibrated framing
 
 Actually verify the verified constraints — run the queries/checks, don't just
-claim them. Then frame the answer by score:
+claim them.
+
+**Match the presentation to the conversation.** In a normal conversational
+answer, do NOT paste the report block: no bar graphs, no two-decimal bit
+values, no percentage more precise than a whole number. The score's job is
+to shape your prose, not to appear in it as a table. Weave the split in
+naturally — say which parts of the answer came straight from the data and
+which are your judgment, in the same breath as the answer itself: "the
+counts, dates, and locations here are straight from the city's database;
+which ones sound 'furious' is my reading of the descriptions." Cite the
+score qualitatively ("almost all of this is verifiable", "roughly
+two-thirds of what you asked is checkable; the rest is judgment") or as a
+round percent at most. Injected filters and coverage limits are still
+stated plainly in every mode — that disclosure is never optional.
+
+Show the full report block only when it's actually wanted: the user asks
+for the score, the audit, or "how sure are you"; the skill was invoked
+explicitly (e.g. `/prompt-fidelity`); the output is going into a file,
+eval, log, or other technical artifact; or the user has shown they want
+the detail. `--brief` covers the middle ground — a compact summary without
+graphics or decimals.
+
+Whatever the presentation, frame the answer by score band:
 
 - **≥ 80%**: "These results are verifiably correct on the stated criteria."
   Every result should pass an audit of the verified constraints.
