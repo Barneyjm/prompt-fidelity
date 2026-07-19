@@ -260,6 +260,48 @@ Whatever the presentation, frame the answer by score band:
 Whatever the score, state any injected filters and any coverage limits
 ("ranked the top 30 of 2.1M matching rows") in plain language.
 
+## Broad questions: decompose, delegate, roll up
+
+A broad question ("is quality of life declining here?", "which
+neighborhood is better?") fans out into sub-questions, often against
+disparate datasets, sometimes via sub-agents. Fidelity composes — but two
+new inference layers appear that no single-dataset run has:
+
+- **The decomposition is itself inferred.** Mapping "quieter and safer"
+  to "311 noise complaints + felony reports" is a judgment call, even if
+  every sub-answer is 100% verified. Record it as a bridging constraint.
+- **The synthesis is inferred.** Weighing "noise up, crime down" into one
+  verdict is judgment. Record it too, along with proxy assumptions
+  (complaint volume ≈ actual incidence, reporting rates comparable
+  across areas) and any cross-dataset alignment guesses (category X in
+  one schema ≈ category Y in another, mismatched time windows).
+
+The protocol:
+
+1. Decompose into sub-questions. Each sub-question runs the FULL workflow
+   against its own dataset — measured rates, within-dataset joint
+   correction, injected filters declared. Sub-agents should each return
+   their report JSON (`analyze()` output or the machine-readable report).
+2. Write the bridging constraints — the decomposition mapping, proxy
+   assumptions, and synthesis rules, almost always `inferred` — as their
+   own constraints file. These are the bridging premises of the composite
+   answer: the unstated assumptions that connect the sub-answers to the
+   broad question.
+3. Merge: `python3 scripts/compute_fidelity.py --merge sub1.json
+   sub2.json --bridge bridge.json` (add `--brief` or `--json` as usual).
+   Verified and inferred bits sum across sub-questions; each sub-report
+   keeps its own joint correction, but there is NO joint correction
+   across datasets — a cross-dataset joint count is not measurable, and
+   the composite report says so. Injected filters from every sub-question
+   surface in the composite.
+4. Present by the same rules as Step 6. In conversation this usually
+   reads as: which sub-answers are fully verifiable, and which
+   connective claims ("these two metrics capture what you mean by
+   'better'") are yours. The composite score is typically LOWER than any
+   sub-score — the bridging premises are pure inference, and that honesty is the
+   point: a broad question doesn't become verifiable just because its
+   pieces are.
+
 ## Example
 
 Request: *"Find well-regarded reviews of Heat that read as sincere"* against

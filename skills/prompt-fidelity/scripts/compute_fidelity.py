@@ -67,6 +67,7 @@ only for display.
 import argparse
 import json
 import math
+import os
 import sys
 
 # Default per-constraint cap; 20 bits ~= a one-in-a-million survival rate.
@@ -176,6 +177,130 @@ def analyze(constraints: list[dict], pool_size: float | None = None,
         "unlabeled_rate_constraints": unlabeled,
         "constraints": constraints,
     }
+
+
+def merge_reports(labeled_reports: list, bridge_constraints: list | None = None) -> dict:
+    """Compose sub-question reports into one composite report.
+
+    For a broad question decomposed across multiple (usually disparate)
+    datasets: each sub-report keeps its own within-dataset joint
+    correction, verified/inferred bits SUM across sub-questions (a joint
+    count across different datasets is not measurable — this is the
+    federated limitation, stated in the report), and the decomposition/
+    synthesis choices enter as explicit bridging constraints, scored with the
+    default 20-bit cap since they have no single pool.
+
+    labeled_reports: [(label, report_dict), ...] where report_dict is the
+    output of analyze() (or the harness). bridge_constraints: the same
+    constraint shape as analyze() takes — the bridging premises that
+    connect the sub-questions to the broad question: the decomposition
+    mapping, proxy assumptions, synthesis rules.
+    """
+    verified = inferred = 0.0
+    subs, injected_descriptions = [], []
+    for label, r in labeled_reports:
+        label = r.get("label", label)
+        verified += r["verified_bits"]
+        inferred += r["inferred_bits"]
+        inj = [c["description"] for c in r.get("constraints", [])
+               if c.get("type") == "injected"]
+        subs.append({
+            "label": label,
+            "fidelity_score": r["fidelity_score"],
+            "verified_bits": r["verified_bits"],
+            "inferred_bits": r["inferred_bits"],
+            "verified_rate_basis": r.get("verified_rate_basis", "summed"),
+            "num_injected_constraints": len(inj),
+        })
+        injected_descriptions.extend(f"[{label}] {d}" for d in inj)
+
+    bridge = analyze(bridge_constraints) if bridge_constraints else None
+    if bridge:
+        verified += bridge["verified_bits"]
+        inferred += bridge["inferred_bits"]
+        injected_descriptions.extend(
+            c["description"] for c in bridge["constraints"]
+            if c["type"] == "injected")
+
+    total = verified + inferred
+    return {
+        "composite": True,
+        "fidelity_score": round(1.0 if total == 0 else verified / total, 3),
+        "verified_bits": round(verified, 2),
+        "inferred_bits": round(inferred, 2),
+        "total_bits": round(total, 2),
+        "sub_questions": subs,
+        "bridge_constraints": bridge["constraints"] if bridge else [],
+        "injected_descriptions": injected_descriptions,
+        "note": ("Verified bits are summed across sub-questions: joint "
+                 "correction applies within each dataset but cannot be "
+                 "measured across datasets."),
+    }
+
+
+def render_composite(report: dict) -> str:
+    score = report["fidelity_score"]
+    filled = round(score * BAR_WIDTH)
+    bar = "█" * filled + "░" * (BAR_WIDTH - filled)
+    rule = "═" * 50
+    thin = "─" * 40
+
+    lines = [
+        rule,
+        f"  COMPOSITE PROMPT FIDELITY: {score * 100:.1f}%",
+        rule,
+        "",
+        f"  [{bar}] {score * 100:.1f}%",
+        "",
+        "  Sub-questions:",
+    ]
+    for s in report["sub_questions"]:
+        basis = ", joint-measured" if s["verified_rate_basis"] == "joint-measured" else ""
+        lines.append(f"  • {s['label']}: {s['fidelity_score'] * 100:.1f}% — "
+                     f"verified {s['verified_bits']:.2f} bits{basis}, "
+                     f"inferred {s['inferred_bits']:.2f}")
+
+    if report["bridge_constraints"]:
+        lines.append("")
+        lines.append("  Bridging premises (decomposition & synthesis):")
+        for c in report["bridge_constraints"]:
+            icon = {"verified": "✓", "inferred": "?", "injected": "!"}[c["type"]]
+            lines.append(constraint_line(icon, c))
+
+    lines += [
+        "",
+        f"  {thin}",
+        f"  Verified:  {report['verified_bits']:>7.2f} bits (summed across sub-questions)",
+        f"  Inferred:  {report['inferred_bits']:>7.2f} bits",
+        f"  Total:     {report['total_bits']:>7.2f} bits",
+    ]
+    if report["injected_descriptions"]:
+        lines.append(f"  Injected filters across sub-questions:")
+        lines.extend(f"    ! {d}" for d in report["injected_descriptions"])
+    lines.append(f"  Note: {report['note']}")
+    lines.append(rule)
+    return "\n".join(lines)
+
+
+def render_composite_brief(report: dict) -> str:
+    score = report["fidelity_score"]
+    if score >= 0.8:
+        band = "almost all of this answer is verifiable"
+    elif score >= 0.4:
+        band = "a mix of checked facts and judgment"
+    else:
+        band = "mostly judgment"
+    lines = [f"Composite fidelity: {score * 100:.0f}% — {band}."]
+    for s in report["sub_questions"]:
+        lines.append(f"• {s['label']}: {s['fidelity_score'] * 100:.0f}% verifiable")
+    bridging = [c["description"] for c in report["bridge_constraints"]
+                if c["type"] == "inferred"]
+    if bridging:
+        lines.append(f"Judgment calls bridging them: {'; '.join(bridging)}")
+    if report["injected_descriptions"]:
+        lines.append("System filters (not requested): "
+                     + "; ".join(report["injected_descriptions"]))
+    return "\n".join(lines)
 
 
 def constraint_line(icon: str, c: dict) -> str:
@@ -294,8 +419,20 @@ def render_brief(report: dict) -> str:
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Compute a prompt fidelity report from constraints JSON")
-    parser.add_argument("input", nargs="?",
-                        help="Path to constraints JSON (default: stdin)")
+    parser.add_argument("inputs", nargs="*",
+                        help="Path to constraints JSON (default: stdin); "
+                             "with --merge, two or more sub-report JSON files")
+    parser.add_argument("--merge", action="store_true",
+                        help="Compose sub-question reports (each a --json "
+                             "output of this script or the harness) into one "
+                             "composite report for a broad multi-dataset "
+                             "question")
+    parser.add_argument("--bridge",
+                        help="Merge mode: constraints JSON of bridging "
+                             "premises — the decomposition/synthesis "
+                             "judgment calls (usually inferred) that "
+                             "connect the sub-questions to the broad "
+                             "question")
     parser.add_argument("--pool-size", type=float,
                         help="Candidate pool size; caps per-constraint bits "
                              "at log2(pool_size)")
@@ -309,7 +446,35 @@ def main() -> int:
                              "decimal bits) for conversational use")
     args = parser.parse_args()
 
-    raw = open(args.input).read() if args.input else sys.stdin.read()
+    if args.merge:
+        if len(args.inputs) < 2:
+            print("error: --merge needs two or more sub-report files",
+                  file=sys.stderr)
+            return 1
+        try:
+            labeled = []
+            for path in args.inputs:
+                stem = os.path.splitext(os.path.basename(path))[0]
+                labeled.append((stem, json.load(open(path))))
+            bridge = json.load(open(args.bridge)) if args.bridge else None
+            if isinstance(bridge, dict):
+                bridge = bridge["constraints"]
+            composite = merge_reports(labeled, bridge)
+        except (KeyError, ValueError, TypeError, OSError) as e:
+            print(f"error: {e}", file=sys.stderr)
+            return 1
+        if args.json:
+            print(json.dumps(composite, indent=2))
+        elif args.brief:
+            print(render_composite_brief(composite))
+        else:
+            print(render_composite(composite))
+        return 0
+
+    if len(args.inputs) > 1:
+        print("error: multiple input files require --merge", file=sys.stderr)
+        return 1
+    raw = open(args.inputs[0]).read() if args.inputs else sys.stdin.read()
     data = json.loads(raw)
     pool_size, joint_count, joint_rate = args.pool_size, args.joint_count, None
     if isinstance(data, dict):
