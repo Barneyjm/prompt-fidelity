@@ -88,13 +88,19 @@ class FidelityReport:
 
     verified_joint_survival_rate: measured survival rate of ALL verified
         filters ANDed together. When set, the verified side of the score
-        uses the exact joint information -log2(rate) instead of summing
-        per-constraint bits (which assumes independence). Per-constraint
-        bits remain as attribution.
+        uses the exact joint information -log2(rate), capped at the pool
+        cap, instead of summing per-constraint bits (which assumes
+        independence). A rate of 0 (jointly unsatisfiable filters) is
+        valid and scores at the cap. Per-constraint bits remain as
+        attribution.
+    pool_size: candidate pool size the report was computed against; the
+        per-constraint and joint cap is log2(pool_size), defaulting to
+        20 bits when None. Carried on the report so to_dict() round-trips.
     """
 
     constraints: list[Constraint]
     verified_joint_survival_rate: float | None = None
+    pool_size: float | None = None
 
     @property
     def verified_constraints(self) -> list[Constraint]:
@@ -112,6 +118,11 @@ class FidelityReport:
         return [c for c in self.constraints if c.constraint_type == "injected"]
 
     @property
+    def max_bits(self) -> float:
+        """Per-constraint (and joint) bit cap for this report's pool."""
+        return max_bits_for_pool(self.pool_size)
+
+    @property
     def verified_bits_summed(self) -> float:
         """Verified bits summed per-constraint (assumes independence)."""
         return sum(c.bits for c in self.verified_constraints)
@@ -122,9 +133,10 @@ class FidelityReport:
         if self.verified_joint_survival_rate is not None:
             rate = self.verified_joint_survival_rate
             if rate <= 0:
-                raise ValueError(
-                    f"verified_joint_survival_rate must be positive, got {rate}")
-            return 0.0 if rate >= 1 else -math.log2(rate)
+                return self.max_bits  # jointly unsatisfiable -> capped
+            if rate >= 1:
+                return 0.0
+            return min(-math.log2(rate), self.max_bits)
         return self.verified_bits_summed
 
     @property
@@ -153,6 +165,8 @@ class FidelityReport:
         """Convert report to dictionary representation."""
         return {
             "fidelity_score": round(self.fidelity_score, 3),
+            "pool_size": self.pool_size,
+            "verified_joint_survival_rate": self.verified_joint_survival_rate,
             "verified_bits": round(self.verified_bits, 2),
             "verified_bits_summed": round(self.verified_bits_summed, 2),
             "verified_rate_basis": (
@@ -194,15 +208,26 @@ def compute_fidelity(constraints: list[dict],
     Returns:
         FidelityReport with computed fidelity score and breakdown.
         Injected constraints are reported but excluded from the score.
+
+    Raises:
+        ValueError: if a verified/inferred constraint is missing its
+            estimated_survival_rate (a silent 0-bit score would distort
+            fidelity), if the joint rate is outside [0, 1], or if a joint
+            rate is given with no verified constraints.
     """
     max_bits = max_bits_for_pool(pool_size)
     parsed_constraints = []
 
     for c in constraints:
+        rate = c.get("estimated_survival_rate")
+        if rate is None and c["type"] in ("verified", "inferred"):
+            raise ValueError(
+                f"estimated_survival_rate is required for {c['type']} "
+                f"constraint {c.get('description', '?')!r}")
         constraint = Constraint(
             description=c["description"],
             constraint_type=c["type"],
-            estimated_survival_rate=c.get("estimated_survival_rate"),
+            estimated_survival_rate=rate,
             api_param=c.get("api_param"),
             api_value=c.get("api_value"),
             max_bits=max_bits,
@@ -210,9 +235,20 @@ def compute_fidelity(constraints: list[dict],
         )
         parsed_constraints.append(constraint)
 
+    if verified_joint_survival_rate is not None:
+        if not any(c.constraint_type == "verified" for c in parsed_constraints):
+            raise ValueError(
+                "verified_joint_survival_rate given but there are no "
+                "verified constraints")
+        if not 0 <= verified_joint_survival_rate <= 1:
+            raise ValueError(
+                f"verified_joint_survival_rate must be in [0, 1], "
+                f"got {verified_joint_survival_rate}")
+
     return FidelityReport(
         constraints=parsed_constraints,
-        verified_joint_survival_rate=verified_joint_survival_rate)
+        verified_joint_survival_rate=verified_joint_survival_rate,
+        pool_size=pool_size)
 
 
 def estimate_survival_rate_from_bits(bits: float) -> float:

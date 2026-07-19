@@ -31,10 +31,9 @@ SPECS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "specs")
 def run_spec(path: str, quiet: bool) -> dict:
     with open(path) as f:
         spec = json.load(f)
-    if quiet:
-        with contextlib.redirect_stdout(io.StringIO()):
-            report = socrata_fidelity.run(spec, sample_rows=0)
-    else:
+    ctx = (contextlib.redirect_stdout(io.StringIO()) if quiet
+           else contextlib.nullcontext())
+    with ctx:
         report = socrata_fidelity.run(spec, sample_rows=0)
     return {
         "spec": os.path.splitext(os.path.basename(path))[0],

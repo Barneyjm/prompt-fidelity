@@ -8,21 +8,25 @@ Usage:
     python3 compute_fidelity.py constraints.json
     echo '[{"description": "...", "type": "verified", "estimated_survival_rate": 0.1}]' \
         | python3 compute_fidelity.py
-    python3 compute_fidelity.py --json --pool-size 1000000000 constraints.json
+    python3 compute_fidelity.py --json --pool-size 1e9 --joint-count 1100 constraints.json
 
 Input: a JSON array of constraint objects (or an object with a
-"constraints" key and optional "pool_size" key). Each constraint has:
+"constraints" key and optional "pool_size", "verified_joint_count",
+"verified_joint_survival_rate" keys). Each constraint has:
     description             str   human-readable constraint
     type                    str   "verified", "inferred", or "injected"
     estimated_survival_rate float fraction of the candidate pool that
                                   satisfies this constraint, in (0, 1);
                                   optional for "injected"
-    rate_source             str   optional: "measured" (an exact or
-                                  system-returned count against the actual
-                                  data), "approximated" (system-derived but
+    rate_source             str   "measured" (an exact or system-returned
+                                  count against the actual data),
+                                  "approximated" (system-derived but
                                   inexact — planner statistics, sampled
                                   counts, possibly stale), or "estimated"
-                                  (a guess)
+                                  (a guess). Optional, but omitting it on
+                                  verified/inferred constraints drops the
+                                  provenance labels from the report; the
+                                  CLI warns on stderr when that happens.
 
 Constraint types:
     verified  — mechanically checkable against the data source; counts
@@ -48,13 +52,17 @@ survivor set), pass it via --joint-count, a top-level
 "verified_joint_survival_rate" key. The verified side of the score then
 uses the exact measured joint information, -log2(joint/pool), instead of
 the independence approximation; per-constraint bits remain as attribution
-and the report shows the adjustment. Inferred constraints cannot be
-jointly counted and stay summed — merge heavily overlapping inferred
-constraints rather than listing them separately.
+and the report shows the adjustment. A joint count of 0 (the verified
+filters are jointly unsatisfiable) is valid and scores at the log2(pool)
+cap. Inferred constraints cannot be jointly counted and stay summed —
+merge heavily overlapping inferred constraints rather than listing them
+separately.
 
-Output: a formatted fidelity report (or JSON with --json).
+Output: a formatted fidelity report (or JSON with --json). Input is never
+mutated; sums are computed on unrounded bits and rounded only for display.
 """
 
+import argparse
 import json
 import math
 import sys
@@ -84,6 +92,8 @@ def max_bits_for_pool(pool_size: float | None) -> float:
 
 def analyze(constraints: list[dict], pool_size: float | None = None,
             verified_joint_survival_rate: float | None = None) -> dict:
+    constraints = [dict(c) for c in constraints]  # never mutate the caller's
+
     unknown = [c for c in constraints if c.get("type") not in VALID_TYPES]
     if unknown:
         names = ", ".join(repr(c.get("description", "?")) for c in unknown)
@@ -108,12 +118,16 @@ def analyze(constraints: list[dict], pool_size: float | None = None,
         raise ValueError(
             f'rate_source must be one of {VALID_RATE_SOURCES}: {names}')
 
+    # Raw (unrounded) bits drive every sum; the per-constraint "bits" field
+    # is rounded for display only.
     max_bits = max_bits_for_pool(pool_size)
+    raw = {}
     for c in constraints:
         if "estimated_survival_rate" in c:
-            c["bits"] = round(bits(float(c["estimated_survival_rate"]), max_bits), 2)
+            raw[id(c)] = bits(float(c["estimated_survival_rate"]), max_bits)
+            c["bits"] = round(raw[id(c)], 2)
 
-    verified_bits_summed = sum(c["bits"] for c in verified)
+    verified_bits_summed = sum(raw[id(c)] for c in verified)
 
     joint_bits = None
     if verified_joint_survival_rate is not None:
@@ -122,13 +136,13 @@ def analyze(constraints: list[dict], pool_size: float | None = None,
                 "verified_joint_survival_rate given but there are no "
                 "verified constraints")
         rate = float(verified_joint_survival_rate)
-        if not 0 < rate <= 1:
+        if not 0 <= rate <= 1:
             raise ValueError(
-                f"verified_joint_survival_rate must be in (0, 1], got {rate}")
-        joint_bits = bits(rate, max_bits)
+                f"verified_joint_survival_rate must be in [0, 1], got {rate}")
+        joint_bits = bits(rate, max_bits)  # rate 0 -> capped at log2(pool)
 
     verified_bits = joint_bits if joint_bits is not None else verified_bits_summed
-    inferred_bits = sum(c["bits"] for c in inferred)
+    inferred_bits = sum(raw[id(c)] for c in inferred)
     total_bits = verified_bits + inferred_bits
     score = 1.0 if total_bits == 0 else verified_bits / total_bits
 
@@ -136,6 +150,8 @@ def analyze(constraints: list[dict], pool_size: float | None = None,
                    if c.get("rate_source") == "measured")
     approximated = sum(1 for c in verified + inferred
                        if c.get("rate_source") == "approximated")
+    unlabeled = [c["description"] for c in verified + inferred
+                 if not c.get("rate_source")]
 
     return {
         "fidelity_score": round(score, 3),
@@ -144,6 +160,7 @@ def analyze(constraints: list[dict], pool_size: float | None = None,
         "verified_bits": round(verified_bits, 2),
         "verified_bits_summed": round(verified_bits_summed, 2),
         "verified_rate_basis": "joint-measured" if joint_bits is not None else "summed",
+        "verified_joint_survival_rate": verified_joint_survival_rate,
         "correlation_adjustment_bits": (
             round(verified_bits - verified_bits_summed, 2)
             if joint_bits is not None else None),
@@ -154,6 +171,7 @@ def analyze(constraints: list[dict], pool_size: float | None = None,
         "num_injected_constraints": len(injected),
         "num_measured_rates": measured,
         "num_approximated_rates": approximated,
+        "unlabeled_rate_constraints": unlabeled,
         "constraints": constraints,
     }
 
@@ -223,6 +241,10 @@ def render(report: dict) -> str:
         lines.append(
             f"  Correlation: summed {report['verified_bits_summed']:.2f} bits "
             f"→ joint {report['verified_bits']:.2f} ({adj:+.2f} adjustment)")
+        if report["verified_joint_survival_rate"] == 0:
+            lines.append(
+                "  Warning: joint count is 0 — the verified filters are "
+                "jointly unsatisfiable; no result can match this request")
     if n_j:
         lines.append(f"  Injected:  {n_j} system "
                      f"{'filter narrows' if n_j == 1 else 'filters narrow'} "
@@ -230,38 +252,29 @@ def render(report: dict) -> str:
     if report["pool_size"] is not None:
         lines.append(
             f"  Pool:      {report['pool_size']:,.0f} rows "
-            f"(per-constraint cap: {report['max_constraint_bits']:.1f} bits)"
-        )
+            f"(per-constraint cap: {report['max_constraint_bits']:.1f} bits)")
     lines.append(rule)
     return "\n".join(lines)
 
 
 def main() -> int:
-    args = sys.argv[1:]
-    as_json = "--json" in args
-    args = [a for a in args if a != "--json"]
+    parser = argparse.ArgumentParser(
+        description="Compute a prompt fidelity report from constraints JSON")
+    parser.add_argument("input", nargs="?",
+                        help="Path to constraints JSON (default: stdin)")
+    parser.add_argument("--pool-size", type=float,
+                        help="Candidate pool size; caps per-constraint bits "
+                             "at log2(pool_size)")
+    parser.add_argument("--joint-count", type=float,
+                        help="Measured count of rows matching ALL verified "
+                             "filters ANDed (requires a pool size)")
+    parser.add_argument("--json", action="store_true",
+                        help="Print the report as JSON instead of text")
+    args = parser.parse_args()
 
-    def take_flag(name: str) -> float | None:
-        if name not in args:
-            return None
-        i = args.index(name)
-        try:
-            value = float(args[i + 1])
-        except (IndexError, ValueError):
-            raise ValueError(f"{name} requires a numeric value")
-        del args[i:i + 2]
-        return value
-
-    try:
-        pool_size = take_flag("--pool-size")
-        joint_count = take_flag("--joint-count")
-    except ValueError as e:
-        print(f"error: {e}", file=sys.stderr)
-        return 1
-
-    raw = open(args[0]).read() if args else sys.stdin.read()
+    raw = open(args.input).read() if args.input else sys.stdin.read()
     data = json.loads(raw)
-    joint_rate = None
+    pool_size, joint_count, joint_rate = args.pool_size, args.joint_count, None
     if isinstance(data, dict):
         constraints = data["constraints"]
         if pool_size is None:
@@ -289,7 +302,13 @@ def main() -> int:
         print(f"error: {e}", file=sys.stderr)
         return 1
 
-    print(json.dumps(report, indent=2) if as_json else render(report))
+    if report["unlabeled_rate_constraints"]:
+        names = ", ".join(repr(d) for d in report["unlabeled_rate_constraints"])
+        print(f"warning: no rate_source on {names} — the report will not "
+              f"show whether these rates were measured or guessed",
+              file=sys.stderr)
+
+    print(json.dumps(report, indent=2) if args.json else render(report))
     return 0
 
 

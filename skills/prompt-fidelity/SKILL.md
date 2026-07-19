@@ -1,6 +1,6 @@
 ---
 name: prompt-fidelity
-description: Self-check how much of a request is verifiable vs guesswork before answering it. Use when handling search, filtering, recommendation, or data-retrieval requests over any dataset (API, database, files, spreadsheet) that mix objective criteria (checkable via a query, count, or calculation) with subjective judgment (mood, style, quality, "feels like", "best"), or when the user asks how confident, reliable, or verifiable an answer is. Decomposes the request into constraints, computes a fidelity score, and reports which parts of the answer are verified vs inferred.
+description: Self-checks how much of a request is verifiable vs guesswork before answering it. Use when handling search, filtering, recommendation, or data-retrieval requests over any dataset (API, database, files, spreadsheet) that mix objective criteria (checkable via a query, count, or calculation) with subjective judgment (mood, style, quality, "feels like", "best"), or when the user asks how confident, reliable, or verifiable an answer is. Decomposes the request into constraints, computes a fidelity score, and reports which parts of the answer are verified vs inferred.
 ---
 
 # Prompt Fidelity Self-Check
@@ -154,9 +154,12 @@ inferred constraints must still be merged by hand.
 culprit** — don't stop at the aggregate subtraction. Two ways, same idea:
 
 - *Pairwise counts (no data download)*: for each pair of verified
-  constraints, count `A AND B` and compute the shared information
-  `log2(pool × n_AB / (n_A × n_B))` — the pairwise correlation (lift)
-  expressed in bits. Positive = overlapping, negative = anti-correlated.
+  constraints, count `A AND B` and compute the pair's correlation
+  adjustment `log2((n_A × n_B) / (pool × n_AB))` — the pairwise lift
+  expressed in bits, using the same sign convention as the aggregate
+  adjustment: negative = overlapping (positively correlated), positive =
+  anti-correlated, and the pairwise values sum to approximately the
+  aggregate adjustment (the residual is higher-order interactions).
   k constraints cost k(k−1)/2 extra cheap counts.
 - *Indicator correlation (data in hand)*: with rows in a dataframe or a
   judged sample, build one boolean column per constraint and run a
@@ -194,18 +197,26 @@ only, no installs). The script lives at `scripts/compute_fidelity.py`
 relative to this SKILL.md:
 
 ```bash
-python3 <skill-dir>/scripts/compute_fidelity.py --pool-size 1000000000 constraints.json
+python3 scripts/compute_fidelity.py constraints.json
 ```
+
+(The path is relative to this skill's directory — the folder containing
+this SKILL.md.)
 
 Each constraint object needs `description`, `type` ("verified", "inferred",
 or "injected"), and `estimated_survival_rate` (optional for injected), plus
-`rate_source` ("measured", "approximated", or "estimated"). Pass `--pool-size` when you know
-the pool's rough size (or a top-level `"pool_size"` key in the JSON); omit
-it to use the default 20-bit cap. Pass the measured joint count of the
+`rate_source` ("measured", "approximated", or "estimated" — technically
+optional, but omitting it drops the provenance labels from the report and
+the script warns on stderr). Pass the pool size you determined in Step 3
+via `--pool-size` (or a top-level `"pool_size"` key in the JSON) — use the
+actual pool's size, not a copied example value, since it sets the
+per-constraint bit cap; omit it only when you truly don't know, which
+falls back to the 20-bit cap. Pass the measured joint count of the
 verified filters via `--joint-count` or a top-level `"verified_joint_count"`
-key when you have it. Add `--json` for machine-readable output.
-The script prints the fidelity report block — include it verbatim in your
-response.
+key when you have it (a joint count of 0 is valid — it means the verified
+filters are jointly unsatisfiable, and the report will say so). Add
+`--json` for machine-readable output. The script prints the fidelity
+report block — include it verbatim in your response.
 
 ### Step 6 — Answer with calibrated framing
 

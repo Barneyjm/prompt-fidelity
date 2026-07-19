@@ -13,6 +13,12 @@ from anthropic import Anthropic
 from openai import OpenAI
 
 
+# Injected filters applied by re-ranking. Declared in the fidelity report
+# (agent/main.py pipeline_injected_constraints) — keep in sync by importing
+# these constants, never by copying the numbers.
+RERANK_MAX_RESULTS = 10
+RERANK_SCORE_THRESHOLD = 30
+
 RERANK_SYSTEM_PROMPT = """You are a movie expert assistant helping to rank movies based on subjective criteria.
 
 You will be given:
@@ -43,8 +49,8 @@ Respond with a JSON object in this exact format:
   "ranking_notes": "Any overall observations about the ranking process"
 }
 
-Rank movies by overall_score descending. Only include movies that have a reasonable match (overall_score > 30).
-Only output valid JSON, no other text."""
+Rank movies by overall_score descending. Only include movies that have a reasonable match (overall_score > __SCORE_THRESHOLD__).
+Only output valid JSON, no other text.""".replace("__SCORE_THRESHOLD__", str(RERANK_SCORE_THRESHOLD))
 
 
 def format_movies_for_reranking(movies: list[dict]) -> str:
@@ -87,7 +93,7 @@ def rerank_with_claude(
     original_prompt: str,
     api_key: str | None = None,
     model: str = "claude-sonnet-4-5",
-    max_results: int = 10
+    max_results: int = RERANK_MAX_RESULTS
 ) -> dict:
     """
     Re-rank movies using Claude based on inferred constraints.
@@ -150,7 +156,7 @@ def rerank_with_openai(
     original_prompt: str,
     api_key: str | None = None,
     model: str = "gpt-4o",
-    max_results: int = 10
+    max_results: int = RERANK_MAX_RESULTS
 ) -> dict:
     """
     Re-rank movies using OpenAI based on inferred constraints.
@@ -203,7 +209,7 @@ def rerank_movies(
     provider: Literal["anthropic", "openai"] = "anthropic",
     api_key: str | None = None,
     model: str | None = None,
-    max_results: int = 10
+    max_results: int = RERANK_MAX_RESULTS
 ) -> dict:
     """
     Re-rank movies based on inferred constraints.

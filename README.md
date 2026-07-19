@@ -299,7 +299,7 @@ TMDb is just the working example. Three mechanisms keep the framework honest on 
 - **Injected filters.** Any filter the system applies that the user never requested — quality floors, top-N truncation, sampling, default sort order — is declared with `"type": "injected"`. Injected filters are excluded from the fidelity score (they aren't part of the request) but always listed in the report, because silently narrowing the pool is the main way a "100% fidelity, provably correct" claim becomes dishonest. This repo's own pipeline declares its filters: a 50-vote minimum, a top-30 candidate cap, and a top-10 re-rank cutoff.
 - **Correlation correction.** Bits summed across constraints assume they filter independently, which real data violates. When the datastore can cheaply measure the joint count of all verified filters ANDed together — often the same query that sizes the survivor set — pass it (`verified_joint_count` in the skill script, `verified_joint_survival_rate` to `compute_fidelity()`), and the verified side of the score uses the exact measured joint information `-log2(joint/pool)` instead of the sum. Per-constraint bits remain as attribution and the report shows the adjustment. Inferred constraints can't be jointly counted, so they stay summed — merge overlapping inferred constraints by hand.
 
-  The aggregate adjustment says *how much* correlation there is, not *where*. To attribute it, compute actual correlations: pairwise `A AND B` counts give each pair's shared information as `log2(pool × n_AB / (n_A × n_B))` — the harness does this with `--pairwise` — or, with rows in hand, build boolean indicator columns per constraint and run a standard correlation matrix (`df.corr()` in pandas / `np.corrcoef`). The indicator route is also the only window into correlation among *inferred* constraints, via a judged sample.
+  The aggregate adjustment says *how much* correlation there is, not *where*. To attribute it, compute actual correlations: pairwise `A AND B` counts give each pair's correlation adjustment as `log2((n_A × n_B) / (pool × n_AB))` — same sign convention as the aggregate, and the pairwise values sum to approximately the aggregate adjustment; the harness does this with `--pairwise` — or, with rows in hand, build boolean indicator columns per constraint and run a standard correlation matrix (`df.corr()` in pandas / `np.corrcoef`). The indicator route is also the only window into correlation among *inferred* constraints, via a judged sample.
 
 One more subtlety: "verified" means the *query* is mechanically checkable, not that it faithfully captures intent. A crowd-sourced `melancholy` keyword tag is a verified filter but a noisy proxy for a melancholy tone — the skill's guidance is to split such constraints into a verified query plus an inferred semantic gap.
 
@@ -319,10 +319,10 @@ Results across five cities and five data shapes (suite output):
 
 | Spec | Domain | Pool | Fidelity | Verified bits (joint) | Correlation adj. |
 |---|---|---|---|---|---|
-| `austin_pitbull_adoptions` | data.austintexas.gov | 173,775 | 82.4% | 8.17 (summed 8.40) | -0.23 bits |
+| `austin_pitbull_adoptions` | data.austintexas.gov | 173,775 | 82.5% | 8.17 (summed 8.40) | -0.23 bits |
 | `chicago_theft` | data.cityofchicago.org | 8,595,766 | 76.9% | 9.11 (summed 9.33) | -0.22 bits |
 | `moco_speeding` | data.montgomerycountymd.gov | 2,137,572 | 67.7% | 6.96 (summed 6.68) | +0.28 bits |
-| `nyc_311_noise` | data.cityofnewyork.us | 21,848,232 | 72.4% | 8.70 (summed 8.57) | +0.13 bits |
+| `nyc_311_noise` | data.cityofnewyork.us | 21,848,232 | 72.4% | 8.70 (summed 8.57) | +0.12 bits |
 | `seattle_aid_calls` | data.seattle.gov | 2,187,508 | 69.0% | 5.16 (summed 5.06) | +0.10 bits |
 
 Every adjustment lands within ±0.3 bits against 5–9 verified bits, so the independence sum is a good approximation on real civic data — but with the joint count measured, the verified side no longer needs the approximation at all. Reading the sign: a negative adjustment (Chicago, Austin) means the constraints are positively correlated — the joint pool is larger than independence predicts, so the sum *overstated* the verified information; a positive adjustment (NYC, Seattle, Montgomery County) means mildly negatively correlated constraints, where the sum understated it. Write a new spec JSON to test any other Socrata dataset.
@@ -339,10 +339,10 @@ PROMPT FIDELITY: 91.6%
   ✓ Williamsburg zips 11211/11249    (6.31 bits, measured)
   ✓ June 28 – July 6, 2026           (7.63 bits, measured)
   ? "full show vs firecrackers"      (1.74 bits, estimated)
-  Correlation: summed 21.42 bits → joint 18.89 (-2.53 adjustment)
+  Correlation: summed 21.43 bits → joint 18.89 (-2.54 adjustment)
 ```
 
-The verified half answered richly: 45 complaints, peaking at 19 on July 4th, with a repeat-complaint hot spot on South 2nd Street. The inferred half hit a wall — all 45 records had descriptor "N/A" and boilerplate resolutions — so the answer said plainly that the data cannot distinguish shows from firecrackers, and offered the one verifiable proxy (repeat complaints at one address in one night) clearly labeled as inference. A high fidelity score means the *verified part dominates the request*, not that every part is answerable. The −2.53 bit adjustment reflects a real seasonal correlation: fireworks complaints barely exist outside that week, so complaint type and date range heavily overlap.
+The verified half answered richly: 45 complaints, peaking at 19 on July 4th, with a repeat-complaint hot spot on South 2nd Street. The inferred half hit a wall — all 45 records had descriptor "N/A" and boilerplate resolutions — so the answer said plainly that the data cannot distinguish shows from firecrackers, and offered the one verifiable proxy (repeat complaints at one address in one night) clearly labeled as inference. A high fidelity score means the *verified part dominates the request*, not that every part is answerable. The −2.54 bit adjustment reflects a real seasonal correlation: fireworks complaints barely exist outside that week, so complaint type and date range heavily overlap.
 
 **"How bad have car break-ins been in Logan Square this summer? Do they look targeted or random?"** (Chicago crimes, 8.6M rows)
 
@@ -352,10 +352,10 @@ PROMPT FIDELITY: 94.5%
   ✓ Logan Square (community area 22)                (5.71 bits, measured)
   ✓ Jun 1 – Jul 18, 2026                            (8.40 bits, measured)
   ? "targeted vs random"                            (1.00 bits, estimated)
-  Correlation: summed 22.87 bits → joint 17.23 (-5.64 adjustment)
+  Correlation: summed 22.86 bits → joint 17.23 (-5.63 adjustment)
 ```
 
-Verified: 56 break-ins, up 33% from 42 in the same window last year; 41 of 56 street parking; zero arrests; 17 of the 56 in a single June 2–4 burst. The inferred judgment ("systematic about the area, random about the victim") was grounded in checkable patterns — burst days and no block hit more than twice — with the line drawn explicitly between database facts and interpretation. Two mechanisms earned their keep here: a cheap group-by probe *before* decomposing revealed that "car break-ins" spans two encodings (guessing would have silently dropped 57% of the answer), and the −5.64 bit correlation adjustment absorbed a data-quality landmine — those description labels barely exist before ~2024 because Chicago changed its coding taxonomy, making the all-time per-constraint rate meaningless. Independence predicted ~1 matching row; the measured joint count of 56 kept the score correct despite 25 years of label drift.
+Verified: 56 break-ins, up 33% from 42 in the same window last year; 41 of 56 street parking; zero arrests; 17 of the 56 in a single June 2–4 burst. The inferred judgment ("systematic about the area, random about the victim") was grounded in checkable patterns — burst days and no block hit more than twice — with the line drawn explicitly between database facts and interpretation. Two mechanisms earned their keep here: a cheap group-by probe *before* decomposing revealed that "car break-ins" spans two encodings (guessing would have silently dropped 57% of the answer), and the −5.63 bit correlation adjustment absorbed a data-quality landmine — those description labels barely exist before ~2024 because Chicago changed its coding taxonomy, making the all-time per-constraint rate meaningless. Independence predicted ~1 matching row; the measured joint count of 56 kept the score correct despite 25 years of label drift.
 
 ## TMDb Verified Fields
 
