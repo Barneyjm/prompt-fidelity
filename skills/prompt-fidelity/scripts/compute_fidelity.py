@@ -199,6 +199,11 @@ def merge_reports(labeled_reports: list, bridge_constraints: list | None = None)
     verified = inferred = 0.0
     subs, injected_descriptions = [], []
     for label, r in labeled_reports:
+        if not isinstance(r, dict) or "verified_bits" not in r or "inferred_bits" not in r:
+            raise ValueError(
+                f"input for {label!r} is not a fidelity report (expected the "
+                f"--json output of this script or the harness — did you pass "
+                f"a raw constraints file?)")
         label = r.get("label", label)
         verified += r["verified_bits"]
         inferred += r["inferred_bits"]
@@ -455,8 +460,12 @@ def main() -> int:
             labeled = []
             for path in args.inputs:
                 stem = os.path.splitext(os.path.basename(path))[0]
-                labeled.append((stem, json.load(open(path))))
-            bridge = json.load(open(args.bridge)) if args.bridge else None
+                with open(path, encoding="utf-8") as f:
+                    labeled.append((stem, json.load(f)))
+            bridge = None
+            if args.bridge:
+                with open(args.bridge, encoding="utf-8") as f:
+                    bridge = json.load(f)
             if isinstance(bridge, dict):
                 bridge = bridge["constraints"]
             composite = merge_reports(labeled, bridge)
@@ -474,7 +483,11 @@ def main() -> int:
     if len(args.inputs) > 1:
         print("error: multiple input files require --merge", file=sys.stderr)
         return 1
-    raw = open(args.inputs[0]).read() if args.inputs else sys.stdin.read()
+    if args.inputs:
+        with open(args.inputs[0], encoding="utf-8") as f:
+            raw = f.read()
+    else:
+        raw = sys.stdin.read()
     data = json.loads(raw)
     pool_size, joint_count, joint_rate = args.pool_size, args.joint_count, None
     if isinstance(data, dict):
